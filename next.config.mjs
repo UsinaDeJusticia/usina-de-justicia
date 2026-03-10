@@ -7,7 +7,8 @@ const nextConfig = {
     remotePatterns: [
       {
         protocol: 'https',
-        hostname: '**.usinadejusticia.org.ar',
+        hostname: 'usinadejusticia.org.ar',
+        pathname: '/wp-content/uploads/**',
       },
     ],
   },
