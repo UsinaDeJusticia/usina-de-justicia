@@ -6,6 +6,7 @@ import type { Articulo, Categoria, Tag, ImageAsset } from '@/types'
 import type {
   WPPost,
   WPCategory,
+  WPTag as WPTagType,
   WPQueryParams,
   PaginatedResponse,
   SiteSection,
@@ -310,6 +311,42 @@ export async function searchArticulos(
   params: Omit<WPQueryParams, 'search'> = {}
 ): Promise<PaginatedResponse<Articulo>> {
   return getArticulos({ ...params, search: query, orderBy: 'relevance' })
+}
+
+// ============================================
+// API: TAGS
+// ============================================
+
+export async function getWPTags(): Promise<Tag[]> {
+  const cacheKey = 'wp-tags'
+  const cached = getCached<Tag[]>(cacheKey)
+  if (cached) return cached
+
+  const { data } = await wpFetch<WPTagType[]>('/tags', {
+    per_page: 100,
+    hide_empty: true,
+  })
+
+  const tags: Tag[] = data.map((t) => ({
+    id: String(t.id),
+    nombre: t.name,
+    slug: t.slug,
+  }))
+
+  setCache(cacheKey, tags)
+  return tags
+}
+
+export async function getArticulosByTagSlug(
+  tagSlug: string,
+  params: Omit<WPQueryParams, 'tags'> = {}
+): Promise<PaginatedResponse<Articulo>> {
+  const tags = await getWPTags()
+  const tag = tags.find((t) => t.slug === tagSlug)
+  if (!tag) {
+    return { data: [], total: 0, totalPages: 0, currentPage: 1 }
+  }
+  return getArticulos({ ...params, tags: [Number(tag.id)] })
 }
 
 // ============================================
