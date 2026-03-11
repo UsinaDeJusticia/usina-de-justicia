@@ -6,32 +6,31 @@ import { formatDate } from '@/lib/utils'
 export const metadata: Metadata = {
   title: 'Transparencia',
   description:
-    'Informes de gestión, estados contables y rendición de cuentas de Usina de Justicia.',
+    'Memorias y balances certificados de Usina de Justicia. Documentos institucionales de acceso público.',
   alternates: { canonical: 'https://www.usinadejusticia.org.ar/sobre-nosotros/transparencia' },
 }
 
-// PLACEHOLDER — Reemplazar con datos reales o fetch desde Strapi
 const informes = [
   {
     id: '1',
-    titulo: 'Informe de gestión 2025',
-    fecha: '2025-03-01',
-    url: '#',
-    tipo: 'Informe anual',
+    titulo: 'Memoria y Balance — Año 2023',
+    fecha: '2024-03-01',
+    url: 'https://usinadejusticia.org.ar/wp-content/uploads/2024/05/Memoria-y-Balance-2023-certificado-y-comprimido.pdf',
+    tipo: 'Memoria y Balance certificado',
   },
   {
     id: '2',
-    titulo: 'Informe de gestión 2024',
-    fecha: '2024-03-01',
-    url: '#',
-    tipo: 'Informe anual',
+    titulo: 'Memoria y Balance — Año 2022',
+    fecha: '2023-03-01',
+    url: 'https://usinadejusticia.org.ar/wp-content/uploads/2023/08/Memoria-y-Balance-2022-Certificado-Comprimido.pdf',
+    tipo: 'Memoria y Balance certificado',
   },
   {
     id: '3',
-    titulo: 'Estados contables 2024',
-    fecha: '2024-06-01',
-    url: '#',
-    tipo: 'Contable',
+    titulo: 'Memoria y Balance — Año 2021',
+    fecha: '2022-03-01',
+    url: 'https://usinadejusticia.org.ar/wp-content/uploads/2022/11/Memoria-y-Balance-Certificado-2021-Comprimido.pdf',
+    tipo: 'Memoria y Balance certificado',
   },
 ]
 
@@ -52,9 +51,7 @@ export default function TransparenciaPage() {
         <div className="max-w-content mx-auto px-4">
           <h1 className="text-h1 lg:text-display">Transparencia</h1>
           <p className="mt-4 text-body-lg text-white/80 max-w-narrow">
-            Creemos en la rendición de cuentas como pilar fundamental de
-            nuestra organización. Acá podés consultar nuestros informes de
-            gestión y estados contables.
+            Creemos en la rendición de cuentas como pilar fundamental de nuestra organización. Acá podés consultar nuestras memorias y balances certificados.
           </p>
         </div>
       </section>
