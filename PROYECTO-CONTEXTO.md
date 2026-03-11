@@ -77,7 +77,7 @@
 ```
 src/
 ├── app/
-│   ├── page.tsx                              # Home (placeholder)
+│   ├── page.tsx                              # ✅ CONECTADO A WP API (Archivo 32)
 │   ├── layout.tsx                            # Layout raíz
 │   ├── blog/
 │   │   ├── page.tsx                          # ✅ Secciones agrupadas con SITE_SECTIONS (Archivo 26)
@@ -90,9 +90,9 @@ src/
 │   │       └── [tag]/
 │   │           └── page.tsx                  # ✅ CONECTADO A WP API (Archivo 29)
 │   ├── sobre-nosotros/
-│   │   ├── page.tsx                          # ⏳ Placeholder
+│   │   ├── page.tsx                          # ✅ Contenido real (Archivo 33)
 │   │   ├── equipo/page.tsx                   # ⏳ Placeholder
-│   │   └── transparencia/page.tsx            # ⏳ Placeholder
+│   │   └── transparencia/page.tsx            # ✅ Datos reales (PDFs 2021-2023)
 │   ├── programas/
 │   │   ├── page.tsx                          # ⏳ Placeholder
 │   │   └── [slug]/page.tsx                   # ⏳ Placeholder
@@ -260,10 +260,13 @@ NEXT_PUBLIC_WP_API_URL=https://usinadejusticia.org.ar/wp-json/wp/v2
 | 29   | src/app/blog/tag/[tag]/page.tsx                  | ✅ Implementado | Filtro por tag + componentes compartidos                 |
 | 30   | src/components/blog/ArticleCard.tsx              | ✅ Implementado | Componente compartido para cards de artículos |
 | 31   | src/components/blog/Pagination.tsx               | ✅ Implementado | Componente compartido de paginación |
+| 32   | src/app/page.tsx                                 | ✅ Implementado | Home page con datos reales de WP |
+| 33   | src/app/sobre-nosotros/page.tsx                  | ✅ Implementado | Sobre nosotros con contenido real: historia, valores, objetivos, timeline |
 
 ## 10. PROBLEMAS CONOCIDOS / DEUDA TÉCNICA
 
 1. **Tags sin criterio:** Los tags de WP están puestos al azar. No vale la pena limpiarlos ahora, se hará cuando se migre a Strapi.
+2. Link de MercadoPago en página Donar: verificar con Usina que el plan de suscripción siga activo
 
 ## 11. MEJORAS SEO/ACCESIBILIDAD PENDIENTES
 
@@ -307,12 +310,13 @@ Estas mejoras aplican a archivos ya implementados y deberían hacerse en un paso
 - [x] Home page con datos reales de WP
 
 ### Fase 2 — Páginas institucionales ← ESTAMOS ACÁ
-- [ ] Sobre nosotros (contenido real disponible en WP id:94)
+- [x] Sobre nosotros (contenido real disponible en WP id:94)
 - [ ] Equipo (definir si hay datos en WP o se arma manual)
-- [ ] Transparencia (WP id:21247 — PDFs de memorias y balances)
+- [x] Transparencia (WP id:21247 — PDFs de memorias y balances)
 - [ ] Programas (WP id:213 vacía — armar con subpáginas)
 - [ ] Programas/[slug] (WP id:103 Acompañamiento, id:101 Incidencia, id:15851 Capacitación)
 - [ ] Distinciones (WP id:20992)
+- [ ] Donar ← SIGUIENTE PASO (WP id:21260 — MercadoPago + datos bancarios BBVA)
 
 ### Fase 3 — Páginas funcionales
 - [ ] Contacto (formulario real — WP id:8)
