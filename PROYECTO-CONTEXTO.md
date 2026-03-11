@@ -267,6 +267,7 @@ NEXT_PUBLIC_WP_API_URL=https://usinadejusticia.org.ar/wp-json/wp/v2
 
 1. **Tags sin criterio:** Los tags de WP están puestos al azar. No vale la pena limpiarlos ahora, se hará cuando se migre a Strapi.
 2. Link de MercadoPago en página Donar: verificar con Usina que el plan de suscripción siga activo
+3. **Página Donar:** actualmente solo MercadoPago + transferencia. Diseñar sistema modular de métodos de pago para agregar fácilmente nuevas opciones (Stripe, PayPal, crypto, plataformas argentinas como Cafecito). Prioridad media-alta para maximizar donaciones internacionales y locales.
 
 ## 11. MEJORAS SEO/ACCESIBILIDAD PENDIENTES
 
@@ -321,6 +322,7 @@ Estas mejoras aplican a archivos ya implementados y deberían hacerse en un paso
 ### Fase 3 — Páginas funcionales
 - [ ] Contacto (formulario real — WP id:8)
 - [ ] Donar (WP id:21260 — MercadoPago + datos bancarios BBVA)
+- [ ] Donar: ampliar medios de pago (Stripe internacional, crypto, PayPal, botón de Cafecito/Colaboratorio) — diseñar como componente modular para agregar métodos fácilmente
 - [ ] Recursos
 - [ ] Galería
 
