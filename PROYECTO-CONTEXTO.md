@@ -294,21 +294,75 @@ Estas mejoras aplican a archivos ya implementados y deberían hacerse en un paso
 - src/app/sitemap.ts (nuevo archivo)
 - public/robots.txt (nuevo archivo)
 
-## 12. PRÓXIMOS PASOS SUGERIDOS
+## 12. PLAN GENERAL DEL REDISEÑO
 
-### Siguiente fase (páginas con placeholder):
+### Fase 1 — Estructura y blog ✅ COMPLETADA
+- [x] 23 archivos base con estructura completa
+- [x] Conexión WP REST API
+- [x] Blog: listado con paginación (825 artículos)
+- [x] Blog: artículo individual con contenido limpio de Elementor
+- [x] Blog: filtro por categorías agrupadas en 6 secciones
+- [x] Blog: páginas de tag funcionando
+- [x] Componentes compartidos (ArticleCard, Pagination)
+- [x] Home page con datos reales de WP
 
-- [ ] Home page con contenido real
-- [ ] Sobre nosotros
-- [ ] Programas
-- [ ] Contacto
-- [ ] Donar
+### Fase 2 — Páginas institucionales ← ESTAMOS ACÁ
+- [ ] Sobre nosotros (contenido real disponible en WP id:94)
+- [ ] Equipo (definir si hay datos en WP o se arma manual)
+- [ ] Transparencia (WP id:21247 — PDFs de memorias y balances)
+- [ ] Programas (WP id:213 vacía — armar con subpáginas)
+- [ ] Programas/[slug] (WP id:103 Acompañamiento, id:101 Incidencia, id:15851 Capacitación)
+- [ ] Distinciones (WP id:20992)
 
-### Futuro:
+### Fase 3 — Páginas funcionales
+- [ ] Contacto (formulario real — WP id:8)
+- [ ] Donar (WP id:21260 — MercadoPago + datos bancarios BBVA)
+- [ ] Recursos
+- [ ] Galería
 
-- [ ] Sistema de fichas/timeline para historias de víctimas
-- [ ] Migración a Strapi
+### Fase 4 — SEO y optimización (ver sección 11)
+- [ ] JSON-LD Organization, Article, BreadcrumbList
+- [ ] Sitemap dinámico, robots.txt
+- [ ] Open Graph images, canonical en paginadas
+- [ ] Performance y accesibilidad
+
+### Fase 5 — Sistema de historias de víctimas
+- [ ] Diseño de ficha/timeline por caso
+- [ ] Transformar posts-monstruo en estructura navegable
+- [ ] Sistema de búsqueda por nombre de víctima
+
+### Fase 6 — Migración a Strapi + Deploy
+- [ ] Modelar content types en Strapi
+- [ ] Migrar contenido de WP a Strapi
+- [ ] Cambiar fuente de datos en Next.js
 - [ ] Deploy en Vercel
+
+### Contenido real disponible en WP REST API (páginas):
+| ID | Slug | Título | Estado |
+|---|---|---|---|
+| 94 | nosotros | Nosotros | Tiene contenido real: historia, valores, objetivos |
+| 21247 | transparencia-institucional | Transparencia | PDFs de memorias 2021-2023 |
+| 213 | programas | Programas | Página vacía (contenido en subpáginas) |
+| 103 | acompanamiento-a-la-victima | Acompañamiento a Víctimas | Tiene contenido |
+| 101 | incidencia-en-politicas-publicas | Incidencia en Políticas Públicas | Tiene contenido |
+| 15851 | capacitacion | Capacitación | Tiene contenido |
+| 21260 | donar | Donar | MercadoPago + datos bancarios BBVA |
+| 20992 | distinciones | Distinciones | Tiene contenido |
+| 8 | contacto | Contacto | Tiene contenido |
+
+### Datos reales para página Donar:
+- MercadoPago (donaciones únicas y suscripciones)
+- Presets: $10.000, $15.000, $20.000, $25.000, $30.000, $40.000, $50.000, $60.000, $70.000
+- Banco: BBVA BANCO FRANCÉS
+- Cuenta corriente pesos: 035-019044/4
+- Titular: USINA DE JUSTICIA - ARGENTINA ASOCIACIÓN
+- CUIT: 30-71540108-4
+- CBU: 0170035020000001904442
+- ALIAS: USINA.JUSTICIA.ARG
+
+### Bugs/mejoras visuales detectados:
+- [ ] Artículo destacado en home sin imagen muestra espacio vacío (usar extractFirstImage como fallback)
+- [ ] Doble CTA de donación al final de la home (uno de la page + uno del footer)
 
 ---
 
