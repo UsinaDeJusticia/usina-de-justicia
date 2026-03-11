@@ -3,7 +3,9 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { Breadcrumbs } from '@/components/layout/Breadcrumbs'
 import { ChevronLeft, FolderOpen } from 'lucide-react'
-import { getArticulosByCategorySlug, getWPCategories } from '@/lib/wordpress'
+import { getArticulosByCategorySlug, getArticulosBySection, getWPCategories } from '@/lib/wordpress'
+import { SITE_SECTIONS } from '@/types/wordpress'
+import type { SiteSection } from '@/types/wordpress'
 import { ArticleCard } from '@/components/blog/ArticleCard'
 import { Pagination } from '@/components/blog/Pagination'
 
@@ -13,8 +15,11 @@ import { Pagination } from '@/components/blog/Pagination'
 
 export async function generateStaticParams() {
   try {
+    // Pre-renderizar secciones agrupadas + categorías WP individuales
+    const sectionSlugs = Object.keys(SITE_SECTIONS).map((key) => ({ categoria: key }))
     const categorias = await getWPCategories()
-    return categorias.map((cat) => ({ categoria: cat.slug }))
+    const wpSlugs = categorias.map((cat) => ({ categoria: cat.slug }))
+    return [...sectionSlugs, ...wpSlugs]
   } catch {
     return []
   }
@@ -33,9 +38,22 @@ export async function generateMetadata({
   params,
 }: CategoriaPageProps): Promise<Metadata> {
   const { categoria } = await params
+
+  // Verificar si es una sección agrupada
+  if (categoria in SITE_SECTIONS) {
+    const section = SITE_SECTIONS[categoria as SiteSection]
+    return {
+      title: `${section.title} — Blog`,
+      description: `${section.description} — Usina de Justicia`,
+      alternates: {
+        canonical: `https://www.usinadejusticia.org.ar/blog/categoria/${categoria}`,
+      },
+    }
+  }
+
+  // Si no, buscar como categoría WP
   const categorias = await getWPCategories()
   const cat = categorias.find((c) => c.slug === categoria)
-
   if (!cat) return { title: 'Categoría no encontrada' }
 
   return {
@@ -60,16 +78,33 @@ export default async function CategoriaPage({
   const currentPage = Math.max(1, parseInt(sp.page || '1', 10))
   const perPage = 12
 
-  // Verificar que la categoría existe
-  const categorias = await getWPCategories()
-  const cat = categorias.find((c) => c.slug === categoria)
-  if (!cat) notFound()
+  // Determinar si es sección agrupada o categoría WP
+  const isSection = categoria in SITE_SECTIONS
+  let title: string
+  let description: string | undefined
+  let articulosData: Awaited<ReturnType<typeof getArticulosBySection>>
 
-  // Fetch artículos de esta categoría
-  const { data: articulos, total, totalPages } = await getArticulosByCategorySlug(
-    categoria,
-    { page: currentPage, perPage }
-  )
+  if (isSection) {
+    const section = SITE_SECTIONS[categoria as SiteSection]
+    title = section.title
+    description = section.description
+    articulosData = await getArticulosBySection(categoria as SiteSection, {
+      page: currentPage,
+      perPage,
+    })
+  } else {
+    const categorias = await getWPCategories()
+    const cat = categorias.find((c) => c.slug === categoria)
+    if (!cat) notFound()
+    title = cat.nombre
+    description = cat.descripcion
+    articulosData = await getArticulosByCategorySlug(categoria, {
+      page: currentPage,
+      perPage,
+    })
+  }
+
+  const { data: articulos, total, totalPages } = articulosData
 
   return (
     <>
@@ -77,7 +112,7 @@ export default async function CategoriaPage({
         <Breadcrumbs
           items={[
             { label: 'Blog', href: '/blog' },
-            { label: cat.nombre, href: `/blog/categoria/${categoria}` },
+            { label: title, href: `/blog/categoria/${categoria}` },
           ]}
         />
       </div>
@@ -86,11 +121,11 @@ export default async function CategoriaPage({
         <div className="max-w-content mx-auto px-4">
           <div className="flex items-center gap-3 mb-4">
             <FolderOpen className="w-6 h-6 text-primary-500" />
-            <h1 className="text-h1 lg:text-display">{cat.nombre}</h1>
+            <h1 className="text-h1 lg:text-display">{title}</h1>
           </div>
-          {cat.descripcion && (
+          {description && (
             <p className="text-body-lg text-neutral-600 max-w-narrow mb-6">
-              {cat.descripcion}
+              {description}
             </p>
           )}
           <p className="text-body text-neutral-500 mb-12">

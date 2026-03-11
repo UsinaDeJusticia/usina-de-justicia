@@ -1,9 +1,8 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { Breadcrumbs } from '@/components/layout/Breadcrumbs'
-import { getArticulos, getWPCategories } from '@/lib/wordpress'
-import { CATEGORY_MAP } from '@/types/wordpress'
-import type { Categoria } from '@/types'
+import { getArticulos } from '@/lib/wordpress'
+import { SITE_SECTIONS } from '@/types/wordpress'
 import { ArticleCard } from '@/components/blog/ArticleCard'
 import { Pagination } from '@/components/blog/Pagination'
 
@@ -14,13 +13,12 @@ export const metadata: Metadata = {
   alternates: { canonical: 'https://www.usinadejusticia.org.ar/blog' },
 }
 
-// Categorías que mostramos como filtros (las que no son null en CATEGORY_MAP)
-async function getFilterCategories(): Promise<Categoria[]> {
-  const wpCategories = await getWPCategories()
-  // Filtrar solo las que están mapeadas y tienen posts
-  return wpCategories.filter(
-    (cat) => cat.slug in CATEGORY_MAP && CATEGORY_MAP[cat.slug] !== null
-  )
+// Secciones agrupadas para los filtros
+function getSectionFilters() {
+  return Object.entries(SITE_SECTIONS).map(([key, section]) => ({
+    nombre: section.title,
+    slug: key,
+  }))
 }
 
 // Next.js 14: searchParams para paginación
@@ -33,11 +31,8 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
   const currentPage = Math.max(1, parseInt(params.page || '1', 10))
   const perPage = 12
 
-  // Fetch en paralelo: artículos + categorías para filtros
-  const [articulosResponse, filterCategorias] = await Promise.all([
-    getArticulos({ page: currentPage, perPage }),
-    getFilterCategories(),
-  ])
+  const articulosResponse = await getArticulos({ page: currentPage, perPage })
+  const sectionFilters = getSectionFilters()
 
   const { data: articulos, total, totalPages } = articulosResponse
 
@@ -63,13 +58,13 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
             >
               Todas
             </Link>
-            {filterCategorias.map((cat) => (
+            {sectionFilters.map((section) => (
               <Link
-                key={cat.slug}
-                href={`/blog/categoria/${cat.slug}`}
+                key={section.slug}
+                href={`/blog/categoria/${section.slug}`}
                 className="px-4 py-2 rounded-full text-body-sm font-medium border border-neutral-200 text-neutral-600 hover:border-primary-500 hover:text-primary-500 transition-colors"
               >
-                {cat.nombre}
+                {section.nombre}
               </Link>
             ))}
           </div>
