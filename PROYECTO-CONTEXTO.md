@@ -3,7 +3,7 @@
 ## Documento de Contexto del Proyecto
 
 **Última actualización:** 10 de marzo de 2026
-**Conversación:** Chat 2 (integración WP API)
+**Conversación:** Chat 3 (componentes compartidos + secciones)
 
 ---
 
@@ -80,12 +80,12 @@ src/
 │   ├── page.tsx                              # Home (placeholder)
 │   ├── layout.tsx                            # Layout raíz
 │   ├── blog/
-│   │   ├── page.tsx                          # ✅ CONECTADO A WP API (Archivo 26)
+│   │   ├── page.tsx                          # ✅ Secciones agrupadas con SITE_SECTIONS (Archivo 26)
 │   │   ├── [slug]/
 │   │   │   └── page.tsx                      # ✅ CONECTADO A WP API (Archivo 27)
 │   │   ├── categoria/
 │   │   │   └── [categoria]/
-│   │   │       └── page.tsx                  # ✅ CONECTADO A WP API (Archivo 28)
+│   │   │       └── page.tsx                  # ✅ Secciones + categorías WP (Archivo 28)
 │   │   └── tag/
 │   │       └── [tag]/
 │   │           └── page.tsx                  # ✅ CONECTADO A WP API (Archivo 29)
@@ -104,10 +104,13 @@ src/
 │       ├── privacidad/page.tsx               # ⏳ Placeholder
 │       └── terminos/page.tsx                 # ⏳ Placeholder
 ├── components/
-│   └── layout/
-│       ├── Header.tsx                        # ✅ Funcional
-│       ├── Footer.tsx                        # ✅ Funcional
-│       └── Breadcrumbs.tsx                   # ✅ Funcional (requiere href en todos los items)
+│   ├── layout/
+│   │   ├── Header.tsx                        # ✅ Funcional
+│   │   ├── Footer.tsx                        # ✅ Funcional
+│   │   └── Breadcrumbs.tsx                   # ✅ Funcional (requiere href en todos los items)
+│   └── blog/
+│       ├── ArticleCard.tsx                   # ✅ Componente compartido (Archivo 30)
+│       └── Pagination.tsx                    # ✅ Componente compartido (Archivo 31)
 ├── lib/
 │   ├── utils.ts                              # ✅ cn(), formatDate(), truncate(), formatFileSize()
 │   ├── site-config.ts                        # ✅ Configuración del sitio
@@ -115,7 +118,7 @@ src/
 │   └── wordpress.ts                          # ✅ Servicio WP API (Archivo 25)
 └── types/
     ├── index.ts                              # ✅ Tipos base (Articulo, Categoria, Tag, etc.)
-    └── wordpress.ts                          # ✅ Tipos WP + CATEGORY_MAP (Archivo 24)
+    └── wordpress.ts                          # ✅ Tipos WP + CATEGORY_MAP + SITE_SECTIONS (Archivo 24)
 ```
 
 ## 5. TIPOS EXISTENTES (src/types/index.ts)
@@ -246,30 +249,52 @@ NEXT_PUBLIC_WP_API_URL=https://usinadejusticia.org.ar/wp-json/wp/v2
 
 ## 9. HISTORIAL DE ARCHIVOS GENERADOS
 
-| #    | Archivo                                     | Estado          | Descripción                                 |
-| ---- | ------------------------------------------- | --------------- | ------------------------------------------- |
-| 1-23 | (varios)                                    | ✅ Chat 1       | Estructura base completa con placeholder    |
-| 24   | src/types/wordpress.ts                      | ✅ Implementado | Tipos WP API + CATEGORY_MAP + SITE_SECTIONS |
-| 25   | src/lib/wordpress.ts                        | ✅ Implementado | Servicio WP API completo                    |
-| 26   | src/app/blog/page.tsx                       | ✅ Implementado | Blog con datos reales + paginación          |
-| 27   | src/app/blog/[slug]/page.tsx                | ✅ Implementado | Artículo individual desde WP                |
-| 28   | src/app/blog/categoria/[categoria]/page.tsx | ✅ Implementado | Filtro por categoría desde WP               |
-| 29   | src/app/blog/tag/[tag]/page.tsx             | ✅ Implementado | Filtro por tag desde WP                     |
+| #    | Archivo                                          | Estado          | Descripción                                              |
+| ---- | ------------------------------------------------ | --------------- | -------------------------------------------------------- |
+| 1-23 | (varios)                                         | ✅ Chat 1       | Estructura base completa con placeholder                 |
+| 24   | src/types/wordpress.ts                           | ✅ Implementado | Tipos WP API + CATEGORY_MAP + SITE_SECTIONS              |
+| 25   | src/lib/wordpress.ts                             | ✅ Implementado | Servicio WP API completo (incl. getWPTags, getArticulosByTagSlug, getArticulosBySection) |
+| 26   | src/app/blog/page.tsx                            | ✅ Implementado | Blog con filtros por SITE_SECTIONS + componentes compartidos |
+| 27   | src/app/blog/[slug]/page.tsx                     | ✅ Implementado | Artículo individual desde WP                             |
+| 28   | src/app/blog/categoria/[categoria]/page.tsx      | ✅ Implementado | Secciones agrupadas + categorías WP + componentes compartidos |
+| 29   | src/app/blog/tag/[tag]/page.tsx                  | ✅ Implementado | Filtro por tag + componentes compartidos                 |
+| 30   | src/components/blog/ArticleCard.tsx              | ✅ Implementado | Componente compartido para cards de artículos |
+| 31   | src/components/blog/Pagination.tsx               | ✅ Implementado | Componente compartido de paginación |
 
 ## 10. PROBLEMAS CONOCIDOS / DEUDA TÉCNICA
 
-1. **Filtros de categorías en blog/page.tsx:** Muestra las 16 categorías raw de WP en vez de las 6 secciones agrupadas del CATEGORY_MAP
-2. **ArticleCard y Pagination repetidos:** Están definidos como componentes internos en 4 archivos diferentes (blog, [slug], categoría, tag). Deberían extraerse a componentes compartidos.
-3. **Imágenes en listado del blog:** Algunas no cargan (icon de imagen rota visible en screenshot). Posiblemente posts sin featured image donde el fallback de extractFirstImage no se está usando en el listado.
-4. **Historias de víctimas:** El contenido actual en WP es un desorden (actualizaciones apiladas con separadores `<hr>`). Se necesita diseñar un sistema de timeline/ficha por caso. Esto es una feature futura importante.
-5. **Tags sin criterio:** Los tags de WP están puestos al azar. No vale la pena limpiarlos ahora, se hará cuando se migre a Strapi.
+1. **Tags sin criterio:** Los tags de WP están puestos al azar. No vale la pena limpiarlos ahora, se hará cuando se migre a Strapi.
 
-## 11. PRÓXIMOS PASOS SUGERIDOS
+## 11. MEJORAS SEO/ACCESIBILIDAD PENDIENTES
 
-### Inmediatos (blog):
+Estas mejoras aplican a archivos ya implementados y deberían hacerse en un paso dedicado:
 
-- [ ] Extraer ArticleCard y Pagination a componentes compartidos
-- [ ] Limpiar filtros de categorías en blog/page.tsx (usar secciones agrupadas)
+### Prioridad alta:
+- [ ] JSON-LD `Organization` en layout raíz o home (identifica la ONG para Google)
+- [ ] JSON-LD `Article` en blog/[slug]/page.tsx (resultados enriquecidos)
+- [ ] Sitemap dinámico (/sitemap.xml) con las 825+ URLs del blog
+- [ ] robots.txt
+
+### Prioridad media:
+- [ ] Open Graph images en páginas de categoría y tag
+- [ ] Canonical URLs en páginas paginadas (?page=2 → apuntar a base)
+- [ ] Verificar JSON-LD BreadcrumbList en componente Breadcrumbs
+- [ ] Meta article:section y article:tag en posts individuales
+
+### Prioridad baja:
+- [ ] aria-label en secciones de la home y grids de artículos
+- [ ] hreflang (solo si se agrega otro idioma)
+
+### Archivos que se verán afectados:
+- src/app/layout.tsx (JSON-LD Organization)
+- src/app/page.tsx (aria-labels, structured data)
+- src/app/blog/[slug]/page.tsx (JSON-LD Article, meta tags)
+- src/app/blog/categoria/[categoria]/page.tsx (og:image, canonical)
+- src/app/blog/tag/[tag]/page.tsx (og:image, canonical)
+- src/app/sitemap.ts (nuevo archivo)
+- public/robots.txt (nuevo archivo)
+
+## 12. PRÓXIMOS PASOS SUGERIDOS
 
 ### Siguiente fase (páginas con placeholder):
 
@@ -287,6 +312,6 @@ NEXT_PUBLIC_WP_API_URL=https://usinadejusticia.org.ar/wp-json/wp/v2
 
 ---
 
-## PROMPT PARA CONTINUAR EN NUEVA VENTANA DE CLAUDE
+## 13. PROMPT PARA CONTINUAR EN NUEVA VENTANA DE CLAUDE
 
 > Estoy rediseñando usinadejusticia.org.ar. Te adjunto PROYECTO-CONTEXTO.md con todo el estado del proyecto. Léelo completo antes de responder. Estamos en [DESCRIBIR PASO ACTUAL]. Mi flujo de trabajo: vos generás código en artifacts, yo se lo paso a Minimax en VSC para implementarlo, y te reporto el resultado. Antes de generar archivos nuevos, siempre pedime que audite con Minimax para evitar conflictos de tipos o imports.
