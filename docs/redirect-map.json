@@ -1,0 +1,145 @@
+[
+  {
+    "source": "/acompanamiento-a-la-victima",
+    "destination": "/programas/acompanamiento",
+    "permanent": true
+  },
+  {
+    "source": "/programas/acompanamiento-a-la-victima",
+    "destination": "/programas/acompanamiento",
+    "permanent": true
+  },
+  {
+    "source": "/programas/incidencia-en-politicas-publicas",
+    "destination": "/programas/incidencia",
+    "permanent": true
+  },
+  {
+    "source": "/capacitacion",
+    "destination": "/programas/capacitacion",
+    "permanent": true
+  },
+  {
+    "source": "/donar",
+    "destination": "/colaborar",
+    "permanent": true
+  },
+  {
+    "source": "/transparencia-institucional",
+    "destination": "/nosotros/transparencia",
+    "permanent": true
+  },
+  {
+    "source": "/distinciones",
+    "destination": "/nosotros/distinciones",
+    "permanent": true
+  },
+  {
+    "source": "/2015/01/30/que-hacer-primero",
+    "destination": "/necesito-ayuda/que-hacer-primero",
+    "permanent": true
+  },
+  {
+    "source": "/agradecimientos",
+    "destination": "/programas/acompanamiento#agradecimientos",
+    "permanent": true
+  },
+  {
+    "source": "/quiero-suscribirme",
+    "destination": "/colaborar#suscripcion",
+    "permanent": true
+  },
+  {
+    "source": "/blog",
+    "destination": "/noticias",
+    "permanent": true
+  },
+  {
+    "source": "/blog/page/:page",
+    "destination": "/noticias",
+    "permanent": true
+  },
+  {
+    "source": "/inicio-nueva",
+    "destination": "/",
+    "permanent": true
+  },
+  {
+    "source": "/sabias-que",
+    "destination": "/",
+    "permanent": true
+  },
+  {
+    "source": "/gracias",
+    "destination": "/colaborar/gracias",
+    "permanent": true
+  },
+  {
+    "source": "/category/institucional",
+    "destination": "/noticias/categoria/institucional",
+    "permanent": true
+  },
+  {
+    "source": "/category/actividades",
+    "destination": "/noticias/categoria/institucional",
+    "permanent": true
+  },
+  {
+    "source": "/category/eventos",
+    "destination": "/noticias/categoria/institucional",
+    "permanent": true
+  },
+  {
+    "source": "/category/incidencia-en-politicas-publicas",
+    "destination": "/noticias/categoria/incidencia",
+    "permanent": true
+  },
+  {
+    "source": "/category/acompanamiento-a-victimas-de-homicidio",
+    "destination": "/noticias/categoria/acompanamiento",
+    "permanent": true
+  },
+  {
+    "source": "/category/medios-y-entrevistas",
+    "destination": "/noticias/categoria/medios",
+    "permanent": true
+  },
+  {
+    "source": "/category/distinciones-premios",
+    "destination": "/noticias/categoria/distinciones",
+    "permanent": true
+  },
+  {
+    "source": "/category/historias",
+    "destination": "/historias",
+    "permanent": true
+  },
+  {
+    "source": "/category/historias-de-los-miembros-de-uj",
+    "destination": "/historias",
+    "permanent": true
+  },
+  {
+    "source": "/category/estadisticas",
+    "destination": "/observatorio/informes",
+    "permanent": true
+  },
+  {
+    "source": "/category/publicaciones",
+    "destination": null,
+    "permanent": true,
+    "fase": "FASE2-IVUJUS"
+  },
+  {
+    "source": "/category/capacitacion",
+    "destination": null,
+    "permanent": true,
+    "fase": "FASE2-IVUJUS"
+  },
+  {
+    "source": "/category/debatesyconferencias",
+    "destination": null,
+    "permanent": true,
+    "fase": "FASE2-IVUJUS"
+  }
+]
