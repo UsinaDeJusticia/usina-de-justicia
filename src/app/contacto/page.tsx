@@ -53,7 +53,7 @@ export default function ContactoPage() {
 
               <div className="space-y-6">
                 <div className="flex items-start gap-4">
-                  <div className="w-10 h-10 rounded-lg bg-primary-500/10 flex items-center justify-center flex-shrink-0">
+                  <div className="w-10 h-10 rounded-lg bg-primary-500/10 flex items-center justify-center shrink-0">
                     <Mail className="w-5 h-5 text-primary-500" />
                   </div>
                   <div>
@@ -69,7 +69,7 @@ export default function ContactoPage() {
 
                 {siteConfig.contact.phone && (
                   <div className="flex items-start gap-4">
-                    <div className="w-10 h-10 rounded-lg bg-primary-500/10 flex items-center justify-center flex-shrink-0">
+                    <div className="w-10 h-10 rounded-lg bg-primary-500/10 flex items-center justify-center shrink-0">
                       <Phone className="w-5 h-5 text-primary-500" />
                     </div>
                     <div>
@@ -142,7 +142,7 @@ export default function ContactoPage() {
                           required
                           value={formData.nombre}
                           onChange={handleChange}
-                          className="w-full px-4 py-3 rounded-lg border border-neutral-300 text-body focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-colors"
+                          className="w-full px-4 py-3 rounded-lg border border-neutral-300 text-body focus:outline-hidden focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-colors"
                           placeholder="Tu nombre"
                         />
                       </div>
@@ -157,7 +157,7 @@ export default function ContactoPage() {
                           required
                           value={formData.email}
                           onChange={handleChange}
-                          className="w-full px-4 py-3 rounded-lg border border-neutral-300 text-body focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-colors"
+                          className="w-full px-4 py-3 rounded-lg border border-neutral-300 text-body focus:outline-hidden focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-colors"
                           placeholder="tu@email.com"
                         />
                       </div>
@@ -174,7 +174,7 @@ export default function ContactoPage() {
                           name="telefono"
                           value={formData.telefono}
                           onChange={handleChange}
-                          className="w-full px-4 py-3 rounded-lg border border-neutral-300 text-body focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-colors"
+                          className="w-full px-4 py-3 rounded-lg border border-neutral-300 text-body focus:outline-hidden focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-colors"
                           placeholder="11 XXXX-XXXX"
                         />
                       </div>
@@ -188,7 +188,7 @@ export default function ContactoPage() {
                           required
                           value={formData.asunto}
                           onChange={handleChange}
-                          className="w-full px-4 py-3 rounded-lg border border-neutral-300 text-body focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-colors bg-white"
+                          className="w-full px-4 py-3 rounded-lg border border-neutral-300 text-body focus:outline-hidden focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-colors bg-white"
                         >
                           <option value="">Seleccioná un asunto</option>
                           <option value="consulta-general">Consulta general</option>
@@ -211,7 +211,7 @@ export default function ContactoPage() {
                         rows={5}
                         value={formData.mensaje}
                         onChange={handleChange}
-                        className="w-full px-4 py-3 rounded-lg border border-neutral-300 text-body focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-colors resize-vertical"
+                        className="w-full px-4 py-3 rounded-lg border border-neutral-300 text-body focus:outline-hidden focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-colors resize-vertical"
                         placeholder="Contanos cómo podemos ayudarte..."
                       />
                     </div>

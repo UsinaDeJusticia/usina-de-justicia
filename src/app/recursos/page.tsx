@@ -76,7 +76,7 @@ export default function RecursosPage() {
                   className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-6 bg-white border border-neutral-200 rounded-xl hover:border-primary-500/30 hover:shadow-md transition-all"
                 >
                   <div className="flex gap-4">
-                    <div className="w-12 h-12 rounded-lg bg-primary-500/10 text-primary-500 flex items-center justify-center flex-shrink-0">
+                    <div className="w-12 h-12 rounded-lg bg-primary-500/10 text-primary-500 flex items-center justify-center shrink-0">
                       {tipo.icon}
                     </div>
                     <div>
@@ -99,7 +99,7 @@ export default function RecursosPage() {
                     href={recurso.archivo.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 bg-primary-500 hover:bg-primary-600 text-white px-5 py-2.5 rounded-lg text-body-sm font-semibold transition-colors flex-shrink-0"
+                    className="inline-flex items-center gap-2 bg-primary-500 hover:bg-primary-600 text-white px-5 py-2.5 rounded-lg text-body-sm font-semibold transition-colors shrink-0"
                   >
                     <Download className="w-4 h-4" />
                     Descargar

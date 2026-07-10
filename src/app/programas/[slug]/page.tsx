@@ -71,18 +71,21 @@ const programasData: Record<string, { titulo: string; contenido: string; descrip
 }
 
 interface PageProps {
-  params: { slug: string }
+  params: Promise<{ slug: string }>
 }
 
-export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
-  const programa = programasData[params.slug]
+export async function generateMetadata({
+  params,
+}: PageProps): Promise<Metadata> {
+  const { slug } = await params
+  const programa = programasData[slug]
   if (!programa) return {}
 
   return {
     title: `${programa.titulo} — Programas`,
     description: programa.descripcion,
     alternates: {
-      canonical: `https://www.usinadejusticia.org.ar/programas/${params.slug}`,
+      canonical: `https://www.usinadejusticia.org.ar/programas/${slug}`,
     },
   }
 }
@@ -91,8 +94,9 @@ export function generateStaticParams() {
   return Object.keys(programasData).map((slug) => ({ slug }))
 }
 
-export default function ProgramaPage({ params }: PageProps) {
-  const programa = programasData[params.slug]
+export default async function ProgramaPage({ params }: PageProps) {
+  const { slug } = await params
+  const programa = programasData[slug]
 
   if (!programa) notFound()
 
@@ -118,7 +122,7 @@ export default function ProgramaPage({ params }: PageProps) {
         <Breadcrumbs
           items={[
             { label: 'Programas', href: '/programas' },
-            { label: programa.titulo, href: `/programas/${params.slug}` },
+            { label: programa.titulo, href: `/programas/${slug}` },
           ]}
         />
       </div>
