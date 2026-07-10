@@ -1,0 +1,3 @@
+allowBuilds:
+  unrs-resolver: true
+minimumReleaseAge: 10080 # 7 días — mitigación supply-chain post-Shai-Hulud
