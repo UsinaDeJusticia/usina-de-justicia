@@ -47,7 +47,7 @@ export function Header() {
       <nav className="max-w-content mx-auto px-4">
         <div className="flex items-center justify-between h-16 lg:h-20">
           {/* Logo */}
-          <Link href="/" className="flex-shrink-0">
+          <Link href="/" className="shrink-0">
             <Image
               src="/images/logo.png"
               alt={siteConfig.name}

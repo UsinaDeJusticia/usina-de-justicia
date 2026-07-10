@@ -107,7 +107,7 @@ export default function TransparenciaPage() {
                 className="flex items-center justify-between p-5 bg-white border border-neutral-200 rounded-xl hover:border-primary-500/30 hover:shadow-md transition-all"
               >
                 <div className="flex items-center gap-4">
-                  <div className="w-10 h-10 rounded-lg bg-primary-500/10 text-primary-500 flex items-center justify-center flex-shrink-0">
+                  <div className="w-10 h-10 rounded-lg bg-primary-500/10 text-primary-500 flex items-center justify-center shrink-0">
                     <FileText className="w-5 h-5" />
                   </div>
                   <div>

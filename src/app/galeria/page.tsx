@@ -66,7 +66,7 @@ export default function GaleriaPage() {
                   href={`/galeria/${album.slug}`}
                   className="group block rounded-xl overflow-hidden border border-neutral-200 hover:shadow-lg transition-all"
                 >
-                  <div className="aspect-[4/3] bg-neutral-100 relative overflow-hidden">
+                  <div className="aspect-4/3 bg-neutral-100 relative overflow-hidden">
                     {album.imagenPortada.url ? (
                       <Image
                         src={album.imagenPortada.url}
