@@ -1,10 +1,25 @@
-# MAPA DE MIGRACIÓN — Fase 1 · Entregable del gate G1
-**Versión:** 1.0 (datos en vivo) · **Fecha:** 11 de julio de 2026
-**Fuente:** REST API en vivo, extracción completa en `docs/inventario/` (841 posts, 20 páginas, 1.230 archivos de media, 16 categorías, 37 tags). Listas post-por-post en `docs/inventario/ANEXO-listas.md`.
+# MAPA DE MIGRACIÓN — Fase 1 · Gate G1 ✅ APROBADO
+**Versión:** 1.1 (final) · **Fecha:** 11 de julio de 2026 · **Aprobado por:** Emanuel
+**Fuente:** REST API en vivo, extracción completa en `docs/inventario/` (841 posts, 20 páginas, 1.230 archivos de media, 16 categorías, 37 tags). Listas post-por-post en `docs/inventario/ANEXO-listas.md`; decisiones editoriales de la cola larga en `docs/inventario/COLA-LARGA-decisiones.md`.
 
 **Evolución desde marzo:** +16 posts (825 → 841). Crecieron medios (+5), incidencia (+6), acompañamiento (+3), y hay contenido nuevo del Simposio 2026 y Victim Support Europe.
 
-> **Qué se aprueba en G1:** el mapa 16→6 (§1), el criterio para la cola larga (§2), el tratamiento IVUJUS (§3) y el destino de las páginas WP (§4). La revisión editorial de Jimena aplica a las listas del ANEXO (§2.1).
+## Distribución FINAL aprobada (cada post en exactamente un destino)
+| Destino | Posts | | Destino | Posts |
+|---|---|---|---|---|
+| prensa | 404 | | acompanamiento | 121 |
+| incidencia | 129 | | institucional | 33 |
+| historias | 127 | | observatorio | 8 |
+| **IVUJUS → 301** | **19** | | **Total** | **841** |
+
+## Decisiones G1 registradas (11-jul-2026)
+1. **Debates y conferencias:** separados por tema — política criminal/reforma penal → `incidencia`; el resto → `institucional` (clasificación post-por-post en COLA-LARGA-decisiones.md).
+2. **Simposio 2026 e IVUJUS:** todo el contenido propio de IVUJUS (Simposio 2026, cursos/capacitaciones, jornada CPACF, encuentro UNA Asunción) → **no se migra, redirect 301** (19 posts + 3 páginas). Las participaciones en simposios *externos* quedan en Usina.
+3. **Newsletter:** se relanza post-lanzamiento (backlog Fase 6). La página `quiero-suscribirme` no se migra; los 2 posts de boletín → institucional.
+4. **Regla de desempate** (63 posts multi-categoría): gana la más específica — historias > acompanamiento > incidencia > prensa > institucional.
+5. **Páginas:** `agradecimientos` → sección en `/nosotros`; `gracias` se recrea en Next para el formulario de contacto.
+6. **Índice de Calidad Legislativa:** el lanzamiento queda en `incidencia`; la jornada CPACF organizada por IVUJUS → 301.
+7. **Libros de miembros** (Fiumara, Pascua) → `incidencia` (banderas de reforma penal).
 
 ---
 

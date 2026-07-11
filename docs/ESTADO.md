@@ -7,7 +7,9 @@
 
 ## Estado actual (fin de sesión 10-11 jul)
 
-**La modernización está EN PRODUCCIÓN.** Emanuel mergeó el PR #1 a `master` y conectó el repo a Vercel (proyecto `usina-de-justicia`). El sitio corre en https://usina-de-justicia.vercel.app con el stack nuevo. **La Fase 1 está completa**: inventario extraído en vivo y mapa de migración v1.0 listo para el gate G1.
+**La modernización está EN PRODUCCIÓN.** Emanuel mergeó el PR #1 a `master` y conectó el repo a Vercel (proyecto `usina-de-justicia`). El sitio corre en https://usina-de-justicia.vercel.app con el stack nuevo.
+
+**El gate G1 está APROBADO (11-jul-2026).** Fase 1 cerrada: inventario en vivo completo, mapa de migración v1.1 final con todas las decisiones editoriales tomadas por Emanuel (ver `docs/MAPA-MIGRACION.md` §Decisiones y `docs/inventario/COLA-LARGA-decisiones.md`). Distribución final: prensa 404 · incidencia 129 · historias 127 · acompanamiento 121 · institucional 33 · observatorio 8 · IVUJUS→301 19. **Se puede arrancar Fase 2.**
 
 ## Qué se hizo
 
@@ -33,11 +35,10 @@
 4. Regla de dedup para posts multi-categoría (63 casos): gana la categoría más específica (historias > acompanamiento > incidencia > prensa > institucional).
 
 ## Pendientes
-1. **Gate G1 (Emanuel):** aprobar `docs/MAPA-MIGRACION.md` §1–§4. Revisión editorial de Jimena sobre `docs/inventario/ANEXO-listas.md` (77 posts de cola larga + 37 candidatos IVUJUS).
+1. ~~Gate G1~~ ✅ APROBADO 11-jul con todas las decisiones editoriales registradas en MAPA-MIGRACION.md.
 2. Deuda técnica menor para Fase 3: try/catch en `src/app/blog/page.tsx` (hoy 500 si la WP API falla); metadata propia en `/contacto` (usa el título genérico del sitio); migrar de `next lint` a ESLint CLI antes de Next 16.
 3. (Solo para trabajo local en Windows) reparar npm/corepack con `prompt-reparar-npm.md`.
 4. Borrar `PROYECTO-CONTEXTO.md` en Fase 3 (obsoleto; el inventario en vivo lo reemplaza).
 
 ## Próximo paso exacto
-1. Emanuel aprueba G1 (con Jimena para las listas del ANEXO).
-2. Con G1 aprobado → **Fase 2** según plan maestro: **backup completo de WP (archivos + DB) como primer comando**, luego plugin `usina-headless`, reasignación 16→6 con dry-run + gate G2. Requiere que Emanuel genere credenciales (Application Password WP, SSH/token Hostinger) — nunca en el repo.
+1. **Fase 2** (requiere credenciales de Emanuel: Application Password WP, SSH/token Hostinger — nunca en el repo): backup completo de WP como primer comando, plugin usina-headless, reasignación 16→6 con dry-run + gate G2. El mapa aprobado y COLA-LARGA-decisiones.md son el input directo del script de reasignación.
