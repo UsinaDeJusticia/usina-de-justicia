@@ -1,0 +1,15 @@
+{
+  "audio/mpeg": 6,
+  "image/webp": 57,
+  "application/pdf": 114,
+  "image/jpeg": 600,
+  "video/mp4": 64,
+  "image/avif": 13,
+  "application/vnd.openxmlformats-officedocument.wordprocessingml.document": 3,
+  "image/png": 352,
+  "image/gif": 2,
+  "image/heic": 1,
+  "image/svg+xml": 16,
+  "audio/ogg": 1,
+  "application/vnd.openxmlformats-officedocument.presentationml.presentation": 1
+}

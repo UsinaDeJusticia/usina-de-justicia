@@ -1,53 +1,43 @@
 # ESTADO DEL PROYECTO — Rebuild Web Usina de Justicia
-**Última actualización:** 10 de julio de 2026 · **Sesión:** Modernización + Fase 1 (Claude Code remoto, Fable 5 orquestador)
-**Rama de trabajo:** `claude/usina-justicia-rebuild-phase1-b6u658` (pusheada a origin)
+**Última actualización:** 11 de julio de 2026 · **Sesión:** Modernización + Fase 1 (Claude Code remoto, Fable 5 orquestador)
 
 > Este archivo reemplaza a `PROYECTO-CONTEXTO.md` como fuente de verdad del estado del proyecto. Los documentos vinculantes son `docs/plan-maestro-usina-web.md` (decisiones D1–D9) y `docs/AUDITORIA-fase0.md` (gate G0 aprobado: reutilizar + modernizar).
 
 ---
 
-## Qué se hizo en esta sesión
+## Estado actual (fin de sesión 10-11 jul)
 
-### TAREA 0 — Sanidad del entorno ✅
-La sesión corrió en el entorno remoto de Claude Code (contenedor Linux), no en la máquina Windows — la rotura de npm/corepack de Windows no aplica acá. Node 22.22.2, npm 10.9.7, corepack 0.34.6 funcionando. La reparación del entorno Windows (`prompt-reparar-npm.md`) sigue pendiente **solo para cuando se trabaje local**.
+**La modernización está EN PRODUCCIÓN.** Emanuel mergeó el PR #1 a `master` y conectó el repo a Vercel (proyecto `usina-de-justicia`). El sitio corre en https://usina-de-justicia.vercel.app con el stack nuevo. **La Fase 1 está completa**: inventario extraído en vivo y mapa de migración v1.0 listo para el gate G1.
 
-### TAREA 1 — Baseline ✅ (con salvedad de red)
-- **Build baseline sobre master: VERDE.** Next 14.2.35, 20 páginas generadas, sin errores de tipos ni warnings.
-- **Verificación de la API en vivo: BLOQUEADA.** La política de red del entorno remoto solo permite salida a registries de paquetes y GitHub; `usinadejusticia.org.ar` devuelve 403 en el proxy (probado con curl y WebFetch, incluso example.com da 403). Los conteos de marzo (825 posts, 16 categorías) siguen siendo la referencia, sin re-verificar.
-- Por lo mismo, el build genera las rutas de blog vacías (los `generateStaticParams` tienen try/catch y devuelven `[]` sin red). Es esperado en este entorno; en Vercel el build fetchea WP normalmente.
+## Qué se hizo
 
-### TAREA 2 — Modernización ✅ (build verde en cada paso)
-| Paso | Commit | Resultado |
-|---|---|---|
-| npm → pnpm 11.11.0 | `bdaa5c0` | `pnpm-workspace.yaml` con `minimumReleaseAge: 10080` (7 días) y solo 2 build scripts aprobados (`sharp`, `unrs-resolver`) vía `allowBuilds` |
-| Next 14.2 → **15.5.20** + React **19.2.7** | `2b574be` | Codemod `next-async-request-api` solo tocó `programas/[slug]` (el resto ya usaba params async). `wordpress.ts` intacto: `revalidate: 300` verificado operativo |
-| Tailwind 3.4 → **4.3.2** (CSS-first) | `8172d54` | `tailwind.config.ts` eliminado, tokens portados a `@theme` en `globals.css`, clases v3→v4 renombradas sin cambio visual. Solo paridad funcional, sin tokens nuevos (el diseño llega de Claude Design) |
+### Modernización (mergeada a master vía PR #1) ✅
+| Cambio | Detalle |
+|---|---|
+| npm → **pnpm 11.11.0** | `pnpm-workspace.yaml` con `minimumReleaseAge: 10080` (7 días); solo `sharp` y `unrs-resolver` aprobados como build scripts |
+| Next 14.2 → **15.5.20** + React **19.2.7** | Codemod async-request-api (solo `programas/[slug]` lo necesitó); `wordpress.ts` intacto con `revalidate: 300` |
+| Tailwind 3.4 → **4.3.2** CSS-first | `tailwind.config.ts` eliminado, tokens en `@theme` de `globals.css`; solo paridad funcional |
 
-**Smoke test local:** `/`, `/contacto`, `/donar`, `/sobre-nosotros` → 200. `/blog` → 500, pero es un **bug preexistente** (reproducido en el baseline): `src/app/blog/page.tsx` llama `getArticulos()` sin try/catch y sin red la página explota en runtime. No es regresión de la migración.
+**Verificado en producción (Vercel):** build verde con el stack nuevo; smoke test OK con contenido real de WP: `/`, `/blog` (posts reales), `/blog/jesus-buffarini`, `/blog/categoria/historias`, `/contacto`.
 
-**Nota:** el plan pedía rama `chore/modernizacion`; esta sesión remota tiene rama designada obligatoria, así que todo va en `claude/usina-justicia-rebuild-phase1-b6u658`. El contenido es el mismo.
+### Fase 1 — Inventario completo en vivo ✅
+- Emanuel agregó `usinadejusticia.org.ar` al network allowlist del entorno remoto → la extracción corrió completa el 11-jul.
+- `scripts/inventario.mjs` (ahora proxy-aware vía `undici` para entornos sandboxeados) exportó a `docs/inventario/`: **841 posts** (+16 desde marzo), **20 páginas**, **1.230 media** (114 PDF, 64 MP4), 16 categorías, 37 tags.
+- Flags detectados: 43 posts con .mp4 propio (56 archivos únicos), 150 con YouTube, 71 con PDF, 37 con patrón IVUJUS.
+- `docs/MAPA-MIGRACION.md` **v1.0** con datos reales + `docs/inventario/ANEXO-listas.md` con las listas post-por-post (77 cola larga, 37 IVUJUS, 43 con video).
 
-### TAREA 3 — Fase 1: inventario y mapa ✅ parcial (bloqueado por red)
-- `scripts/inventario.mjs` (commit `4f17e5a`): pagina la REST API pública y exporta `docs/inventario/{posts,pages,media-resumen,resumen}.json`. Detecta por post: mp4 propio (Hostinger), embeds de YouTube, PDFs linkeados, y patrón IVUJUS. Solo lectura, sin credenciales. **No pudo correr acá** (403 del proxy).
-- `docs/MAPA-MIGRACION.md` v0.9: mapa 16→6 con conteos de marzo, criterio de cola larga (~90 posts), tratamiento IVUJUS (no migrar + 301), páginas WP → rutas Next. Las listas post-por-post (§2.1 y §5) se completan cuando corra el inventario.
+## Decisiones tomadas
+1. Next fijado en **15.5.20** (el plan especifica 15.x; existe Next 16.2 — evaluar post-lanzamiento).
+2. `minimumReleaseAge: 10080` (7 días) como política supply-chain.
+3. Diseño visual actual intacto (paridad) — se reemplaza cuando llegue el de Claude Design.
+4. Regla de dedup para posts multi-categoría (63 casos): gana la categoría más específica (historias > acompanamiento > incidencia > prensa > institucional).
 
-## Decisiones tomadas en esta sesión
-1. Next se fijó en **15.5.20** (última 15.x), NO 16.x — el plan especifica 15.x y no se reabre. Existe Next 16.2; evaluar el salto recién post-lanzamiento. `next lint` está deprecado en Next 16 (migrar a ESLint CLI cuando toque).
-2. `minimumReleaseAge: 10080` (7 días) como política supply-chain — ajustar si la config global de la máquina de Emanuel usa otro valor.
-3. El diseño visual actual quedó tal cual (paridad funcional) — se descarta completo cuando llegue el de Claude Design.
-
-## Pendientes para Emanuel (bloquean lo marcado)
-1. **Conectar el repo a Vercel** (bloquea el preview): vercel.com → Add New Project → Import `UsinaDeJusticia/usina-de-justicia`. No existe proyecto Vercel para este repo (verificado vía MCP; sí existen ivujus-web, simposio2026, etc.). Con eso, cada push de rama genera preview automático — y en Vercel `/blog` va a renderizar con contenido real porque ahí sí hay red hacia WP.
-2. **Destrabar la red del entorno remoto** (bloquea inventario en vivo): en claude.ai/code → configuración del entorno → network policy, permitir `usinadejusticia.org.ar`. Alternativa: correr `node scripts/inventario.mjs` en cualquier máquina con Node 18+ y commitear `docs/inventario/`.
-3. **Aprobar gate G1**: revisar `docs/MAPA-MIGRACION.md` (§1 mapa, §2 criterio cola larga, §3 IVUJUS, §4 páginas). La revisión editorial de Jimena aplica a las listas post-por-post cuando el inventario esté corrido.
-4. (Cuando toque trabajar local) reparar npm/corepack en Windows con `prompt-reparar-npm.md`.
-
-## Deuda técnica anotada
-- `src/app/blog/page.tsx`: sin try/catch en `getArticulos()` → 500 si la WP API falla. Fix chico recomendado en Fase 3 (estado vacío elegante).
-- Tags de WP sin criterio (ya sabido) — se resuelve en migración de contenido.
-- `PROYECTO-CONTEXTO.md` queda obsoleto: su flujo de trabajo (Minimax/artifacts) ya no aplica. Se conserva solo como referencia de datos hasta que el inventario en vivo lo reemplace; borrarlo en Fase 3.
+## Pendientes
+1. **Gate G1 (Emanuel):** aprobar `docs/MAPA-MIGRACION.md` §1–§4. Revisión editorial de Jimena sobre `docs/inventario/ANEXO-listas.md` (77 posts de cola larga + 37 candidatos IVUJUS).
+2. Deuda técnica menor para Fase 3: try/catch en `src/app/blog/page.tsx` (hoy 500 si la WP API falla); metadata propia en `/contacto` (usa el título genérico del sitio); migrar de `next lint` a ESLint CLI antes de Next 16.
+3. (Solo para trabajo local en Windows) reparar npm/corepack con `prompt-reparar-npm.md`.
+4. Borrar `PROYECTO-CONTEXTO.md` en Fase 3 (obsoleto; el inventario en vivo lo reemplaza).
 
 ## Próximo paso exacto
-1. Emanuel: pendientes 1 y 2 de arriba (5 minutos en total).
-2. Próxima sesión de agente: correr `node scripts/inventario.mjs`, completar §2.1 y §5 de `MAPA-MIGRACION.md` con datos reales, comparar conteos vivos vs marzo, y presentar el mapa final para aprobación G1.
-3. Con G1 aprobado → Fase 2 (backup + WP headless) según plan maestro.
+1. Emanuel aprueba G1 (con Jimena para las listas del ANEXO).
+2. Con G1 aprobado → **Fase 2** según plan maestro: **backup completo de WP (archivos + DB) como primer comando**, luego plugin `usina-headless`, reasignación 16→6 con dry-run + gate G2. Requiere que Emanuel genere credenciales (Application Password WP, SSH/token Hostinger) — nunca en el repo.
