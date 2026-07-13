@@ -31,10 +31,22 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
   const currentPage = Math.max(1, parseInt(params.page || '1', 10))
   const perPage = 12
 
-  const articulosResponse = await getArticulos({ page: currentPage, perPage })
   const sectionFilters = getSectionFilters()
 
-  const { data: articulos, total, totalPages } = articulosResponse
+  let articulosResponse: Awaited<ReturnType<typeof getArticulos>> | null = null
+  let loadError = false
+  try {
+    articulosResponse = await getArticulos({ page: currentPage, perPage })
+  } catch {
+    // Si falla la API de WordPress, mostramos un estado de error digno
+    loadError = true
+  }
+
+  const {
+    data: articulos,
+    total,
+    totalPages,
+  } = articulosResponse ?? { data: [], total: 0, totalPages: 0, currentPage }
 
   return (
     <>
@@ -70,7 +82,14 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
           </div>
 
           {/* Listado de artículos */}
-          {articulos.length > 0 ? (
+          {loadError ? (
+            <div className="text-center py-20">
+              <p className="text-body-lg text-neutral-500">
+                No pudimos cargar las noticias en este momento. Por favor,
+                intentá de nuevo más tarde.
+              </p>
+            </div>
+          ) : articulos.length > 0 ? (
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
               {articulos.map((articulo) => (
                 <ArticleCard key={articulo.id} articulo={articulo} />
@@ -85,12 +104,14 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
           )}
 
           {/* Paginación */}
-          <Pagination
-            currentPage={currentPage}
-            totalPages={totalPages}
-            total={total}
-            basePath="/blog"
-          />
+          {!loadError && (
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              total={total}
+              basePath="/blog"
+            />
+          )}
         </div>
       </section>
     </>
