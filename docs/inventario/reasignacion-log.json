@@ -1,0 +1,1187 @@
+[
+  {
+    "id": 22669,
+    "antes": [
+      38
+    ],
+    "despues": [
+      38,
+      254
+    ],
+    "destino": "incidencia"
+  },
+  {
+    "id": 22658,
+    "antes": [
+      38
+    ],
+    "despues": [
+      38,
+      254
+    ],
+    "destino": "incidencia"
+  },
+  {
+    "id": 22673,
+    "antes": [
+      38
+    ],
+    "despues": [
+      38,
+      254
+    ],
+    "destino": "incidencia"
+  },
+  {
+    "id": 22661,
+    "antes": [
+      38
+    ],
+    "despues": [
+      38,
+      254
+    ],
+    "destino": "incidencia"
+  },
+  {
+    "id": 21589,
+    "antes": [
+      35
+    ],
+    "despues": [
+      35,
+      253
+    ],
+    "destino": "acompanamiento"
+  },
+  {
+    "id": 22629,
+    "antes": [
+      9
+    ],
+    "despues": [
+      9,
+      255
+    ],
+    "destino": "prensa"
+  },
+  {
+    "id": 22601,
+    "antes": [
+      36,
+      38,
+      9
+    ],
+    "despues": [
+      36,
+      38,
+      9,
+      254
+    ],
+    "destino": "incidencia"
+  },
+  {
+    "id": 22645,
+    "antes": [
+      38
+    ],
+    "despues": [
+      38,
+      254
+    ],
+    "destino": "incidencia"
+  },
+  {
+    "id": 22623,
+    "antes": [
+      214
+    ],
+    "despues": [
+      214,
+      211
+    ],
+    "destino": "historias"
+  },
+  {
+    "id": 22619,
+    "antes": [
+      9
+    ],
+    "despues": [
+      9,
+      255
+    ],
+    "destino": "prensa"
+  },
+  {
+    "id": 22554,
+    "antes": [
+      38,
+      9
+    ],
+    "despues": [
+      38,
+      9,
+      254
+    ],
+    "destino": "incidencia"
+  },
+  {
+    "id": 22539,
+    "antes": [
+      9
+    ],
+    "despues": [
+      9,
+      255
+    ],
+    "destino": "prensa"
+  },
+  {
+    "id": 22545,
+    "antes": [
+      35
+    ],
+    "despues": [
+      35,
+      253
+    ],
+    "destino": "acompanamiento"
+  },
+  {
+    "id": 22558,
+    "antes": [
+      35
+    ],
+    "despues": [
+      35,
+      253
+    ],
+    "destino": "acompanamiento"
+  },
+  {
+    "id": 22525,
+    "antes": [
+      35,
+      214,
+      9
+    ],
+    "despues": [
+      35,
+      214,
+      9,
+      211
+    ],
+    "destino": "historias"
+  },
+  {
+    "id": 22503,
+    "antes": [
+      35
+    ],
+    "despues": [
+      35,
+      253
+    ],
+    "destino": "acompanamiento"
+  },
+  {
+    "id": 22499,
+    "antes": [
+      35
+    ],
+    "despues": [
+      35,
+      253
+    ],
+    "destino": "acompanamiento"
+  },
+  {
+    "id": 22495,
+    "antes": [
+      35
+    ],
+    "despues": [
+      35,
+      253
+    ],
+    "destino": "acompanamiento"
+  },
+  {
+    "id": 22507,
+    "antes": [
+      35
+    ],
+    "despues": [
+      35,
+      253
+    ],
+    "destino": "acompanamiento"
+  },
+  {
+    "id": 22491,
+    "antes": [
+      35
+    ],
+    "despues": [
+      35,
+      253
+    ],
+    "destino": "acompanamiento"
+  },
+  {
+    "id": 22429,
+    "antes": [
+      9
+    ],
+    "despues": [
+      9,
+      255
+    ],
+    "destino": "prensa"
+  },
+  {
+    "id": 22384,
+    "antes": [
+      9
+    ],
+    "despues": [
+      9,
+      255
+    ],
+    "destino": "prensa"
+  },
+  {
+    "id": 22486,
+    "antes": [
+      35
+    ],
+    "despues": [
+      35,
+      253
+    ],
+    "destino": "acompanamiento"
+  },
+  {
+    "id": 22433,
+    "antes": [
+      9
+    ],
+    "despues": [
+      9,
+      255
+    ],
+    "destino": "prensa"
+  },
+  {
+    "id": 22439,
+    "antes": [
+      223,
+      9
+    ],
+    "despues": [
+      223,
+      9,
+      255
+    ],
+    "destino": "prensa"
+  },
+  {
+    "id": 22398,
+    "antes": [
+      214,
+      38,
+      9
+    ],
+    "despues": [
+      214,
+      38,
+      9,
+      211
+    ],
+    "destino": "historias"
+  },
+  {
+    "id": 22406,
+    "antes": [
+      9
+    ],
+    "despues": [
+      9,
+      255
+    ],
+    "destino": "prensa"
+  },
+  {
+    "id": 22358,
+    "antes": [
+      35
+    ],
+    "despues": [
+      35,
+      253
+    ],
+    "destino": "acompanamiento"
+  },
+  {
+    "id": 22379,
+    "antes": [
+      36,
+      216
+    ],
+    "despues": [
+      36,
+      216,
+      254
+    ],
+    "destino": "incidencia"
+  },
+  {
+    "id": 22395,
+    "antes": [
+      214,
+      9
+    ],
+    "despues": [
+      214,
+      9,
+      211
+    ],
+    "destino": "historias"
+  },
+  {
+    "id": 22336,
+    "antes": [
+      38
+    ],
+    "despues": [
+      38,
+      254
+    ],
+    "destino": "incidencia"
+  },
+  {
+    "id": 22392,
+    "antes": [
+      224,
+      9
+    ],
+    "despues": [
+      224,
+      9,
+      255
+    ],
+    "destino": "prensa"
+  },
+  {
+    "id": 22355,
+    "antes": [
+      9
+    ],
+    "despues": [
+      9,
+      255
+    ],
+    "destino": "prensa"
+  },
+  {
+    "id": 22341,
+    "antes": [
+      38
+    ],
+    "despues": [
+      38,
+      254
+    ],
+    "destino": "incidencia"
+  },
+  {
+    "id": 21320,
+    "antes": [
+      214
+    ],
+    "despues": [
+      214,
+      211
+    ],
+    "destino": "historias"
+  },
+  {
+    "id": 22277,
+    "antes": [
+      35
+    ],
+    "despues": [
+      35,
+      253
+    ],
+    "destino": "acompanamiento"
+  },
+  {
+    "id": 22301,
+    "antes": [
+      35,
+      204
+    ],
+    "despues": [
+      35,
+      204,
+      253
+    ],
+    "destino": "acompanamiento"
+  },
+  {
+    "id": 22291,
+    "antes": [
+      38
+    ],
+    "despues": [
+      38,
+      254
+    ],
+    "destino": "incidencia"
+  },
+  {
+    "id": 22279,
+    "antes": [
+      38
+    ],
+    "despues": [
+      38,
+      254
+    ],
+    "destino": "incidencia"
+  },
+  {
+    "id": 8742,
+    "antes": [
+      38
+    ],
+    "despues": [
+      38,
+      254
+    ],
+    "destino": "incidencia"
+  },
+  {
+    "id": 22009,
+    "antes": [
+      38
+    ],
+    "despues": [
+      38,
+      254
+    ],
+    "destino": "incidencia"
+  },
+  {
+    "id": 22267,
+    "antes": [
+      9
+    ],
+    "despues": [
+      9,
+      255
+    ],
+    "destino": "prensa"
+  },
+  {
+    "id": 22261,
+    "antes": [
+      9
+    ],
+    "despues": [
+      9,
+      255
+    ],
+    "destino": "prensa"
+  },
+  {
+    "id": 22189,
+    "antes": [
+      9
+    ],
+    "despues": [
+      9,
+      255
+    ],
+    "destino": "prensa"
+  },
+  {
+    "id": 22201,
+    "antes": [
+      9
+    ],
+    "despues": [
+      9,
+      255
+    ],
+    "destino": "prensa"
+  },
+  {
+    "id": 22080,
+    "antes": [
+      35
+    ],
+    "despues": [
+      35,
+      253
+    ],
+    "destino": "acompanamiento"
+  },
+  {
+    "id": 22019,
+    "antes": [
+      35
+    ],
+    "despues": [
+      35,
+      253
+    ],
+    "destino": "acompanamiento"
+  },
+  {
+    "id": 22074,
+    "antes": [
+      9
+    ],
+    "despues": [
+      9,
+      255
+    ],
+    "destino": "prensa"
+  },
+  {
+    "id": 22181,
+    "antes": [
+      208
+    ],
+    "despues": [
+      208,
+      256
+    ],
+    "destino": "observatorio"
+  },
+  {
+    "id": 22077,
+    "antes": [
+      35,
+      9
+    ],
+    "despues": [
+      35,
+      9,
+      253
+    ],
+    "destino": "acompanamiento"
+  },
+  {
+    "id": 21964,
+    "antes": [
+      35
+    ],
+    "despues": [
+      35,
+      253
+    ],
+    "destino": "acompanamiento"
+  },
+  {
+    "id": 21881,
+    "antes": [
+      9
+    ],
+    "despues": [
+      9,
+      255
+    ],
+    "destino": "prensa"
+  },
+  {
+    "id": 22004,
+    "antes": [
+      9
+    ],
+    "despues": [
+      9,
+      255
+    ],
+    "destino": "prensa"
+  },
+  {
+    "id": 21878,
+    "antes": [
+      35
+    ],
+    "despues": [
+      35,
+      253
+    ],
+    "destino": "acompanamiento"
+  },
+  {
+    "id": 21883,
+    "antes": [
+      35,
+      9
+    ],
+    "despues": [
+      35,
+      9,
+      253
+    ],
+    "destino": "acompanamiento"
+  },
+  {
+    "id": 21780,
+    "antes": [
+      36
+    ],
+    "despues": [
+      36,
+      254
+    ],
+    "destino": "incidencia"
+  },
+  {
+    "id": 21797,
+    "antes": [
+      214
+    ],
+    "despues": [
+      214,
+      211
+    ],
+    "destino": "historias"
+  },
+  {
+    "id": 21958,
+    "antes": [
+      35
+    ],
+    "despues": [
+      35,
+      253
+    ],
+    "destino": "acompanamiento"
+  },
+  {
+    "id": 21777,
+    "antes": [
+      9
+    ],
+    "despues": [
+      9,
+      255
+    ],
+    "destino": "prensa"
+  },
+  {
+    "id": 21784,
+    "antes": [
+      9
+    ],
+    "despues": [
+      9,
+      255
+    ],
+    "destino": "prensa"
+  },
+  {
+    "id": 21991,
+    "antes": [
+      38
+    ],
+    "despues": [
+      38,
+      254
+    ],
+    "destino": "incidencia"
+  },
+  {
+    "id": 21749,
+    "antes": [
+      9
+    ],
+    "despues": [
+      9,
+      255
+    ],
+    "destino": "prensa"
+  },
+  {
+    "id": 21947,
+    "antes": [
+      35
+    ],
+    "despues": [
+      35,
+      253
+    ],
+    "destino": "acompanamiento"
+  },
+  {
+    "id": 21741,
+    "antes": [
+      9
+    ],
+    "despues": [
+      9,
+      255
+    ],
+    "destino": "prensa"
+  },
+  {
+    "id": 21758,
+    "antes": [
+      9
+    ],
+    "despues": [
+      9,
+      255
+    ],
+    "destino": "prensa"
+  },
+  {
+    "id": 22513,
+    "antes": [
+      38
+    ],
+    "despues": [
+      38,
+      254
+    ],
+    "destino": "incidencia"
+  },
+  {
+    "id": 21731,
+    "antes": [
+      9
+    ],
+    "despues": [
+      9,
+      255
+    ],
+    "destino": "prensa"
+  },
+  {
+    "id": 21712,
+    "antes": [
+      9
+    ],
+    "despues": [
+      9,
+      255
+    ],
+    "destino": "prensa"
+  },
+  {
+    "id": 21728,
+    "antes": [
+      9
+    ],
+    "despues": [
+      9,
+      255
+    ],
+    "destino": "prensa"
+  },
+  {
+    "id": 21697,
+    "antes": [
+      9
+    ],
+    "despues": [
+      9,
+      255
+    ],
+    "destino": "prensa"
+  },
+  {
+    "id": 21950,
+    "antes": [
+      35
+    ],
+    "despues": [
+      35,
+      253
+    ],
+    "destino": "acompanamiento"
+  },
+  {
+    "id": 21691,
+    "antes": [
+      224,
+      208
+    ],
+    "despues": [
+      224,
+      208,
+      256
+    ],
+    "destino": "observatorio"
+  },
+  {
+    "id": 21682,
+    "antes": [
+      9
+    ],
+    "despues": [
+      9,
+      255
+    ],
+    "destino": "prensa"
+  },
+  {
+    "id": 21809,
+    "antes": [
+      208
+    ],
+    "despues": [
+      208,
+      256
+    ],
+    "destino": "observatorio"
+  },
+  {
+    "id": 21686,
+    "antes": [
+      9
+    ],
+    "despues": [
+      9,
+      255
+    ],
+    "destino": "prensa"
+  },
+  {
+    "id": 21611,
+    "antes": [
+      9
+    ],
+    "despues": [
+      9,
+      255
+    ],
+    "destino": "prensa"
+  },
+  {
+    "id": 21676,
+    "antes": [
+      9
+    ],
+    "despues": [
+      9,
+      255
+    ],
+    "destino": "prensa"
+  },
+  {
+    "id": 21666,
+    "antes": [
+      9
+    ],
+    "despues": [
+      9,
+      255
+    ],
+    "destino": "prensa"
+  },
+  {
+    "id": 21586,
+    "antes": [
+      9
+    ],
+    "despues": [
+      9,
+      255
+    ],
+    "destino": "prensa"
+  },
+  {
+    "id": 21669,
+    "antes": [
+      9
+    ],
+    "despues": [
+      9,
+      255
+    ],
+    "destino": "prensa"
+  },
+  {
+    "id": 21526,
+    "antes": [
+      9
+    ],
+    "despues": [
+      9,
+      255
+    ],
+    "destino": "prensa"
+  },
+  {
+    "id": 21529,
+    "antes": [
+      35
+    ],
+    "despues": [
+      35,
+      253
+    ],
+    "destino": "acompanamiento"
+  },
+  {
+    "id": 21600,
+    "antes": [
+      9
+    ],
+    "despues": [
+      9,
+      255
+    ],
+    "destino": "prensa"
+  },
+  {
+    "id": 21510,
+    "antes": [
+      9
+    ],
+    "despues": [
+      9,
+      255
+    ],
+    "destino": "prensa"
+  },
+  {
+    "id": 21544,
+    "antes": [
+      9
+    ],
+    "despues": [
+      9,
+      255
+    ],
+    "destino": "prensa"
+  },
+  {
+    "id": 21498,
+    "antes": [
+      9
+    ],
+    "despues": [
+      9,
+      255
+    ],
+    "destino": "prensa"
+  },
+  {
+    "id": 21500,
+    "antes": [
+      9
+    ],
+    "despues": [
+      9,
+      255
+    ],
+    "destino": "prensa"
+  },
+  {
+    "id": 21493,
+    "antes": [
+      9
+    ],
+    "despues": [
+      9,
+      255
+    ],
+    "destino": "prensa"
+  },
+  {
+    "id": 21508,
+    "antes": [
+      9
+    ],
+    "despues": [
+      9,
+      255
+    ],
+    "destino": "prensa"
+  },
+  {
+    "id": 21502,
+    "antes": [
+      9
+    ],
+    "despues": [
+      9,
+      255
+    ],
+    "destino": "prensa"
+  },
+  {
+    "id": 21485,
+    "antes": [
+      38
+    ],
+    "despues": [
+      38,
+      254
+    ],
+    "destino": "incidencia"
+  },
+  {
+    "id": 21480,
+    "antes": [
+      38
+    ],
+    "despues": [
+      38,
+      254
+    ],
+    "destino": "incidencia"
+  },
+  {
+    "id": 21464,
+    "antes": [
+      9
+    ],
+    "despues": [
+      9,
+      255
+    ],
+    "destino": "prensa"
+  },
+  {
+    "id": 21606,
+    "antes": [
+      38
+    ],
+    "despues": [
+      38,
+      254
+    ],
+    "destino": "incidencia"
+  },
+  {
+    "id": 21462,
+    "antes": [
+      9
+    ],
+    "despues": [
+      9,
+      255
+    ],
+    "destino": "prensa"
+  },
+  {
+    "id": 21887,
+    "antes": [
+      223
+    ],
+    "despues": [
+      223,
+      6
+    ],
+    "destino": "institucional"
+  },
+  {
+    "id": 21449,
+    "antes": [
+      9
+    ],
+    "despues": [
+      9,
+      255
+    ],
+    "destino": "prensa"
+  },
+  {
+    "id": 21459,
+    "antes": [
+      9
+    ],
+    "despues": [
+      9,
+      255
+    ],
+    "destino": "prensa"
+  },
+  {
+    "id": 21471,
+    "antes": [
+      9
+    ],
+    "despues": [
+      9,
+      255
+    ],
+    "destino": "prensa"
+  },
+  {
+    "id": 21445,
+    "antes": [
+      38
+    ],
+    "despues": [
+      38,
+      254
+    ],
+    "destino": "incidencia"
+  },
+  {
+    "id": 21432,
+    "antes": [
+      35
+    ],
+    "despues": [
+      35,
+      253
+    ],
+    "destino": "acompanamiento"
+  },
+  {
+    "id": 21440,
+    "antes": [
+      9
+    ],
+    "despues": [
+      9,
+      255
+    ],
+    "destino": "prensa"
+  },
+  {
+    "id": 21367,
+    "antes": [
+      9
+    ],
+    "despues": [
+      9,
+      255
+    ],
+    "destino": "prensa"
+  },
+  {
+    "id": 22007,
+    "antes": [
+      224
+    ],
+    "despues": [
+      224,
+      6
+    ],
+    "destino": "institucional"
+  },
+  {
+    "id": 21364,
+    "antes": [
+      9
+    ],
+    "despues": [
+      9,
+      255
+    ],
+    "destino": "prensa"
+  }
+]
