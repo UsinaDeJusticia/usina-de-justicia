@@ -22,42 +22,55 @@ export const siteConfig = {
     twitter: 'https://x.com/UsinadeJusticia',
   },
 
+  // Sub-marca con sitio propio (ivujus.org.ar) — no vive en este Next.js app.
+  externalLinks: {
+    ivujus: 'https://ivujus.org.ar/',
+  },
+
+  // Nav principal portada del design system (design-system/home/Header.jsx).
+  // Los items del árbol nuevo que todavía no tienen ruta propia se mapean a
+  // su equivalente actual; cada mapeo temporal queda marcado con
+  // "TODO Fase 3" para cuando se creen las rutas dedicadas.
   mainNav: [
-    {
-      label: 'Sobre Nosotros',
-      href: '/sobre-nosotros',
-      children: [
-        { label: 'Nuestra Historia', href: '/sobre-nosotros' },
-        { label: 'Equipo', href: '/sobre-nosotros/equipo' },
-        { label: 'Transparencia', href: '/sobre-nosotros/transparencia' },
-      ],
-    },
-    {
-      label: 'Programas',
-      href: '/programas',
-      children: [
-        { label: 'Asistencia a Víctimas', href: '/programas/asistencia-a-victimas' },
-        { label: 'Reformas Legislativas', href: '/programas/reformas-legislativas' },
-        { label: 'Capacitación y Formación', href: '/programas/capacitacion-y-formacion' },
-        { label: 'Litigio Estratégico', href: '/programas/litigio-estrategico' },
-      ],
-    },
-    { label: 'Blog', href: '/blog' },
-    { label: 'Recursos', href: '/recursos' },
+    { label: 'Nosotros', href: '/sobre-nosotros' }, // TODO Fase 3: renombrar ruta a /nosotros
+    { label: 'Programas', href: '/programas' },
+    { label: 'Observatorio', href: '/#observatorio' }, // TODO Fase 3: crear ruta dedicada /observatorio
+    { label: 'Noticias', href: '/blog' }, // TODO Fase 3: evaluar renombrar ruta a /noticias
+    { label: 'IVUJUS', href: 'https://ivujus.org.ar/', external: true },
     { label: 'Contacto', href: '/contacto' },
   ],
 
+  // CTAs del header (design-system/home/Header.jsx: "Necesito ayuda" + "Donar").
+  headerCta: {
+    help: { label: 'Necesito ayuda', href: '/#quehacer' }, // TODO Fase 3: crear ruta /necesito-ayuda
+    donate: { label: 'Donar', href: '/donar' },
+  },
+
+  // Columnas del footer (design-system/home/Footer.jsx). Igual que en mainNav,
+  // los sub-ítems sin página propia apuntan al equivalente real más cercano.
   footerNav: {
-    institucional: [
-      { label: 'Sobre Nosotros', href: '/sobre-nosotros' },
+    institucion: [
+      { label: 'Nosotros', href: '/sobre-nosotros' },
       { label: 'Equipo', href: '/sobre-nosotros/equipo' },
-      { label: 'Transparencia', href: '/sobre-nosotros/transparencia' },
+      { label: 'Transparencia institucional', href: '/sobre-nosotros/transparencia' },
     ],
-    contenido: [
-      { label: 'Blog', href: '/blog' },
-      { label: 'Recursos', href: '/recursos' },
-      { label: 'Galería', href: '/galeria' },
-      { label: 'Programas', href: '/programas' },
+    programas: [
+      { label: 'Acompañamiento', href: '/programas/asistencia-a-victimas' },
+      { label: 'Incidencia', href: '/programas/reformas-legislativas' },
+      { label: 'Capacitación', href: '/programas/capacitacion-y-formacion' },
+      { label: 'IVUJUS', href: 'https://ivujus.org.ar/', external: true },
+    ],
+    observatorio: [
+      { label: 'Informes', href: '/recursos' },
+      { label: 'Amicus curiae', href: '/blog/categoria/incidencia' },
+      { label: 'Base de sentencias', href: '/#observatorio' }, // TODO Fase 3: ruta /observatorio
+      { label: 'Prensa', href: '/blog/categoria/medios' },
+    ],
+    contacto: [
+      { label: 'Escribinos', href: '/contacto' },
+      { label: 'Sumate como voluntario', href: '/contacto' }, // TODO Fase 3: formulario de voluntariado
+      { label: 'Convenios', href: '/contacto' }, // TODO Fase 3: página de convenios institucionales
+      { label: 'Prensa', href: 'mailto:info@usinadejusticia.org.ar' },
     ],
     legal: [
       { label: 'Política de Privacidad', href: '/legal/privacidad' },

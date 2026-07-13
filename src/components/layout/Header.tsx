@@ -1,208 +1,150 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
-import { Menu, X, ChevronDown, Heart } from 'lucide-react'
+import { Menu, X } from 'lucide-react'
 import { siteConfig } from '@/lib/site-config'
+import { Button } from '@/components/ui/Button'
 import { cn } from '@/lib/utils'
 
+// Portado de design-system/home/Header.jsx (HeaderUJ).
+// Un único renglón: logo + nav + 2 CTAs. El header viejo tenía además una
+// barra superior con email/redes — el diseño nuevo la elimina (esa info
+// vive en el Footer) para mantener el header liviano y sticky.
 export function Header() {
+  const [scrolled, setScrolled] = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)
-  const [openDropdown, setOpenDropdown] = useState<string | null>(null)
 
-  const toggleDropdown = (label: string) => {
-    setOpenDropdown(openDropdown === label ? null : label)
-  }
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 8)
+    onScroll()
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => window.removeEventListener('scroll', onScroll)
+  }, [])
+
+  // Cerrar el menú mobile al navegar a un hash/página nueva.
+  useEffect(() => {
+    if (!mobileOpen) return
+    const onResize = () => {
+      if (window.innerWidth >= 1024) setMobileOpen(false)
+    }
+    window.addEventListener('resize', onResize)
+    return () => window.removeEventListener('resize', onResize)
+  }, [mobileOpen])
+
+  const focusRing =
+    'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-navy-600 focus-visible:ring-offset-2 focus-visible:ring-offset-white'
 
   return (
-    <header className="sticky top-0 z-50 bg-white border-b border-neutral-200">
-      {/* Top bar con email */}
-      <div className="bg-primary-500 text-white text-body-sm">
-        <div className="max-w-content mx-auto px-4 py-1.5 flex justify-between items-center">
-          <a
-            href={`mailto:${siteConfig.contact.email}`}
-            className="hover:text-accent-300 transition-colors"
+    <header
+      className={cn(
+        'sticky top-0 z-50 bg-white transition-colors duration-base ease-out',
+        scrolled ? 'border-b border-grey-200' : 'border-b border-transparent'
+      )}
+    >
+      <div className="max-w-content mx-auto px-4 md:px-10 flex items-center justify-between h-16 md:h-[72px] gap-5">
+        <Link
+          href="/"
+          className={cn('shrink-0 inline-flex items-center no-underline rounded-xs', focusRing)}
+        >
+          <Image
+            src="/images/logo_uj.png"
+            alt={siteConfig.name}
+            width={172}
+            height={75}
+            priority
+            className="h-9 md:h-[42px] w-auto"
+          />
+        </Link>
+
+        {/* Nav desktop */}
+        <nav aria-label="Principal" className="hidden lg:flex items-center gap-7">
+          {siteConfig.mainNav.map((item) => (
+            <Link
+              key={item.label}
+              href={item.href}
+              {...('external' in item && item.external
+                ? { target: '_blank', rel: 'noopener noreferrer' }
+                : {})}
+              className={cn(
+                'text-body-sm font-bold text-ink no-underline hover:text-navy-600 hover:no-underline transition-colors duration-base ease-out rounded-xs',
+                focusRing
+              )}
+            >
+              {item.label}
+            </Link>
+          ))}
+        </nav>
+
+        {/* CTAs desktop */}
+        <div className="hidden lg:flex items-center gap-2.5 shrink-0">
+          <Button href={siteConfig.headerCta.help.href} variant="secondary" size="sm">
+            {siteConfig.headerCta.help.label}
+          </Button>
+          <Button href={siteConfig.headerCta.donate.href} variant="primary" size="sm">
+            {siteConfig.headerCta.donate.label}
+          </Button>
+        </div>
+
+        {/* Mobile: CTA donar + hamburguesa */}
+        <div className="flex items-center gap-2 lg:hidden">
+          <Button href={siteConfig.headerCta.donate.href} variant="primary" size="sm">
+            {siteConfig.headerCta.donate.label}
+          </Button>
+          <button
+            type="button"
+            onClick={() => setMobileOpen((v) => !v)}
+            aria-expanded={mobileOpen}
+            aria-controls="mobile-nav"
+            aria-label={mobileOpen ? 'Cerrar menú' : 'Abrir menú'}
+            className={cn(
+              'p-2 -mr-2 text-ink hover:text-navy-600 transition-colors duration-base ease-out rounded-xs',
+              focusRing
+            )}
           >
-            {siteConfig.contact.email}
-          </a>
-          <div className="hidden sm:flex items-center gap-4">
-            {Object.entries(siteConfig.social).map(([network, url]) => (
-              <a
-                key={network}
-                href={url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="hover:text-accent-300 transition-colors capitalize text-body-sm"
-                aria-label={`Seguinos en ${network}`}
-              >
-                {network === 'twitter' ? 'X' : network.charAt(0).toUpperCase() + network.slice(1)}
-              </a>
-            ))}
-          </div>
+            {mobileOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+          </button>
         </div>
       </div>
 
-      {/* Navegación principal */}
-      <nav className="max-w-content mx-auto px-4">
-        <div className="flex items-center justify-between h-16 lg:h-20">
-          {/* Logo */}
-          <Link href="/" className="shrink-0">
-            <Image
-              src="/images/logo.png"
-              alt={siteConfig.name}
-              width={180}
-              height={50}
-              className="h-10 lg:h-12 w-auto"
-              priority
-            />
+      {/* Nav mobile */}
+      <div
+        id="mobile-nav"
+        className={cn(
+          'lg:hidden overflow-hidden border-t border-grey-200 transition-[max-height] duration-base ease-out',
+          mobileOpen ? 'max-h-[70vh]' : 'max-h-0 border-t-0'
+        )}
+      >
+        <nav aria-label="Principal" className="max-w-content mx-auto px-4 py-4 flex flex-col gap-1">
+          {siteConfig.mainNav.map((item) => (
+            <Link
+              key={item.label}
+              href={item.href}
+              onClick={() => setMobileOpen(false)}
+              {...('external' in item && item.external
+                ? { target: '_blank', rel: 'noopener noreferrer' }
+                : {})}
+              className={cn(
+                'px-2 py-2.5 text-body font-bold text-ink no-underline hover:text-navy-600 hover:no-underline hover:bg-navy-50 rounded-xs transition-colors duration-base ease-out',
+                focusRing
+              )}
+            >
+              {item.label}
+            </Link>
+          ))}
+          <Link
+            href={siteConfig.headerCta.help.href}
+            onClick={() => setMobileOpen(false)}
+            className={cn(
+              'mt-3 px-2 py-2.5 text-body-sm font-bold text-navy-600 no-underline hover:no-underline rounded-xs',
+              focusRing
+            )}
+          >
+            {siteConfig.headerCta.help.label}
           </Link>
-
-          {/* Desktop Nav */}
-          <div className="hidden lg:flex items-center gap-1">
-            {siteConfig.mainNav.map((item) => (
-              <div key={item.label} className="relative group">
-                {item.children ? (
-                  <>
-                    <Link
-                      href={item.href}
-                      className="flex items-center gap-1 px-3 py-2 text-body-sm font-medium text-neutral-700 hover:text-primary-500 rounded-md hover:bg-neutral-50 transition-colors"
-                    >
-                      {item.label}
-                      <ChevronDown className="w-3.5 h-3.5 text-neutral-400 group-hover:text-primary-500 transition-transform group-hover:rotate-180" />
-                    </Link>
-
-                    {/* Dropdown */}
-                    <div className="absolute left-0 top-full pt-1 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
-                      <div className="bg-white rounded-lg shadow-lg border border-neutral-200 py-2 min-w-[220px]">
-                        {item.children.map((child) => (
-                          <Link
-                            key={child.href}
-                            href={child.href}
-                            className="block px-4 py-2.5 text-body-sm text-neutral-600 hover:text-primary-500 hover:bg-neutral-50 transition-colors"
-                          >
-                            {child.label}
-                          </Link>
-                        ))}
-                      </div>
-                    </div>
-                  </>
-                ) : (
-                  <Link
-                    href={item.href}
-                    className="px-3 py-2 text-body-sm font-medium text-neutral-700 hover:text-primary-500 rounded-md hover:bg-neutral-50 transition-colors"
-                  >
-                    {item.label}
-                  </Link>
-                )}
-              </div>
-            ))}
-
-            {/* CTA Donar */}
-            <Link
-              href="/donar"
-              className="ml-3 inline-flex items-center gap-2 bg-accent-500 hover:bg-accent-600 text-white px-5 py-2.5 rounded-lg text-body-sm font-semibold transition-colors"
-            >
-              <Heart className="w-4 h-4" />
-              Doná
-            </Link>
-          </div>
-
-          {/* Mobile: CTA + Hamburger */}
-          <div className="flex items-center gap-3 lg:hidden">
-            <Link
-              href="/donar"
-              className="inline-flex items-center gap-1.5 bg-accent-500 hover:bg-accent-600 text-white px-4 py-2 rounded-lg text-body-sm font-semibold transition-colors"
-            >
-              <Heart className="w-3.5 h-3.5" />
-              Doná
-            </Link>
-            <button
-              onClick={() => setMobileOpen(!mobileOpen)}
-              className="p-2 text-neutral-700 hover:text-primary-500 transition-colors"
-              aria-label={mobileOpen ? 'Cerrar menú' : 'Abrir menú'}
-            >
-              {mobileOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-            </button>
-          </div>
-        </div>
-
-        {/* Mobile Nav */}
-        <div
-          className={cn(
-            'lg:hidden overflow-hidden transition-all duration-300',
-            mobileOpen ? 'max-h-[80vh] pb-6' : 'max-h-0'
-          )}
-        >
-          <div className="border-t border-neutral-200 pt-4 space-y-1">
-            {siteConfig.mainNav.map((item) => (
-              <div key={item.label}>
-                {item.children ? (
-                  <>
-                    <button
-                      onClick={() => toggleDropdown(item.label)}
-                      className="w-full flex items-center justify-between px-3 py-3 text-body font-medium text-neutral-700 hover:text-primary-500 rounded-md hover:bg-neutral-50 transition-colors"
-                    >
-                      {item.label}
-                      <ChevronDown
-                        className={cn(
-                          'w-4 h-4 text-neutral-400 transition-transform',
-                          openDropdown === item.label && 'rotate-180'
-                        )}
-                      />
-                    </button>
-                    <div
-                      className={cn(
-                        'overflow-hidden transition-all duration-200',
-                        openDropdown === item.label ? 'max-h-96' : 'max-h-0'
-                      )}
-                    >
-                      <div className="pl-4 space-y-1 pb-2">
-                        {item.children.map((child) => (
-                          <Link
-                            key={child.href}
-                            href={child.href}
-                            onClick={() => setMobileOpen(false)}
-                            className="block px-3 py-2.5 text-body-sm text-neutral-600 hover:text-primary-500 rounded-md hover:bg-neutral-50 transition-colors"
-                          >
-                            {child.label}
-                          </Link>
-                        ))}
-                      </div>
-                    </div>
-                  </>
-                ) : (
-                  <Link
-                    href={item.href}
-                    onClick={() => setMobileOpen(false)}
-                    className="block px-3 py-3 text-body font-medium text-neutral-700 hover:text-primary-500 rounded-md hover:bg-neutral-50 transition-colors"
-                  >
-                    {item.label}
-                  </Link>
-                )}
-              </div>
-            ))}
-
-            {/* Redes en mobile */}
-            <div className="pt-4 px-3 border-t border-neutral-100">
-              <p className="text-body-sm text-neutral-400 mb-3">Seguinos</p>
-              <div className="flex items-center gap-4">
-                {Object.entries(siteConfig.social).map(([network, url]) => (
-                  <a
-                    key={network}
-                    href={url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-body-sm text-neutral-500 hover:text-primary-500 transition-colors capitalize"
-                  >
-                    {network === 'twitter' ? 'X' : network.charAt(0).toUpperCase() + network.slice(1)}
-                  </a>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-      </nav>
+        </nav>
+      </div>
     </header>
   )
 }
