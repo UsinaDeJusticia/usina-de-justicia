@@ -65,9 +65,13 @@
   --color-primary-900: var(--color-navy-900);
   --color-primary-950: var(--color-navy-900);
 
-  /* ─── Tipografía ─── */
-  --font-display: 'Nunito', system-ui, -apple-system, 'Segoe UI', sans-serif;
-  --font-body: 'Nunito Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  /*
+   * Tipografía — Nunito (display) + Nunito Sans (body), cargadas vía
+   * next/font/google en layout.tsx y expuestas como --font-nunito /
+   * --font-nunito-sans. Estos tokens las referencian con fallback a system-ui.
+   */
+  --font-display: var(--font-nunito), system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-body: var(--font-nunito-sans), system-ui, -apple-system, 'Segoe UI', sans-serif;
   /* Alias de compatibilidad: `font-sans`/`font-heading` de las páginas viejas. */
   --font-sans: var(--font-body);
   --font-heading: var(--font-display);

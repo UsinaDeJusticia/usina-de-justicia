@@ -1,14 +1,26 @@
 import type { Metadata } from 'next'
-import { Inter } from 'next/font/google'
+import { Nunito, Nunito_Sans } from 'next/font/google'
 import './globals.css'
 import { Header } from '@/components/layout/Header'
 import { Footer } from '@/components/layout/Footer'
 import { siteConfig } from '@/lib/site-config'
 
-const inter = Inter({
+// next/font self-hosts and optimizes the fonts, exposing them as CSS vars.
+// Distinct names (--font-nunito / --font-nunito-sans) avoid clashing with the
+// `--font-display` / `--font-body` Tailwind @theme tokens, which reference
+// these vars (see globals.css) so utilities like `font-display` resolve them.
+const nunito = Nunito({
   subsets: ['latin'],
+  weight: ['600', '700', '800'],
   display: 'swap',
-  variable: '--font-inter',
+  variable: '--font-nunito',
+})
+
+const nunitoSans = Nunito_Sans({
+  subsets: ['latin'],
+  weight: ['400', '500', '600', '700'],
+  display: 'swap',
+  variable: '--font-nunito-sans',
 })
 
 export const metadata: Metadata = {
@@ -64,7 +76,7 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="es-AR" className={inter.variable}>
+    <html lang="es-AR" className={`${nunito.variable} ${nunitoSans.variable}`}>
       <head>
         <script
           type="application/ld+json"
