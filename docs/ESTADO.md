@@ -38,5 +38,13 @@
 4. Post-cutover (Fase 5): limpiar categorías viejas de los posts (log de reasignación como referencia), redirects 301 (IVUJUS + URLs viejas), revocar credenciales de agente.
 5. (Solo trabajo local en Windows) reparar npm/corepack con `prompt-reparar-npm.md`.
 
+## Fase 3 — EN CURSO (13-jul)
+- **Fundación aplicada:** tokens del design system en `@theme` (navy #1D437D, grises, ámbar solo AA, alias de compat para páginas viejas), Nunito/Nunito Sans vía next/font, logos oficiales, `src/components/ui/{Button,Badge}.tsx`. Design system completo versionado en `design-system/` (referencia vinculante: su README).
+- **Header + Footer + Home nuevos en preview:** hero rotador con las 3 variantes (crossfade 320ms, autoplay 9s, pausa en hover/foco, accesible, estático con prefers-reduced-motion), QueHacer, Pillars, Observatorio, Testimonios, Trayectoria, DonarCTA único. HeroEditorial conecta con el último post real de WP. Decisiones de Emanuel: rotador de 3 heroes · densidad amplia · retratos SÍ (pendiente: consentimientos de familias antes del launch; por ahora placeholder digno con iniciales) · acento ámbar SÍ.
+- Preview de la rama: https://usina-de-justicia-git-claude-usi-22815a-ejairsud-3412s-projects.vercel.app
+- **Gate G3 parcial (Home) pendiente:** revisión de Emanuel en móvil.
+
 ## Próximo paso exacto
-**Arrancar Fase 3:** Emanuel comparte el diseño de Claude Design (link o export) → extracción de tokens (D8: navy #1E427C, gris #A7A8AC, blanco; nunca violeta) → construcción por prioridad: `/necesito-ayuda` → Home → `/noticias` (6 categorías nuevas + detalle) → resto del árbol. Rama con preview de Vercel por sección; gate G3 = navegación completa con contenido real verificada en móvil.
+1. Emanuel revisa el preview de la Home en el teléfono (gate G3 parcial) y da feedback.
+2. Siguientes páginas por prioridad del plan: `/necesito-ayuda` (nueva, FAQPage) → `/noticias` con las 6 categorías nuevas (renombre de /blog + CATEGORY_MAP definitivo) → `/nosotros` → resto del árbol.
+3.  Emanuel comparte el diseño de Claude Design (link o export) → extracción de tokens (D8: navy #1E427C, gris #A7A8AC, blanco; nunca violeta) → construcción por prioridad: `/necesito-ayuda` → Home → `/noticias` (6 categorías nuevas + detalle) → resto del árbol. Rama con preview de Vercel por sección; gate G3 = navegación completa con contenido real verificada en móvil.
