@@ -1,0 +1,160 @@
+<!doctype html>
+<!-- @dsCard group="Brand" name="IVUJUS · Home" subtitle="Subbrand académico (bordó/ocre) — 2 variantes de hero" viewport="1280x900" -->
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>IVUJUS · Instituto de Victimología — Usina de Justicia</title>
+<link rel="stylesheet" href="colors_and_type.css?v=3">
+<style id="ivu-token-fallback">
+:root {
+  --ivu-bordeaux:     #6B1F2A;
+  --ivu-bordeaux-900: #3E0F18;
+  --ivu-bordeaux-800: #531820;
+  --ivu-bordeaux-700: #6B1F2A;
+  --ivu-bordeaux-600: #872932;
+  --ivu-bordeaux-500: #A53E46;
+  --ivu-bordeaux-200: #E7CDD1;
+  --ivu-bordeaux-100: #F3E3E5;
+  --ivu-bordeaux-50:  #FAF3F4;
+  --ivu-ochre:        #B8811C;
+  --ivu-ochre-600:    #A06E0F;
+  --ivu-ochre-100:    #F4E7C8;
+  --ivu-ochre-50:     #FAF4E3;
+  --ivu-parchment:    #F6F1E7;
+  --ivu-ink:          #1B1410;
+}
+</style>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;0,8..60,700;0,8..60,800;1,8..60,400&display=swap" rel="stylesheet">
+
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+
+<style>
+  :root {
+    --ivu-serif: 'Source Serif 4', 'Iowan Old Style', 'Apple Garamond', Georgia, serif;
+    --ivu-maxw: 1200px;
+  }
+  html, body { margin: 0; padding: 0; background: #fff; color: var(--ivu-ink); }
+  body.ivu { font-family: var(--font-body); font-size: 16px; -webkit-font-smoothing: antialiased; }
+  * { box-sizing: border-box; }
+  a { color: inherit; }
+  .ivu-wrap { max-width: var(--ivu-maxw); margin: 0 auto; padding: 0 48px; }
+  @media (max-width: 720px) { .ivu-wrap { padding: 0 24px; } }
+
+  /* Display serif — used for all H1/H2 in IVUJUS */
+  .ivu-serif { font-family: var(--ivu-serif); font-weight: 700; letter-spacing: -0.01em; }
+  .ivu-eyebrow { font-family: var(--font-body); font-weight: 700; font-size: 11.5px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--ivu-bordeaux-700); }
+  .ivu-rule { height: 1px; background: linear-gradient(90deg, var(--ivu-ochre) 0, var(--ivu-ochre) 40px, var(--border-1) 40px); }
+
+  /* Reveal */
+  .reveal { opacity: 1; transform: none; transition: opacity 550ms var(--ease-out), transform 550ms var(--ease-out); }
+  .js-reveal .reveal { opacity: 0; transform: translateY(14px); }
+  .js-reveal .reveal.is-in { opacity: 1; transform: none; }
+
+  /* CTAs */
+  .ivu-cta { display:inline-flex; align-items:center; gap:10px; font-family: var(--font-body);
+    font-weight:700; font-size:14px; letter-spacing:0.02em; padding: 14px 22px;
+    background: var(--ivu-bordeaux-700); color:#fff; border-radius: 2px;
+    text-decoration:none; transition: background 180ms var(--ease-out); }
+  .ivu-cta:hover { background: var(--ivu-bordeaux-800); }
+  .ivu-cta-ghost { display:inline-flex; align-items:center; gap:10px; font-weight:700; font-size:14px;
+    color: var(--ivu-bordeaux-700); padding: 14px 8px; text-decoration: none;
+    border-bottom: 1px solid var(--ivu-bordeaux-200); }
+  .ivu-cta-ghost:hover { border-bottom-color: var(--ivu-bordeaux-700); }
+</style>
+</head>
+<body class="ivu">
+<div id="root"></div>
+
+<script>
+  window.IVU_TWEAKS = /*EDITMODE-BEGIN*/{
+    "variant": "editorial",
+    "showUJLockup": true
+  }/*EDITMODE-END*/;
+</script>
+
+<script type="text/babel" src="ivujus/IvuHeader.jsx"></script>
+<script type="text/babel" src="ivujus/HeroEditorialIvu.jsx"></script>
+<script type="text/babel" src="ivujus/HeroAuthority.jsx"></script>
+<script type="text/babel" src="ivujus/WhyStudy.jsx"></script>
+<script type="text/babel" src="ivujus/Programa.jsx"></script>
+<script type="text/babel" src="ivujus/Docentes.jsx"></script>
+<script type="text/babel" src="ivujus/Publicaciones.jsx"></script>
+<script type="text/babel" src="ivujus/Cohorte.jsx"></script>
+<script type="text/babel" src="ivujus/Alianzas.jsx"></script>
+<script type="text/babel" src="ivujus/IvuFooter.jsx"></script>
+<script type="text/babel" src="ivujus/IvuTweaks.jsx"></script>
+
+<script type="text/babel">
+const { useState, useEffect } = React;
+
+function App() {
+  const [t, setT] = useState(window.IVU_TWEAKS);
+  const [editMode, setEditMode] = useState(false);
+
+  useEffect(() => {
+    const onMsg = (e) => {
+      if (!e.data) return;
+      if (e.data.type === '__activate_edit_mode') setEditMode(true);
+      if (e.data.type === '__deactivate_edit_mode') setEditMode(false);
+    };
+    window.addEventListener('message', onMsg);
+    window.parent.postMessage({ type: '__edit_mode_available' }, '*');
+    return () => window.removeEventListener('message', onMsg);
+  }, []);
+
+  const set = (k, v) => {
+    const next = { ...t, [k]: v }; setT(next);
+    window.parent.postMessage({ type: '__edit_mode_set_keys', edits: { [k]: v } }, '*');
+  };
+
+  useEffect(() => {
+    const id = setTimeout(() => window.lucide && window.lucide.createIcons(), 30);
+    return () => clearTimeout(id);
+  });
+
+  useEffect(() => {
+    if (!('IntersectionObserver' in window)) return;
+    document.documentElement.classList.add('js-reveal');
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('is-in'); io.unobserve(e.target); } });
+    }, { threshold: 0.08, rootMargin: '0px 0px -40px 0px' });
+    requestAnimationFrame(() => {
+      document.querySelectorAll('.reveal').forEach(el => {
+        const r = el.getBoundingClientRect();
+        if (r.top < window.innerHeight) el.classList.add('is-in');
+        else io.observe(el);
+      });
+    });
+    return () => io.disconnect();
+  }, [t.variant]);
+
+  const Hero = t.variant === 'authority' ? HeroAuthority : HeroEditorialIvu;
+
+  return (
+    <>
+      <IvuHeader tweaks={t} />
+      <main>
+        <Hero tweaks={t} />
+        <WhyStudy tweaks={t} />
+        <Programa tweaks={t} />
+        <Docentes tweaks={t} />
+        <Publicaciones tweaks={t} />
+        <Cohorte tweaks={t} />
+        <Alianzas tweaks={t} />
+      </main>
+      <IvuFooter tweaks={t} />
+      {editMode && <IvuTweaks tweaks={t} set={set} />}
+    </>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
+</body>
+</html>
