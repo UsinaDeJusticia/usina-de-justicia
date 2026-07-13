@@ -1,70 +1,127 @@
 @import 'tailwindcss';
 
+/*
+ * Fase 3 — Design System de Usina de Justicia.
+ * Tokens fieles a design-system/colors_and_type.css (no lo modifiques, es la fuente de verdad).
+ * Regla de marca: navy #1D437D + gris #A7A9AD son los únicos colores de marca.
+ * Nunca violeta/púrpura, nunca gradientes, nunca sombras de color.
+ */
 @theme {
-  --color-primary-50: #eff6ff;
-  --color-primary-100: #dbeafe;
-  --color-primary-200: #bfdbfe;
-  --color-primary-300: #93c5fd;
-  --color-primary-400: #60a5fa;
-  --color-primary-500: #1e3a5f;
-  --color-primary-600: #1a3353;
-  --color-primary-700: #152b47;
-  --color-primary-800: #11233b;
-  --color-primary-900: #0d1b2f;
-  --color-primary-950: #080f1a;
+  /* ─── Navy — color primario de marca, base #1D437D ─── */
+  --color-navy-50: #F3F6FB;
+  --color-navy-100: #E4EAF3;
+  --color-navy-200: #C3D0E3;
+  --color-navy-300: #8FA6CB;
+  --color-navy-400: #5B7BB0;
+  --color-navy-500: #2E5695;
+  --color-navy-600: #1D437D; /* base */
+  --color-navy-700: #163564; /* hover de links/botones */
+  --color-navy-800: #102A52;
+  --color-navy-900: #0E2550;
 
-  --color-accent-50: #fef3f2;
-  --color-accent-100: #fde5e3;
-  --color-accent-200: #fccfcc;
-  --color-accent-300: #f9ada8;
-  --color-accent-400: #f47b73;
-  --color-accent-500: #c0392b;
-  --color-accent-600: #ad3327;
-  --color-accent-700: #8f2a20;
-  --color-accent-800: #76251e;
-  --color-accent-900: #63241f;
-  --color-accent-950: #360e0b;
+  /* ─── Grey — único color secundario, base #A7A9AD ─── */
+  --color-grey-50: #F7F7F8;
+  --color-grey-100: #EFEFF1;
+  --color-grey-200: #E5E6E8;
+  --color-grey-300: #DADBDE;
+  --color-grey-400: #C4C6CA;
+  --color-grey-500: #A7A9AD; /* base */
+  --color-grey-600: #7A7D82;
+  --color-grey-700: #5A5D63;
+  --color-grey-800: #3A3D42;
+  --color-grey-900: #1F2124;
 
-  --color-neutral-50: #f8fafc;
-  --color-neutral-100: #f1f5f9;
-  --color-neutral-200: #e2e8f0;
-  --color-neutral-300: #cbd5e1;
-  --color-neutral-400: #94a3b8;
-  --color-neutral-500: #64748b;
-  --color-neutral-600: #475569;
-  --color-neutral-700: #334155;
-  --color-neutral-800: #1e293b;
-  --color-neutral-900: #0f172a;
+  /* ─── Superficies ─── */
+  --color-ivory: #FAF8F5; /* fondo cálido para secciones calmas */
+  --color-ink: #101B2A;   /* texto principal */
 
-  --font-sans: Inter, system-ui, -apple-system, sans-serif;
-  --font-heading: Inter, system-ui, -apple-system, sans-serif;
+  /* ─── Semánticos (mudos, nunca saturados) ─── */
+  --color-success: #2F7D5B;
+  --color-success-bg: #E8F2EC;
+  --color-warning: #B8811C;
+  --color-warning-bg: #FAF1DE;
+  --color-danger: #A6342E;
+  --color-danger-bg: #F7E6E4;
+  --color-info: #1D437D;
+  --color-info-bg: #F3F6FB;
 
-  --text-display: 3.5rem;
-  --text-display--line-height: 1.1;
-  --text-display--font-weight: 700;
-  --text-h1: 2.5rem;
-  --text-h1--line-height: 1.2;
-  --text-h1--font-weight: 700;
-  --text-h2: 2rem;
+  /*
+   * Alias de compatibilidad: las páginas heredadas de la migración a Tailwind 4
+   * usan la escala `primary-*` como el color de marca. La mapeamos a la escala
+   * navy nueva (offset +1 nivel: primary-500, el tono "base" que usan las páginas
+   * viejas para fondos/textos de marca, pasa a ser navy-600 = #1D437D, el navy
+   * oficial del logo; primary-600/700/800 son los tonos de hover/press más oscuros).
+   * Se van a ir retirando página por página a medida que se adopte el design system.
+   */
+  --color-primary-50: var(--color-navy-50);
+  --color-primary-100: var(--color-navy-100);
+  --color-primary-200: var(--color-navy-200);
+  --color-primary-300: var(--color-navy-300);
+  --color-primary-400: var(--color-navy-400);
+  --color-primary-500: var(--color-navy-600);
+  --color-primary-600: var(--color-navy-700);
+  --color-primary-700: var(--color-navy-800);
+  --color-primary-800: var(--color-navy-900);
+  --color-primary-900: var(--color-navy-900);
+  --color-primary-950: var(--color-navy-900);
+
+  /* ─── Tipografía ─── */
+  --font-display: 'Nunito', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-body: 'Nunito Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  /* Alias de compatibilidad: `font-sans`/`font-heading` de las páginas viejas. */
+  --font-sans: var(--font-body);
+  --font-heading: var(--font-display);
+
+  /* Escala tipográfica del design system (display 44px → caption 12px). */
+  --text-display: 2.75rem; /* 44px */
+  --text-display--line-height: 1.15;
+  --text-display--font-weight: 800;
+  --text-h1: 2.25rem; /* 36px */
+  --text-h1--line-height: 1.15;
+  --text-h1--font-weight: 800;
+  --text-h2: 1.75rem; /* 28px */
   --text-h2--line-height: 1.3;
-  --text-h2--font-weight: 600;
-  --text-h3: 1.5rem;
-  --text-h3--line-height: 1.4;
-  --text-h3--font-weight: 600;
-  --text-h4: 1.25rem;
-  --text-h4--line-height: 1.5;
-  --text-h4--font-weight: 600;
-  --text-body-lg: 1.125rem;
+  --text-h2--font-weight: 700;
+  --text-h3: 1.375rem; /* 22px */
+  --text-h3--line-height: 1.3;
+  --text-h3--font-weight: 700;
+  --text-h4: 1.125rem; /* 18px */
+  --text-h4--line-height: 1.3;
+  --text-h4--font-weight: 700;
+  --text-body-lg: 1.0625rem; /* 17px */
   --text-body-lg--line-height: 1.7;
-  --text-body: 1rem;
-  --text-body--line-height: 1.7;
-  --text-body-sm: 0.875rem;
-  --text-body-sm--line-height: 1.6;
+  --text-body: 0.9375rem; /* 15px */
+  --text-body--line-height: 1.55;
+  --text-body-sm: 0.8125rem; /* 13px */
+  --text-body-sm--line-height: 1.55;
+  --text-caption: 0.75rem; /* 12px */
+  --text-caption--line-height: 1.4;
 
+  /* ─── Sombras — dos niveles de elevación + lg, nunca de color ─── */
+  --shadow-sm: 0 1px 2px rgba(16, 27, 42, 0.06), 0 1px 1px rgba(16, 27, 42, 0.04);
+  --shadow-md: 0 4px 16px rgba(16, 27, 42, 0.10), 0 2px 4px rgba(16, 27, 42, 0.06);
+  --shadow-lg: 0 12px 32px rgba(16, 27, 42, 0.14);
+
+  /*
+   * Radios: el design system define xs=3px, sm=4px (inputs), md=8px (cards/botones),
+   * lg=12px (modales), pill=999px (badges). La escala por defecto de Tailwind 4 ya
+   * coincide: rounded-sm=4px, rounded-lg=8px, rounded-xl=12px — por eso NO se
+   * sobreescriben esas claves (evita romper el radio de botones/cards ya usados en
+   * las páginas viejas). Sólo se agregan los dos tokens que Tailwind no tiene.
+   */
+  --radius-xs: 3px;
+  --radius-pill: 999px;
+
+  /* ─── Motion — mínimo, sin bounces ─── */
+  --ease-out: cubic-bezier(0.2, 0.6, 0.2, 1);
+  --duration-fast: 120ms;
+  --duration-base: 200ms;
+  --duration-slow: 320ms;
+
+  /* ─── Compatibilidad de layout (Fase 2) ─── */
   --container-content: 1200px;
   --container-narrow: 800px;
   --container-wide: 1400px;
-
   --spacing-section: 5rem;
   --spacing-section-sm: 3rem;
 }
@@ -83,7 +140,7 @@
   ::before,
   ::backdrop,
   ::file-selector-button {
-    border-color: var(--color-gray-200, currentcolor);
+    border-color: var(--color-grey-200, currentcolor);
   }
 }
 
@@ -104,15 +161,27 @@
 }
 
 @layer base {
-  :root {
-    --font-inter: 'Inter', system-ui, -apple-system, sans-serif;
-  }
-
   html {
     scroll-behavior: smooth;
   }
 
   body {
-    @apply bg-white text-neutral-800 font-sans;
+    @apply bg-white text-ink font-sans antialiased;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-display);
+  }
+
+  a {
+    color: var(--color-navy-600);
+    text-decoration: none;
+    transition: color var(--duration-base) var(--ease-out);
+  }
+
+  a:hover {
+    color: var(--color-navy-700);
+    text-decoration: underline;
+    text-underline-offset: 2px;
   }
 }
