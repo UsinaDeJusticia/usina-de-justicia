@@ -1,44 +1,42 @@
 # ESTADO DEL PROYECTO — Rebuild Web Usina de Justicia
-**Última actualización:** 11 de julio de 2026 · **Sesión:** Modernización + Fase 1 (Claude Code remoto, Fable 5 orquestador)
+**Última actualización:** 13 de julio de 2026 · **Sesión:** Modernización + Fases 1 y 2 (Claude Code remoto, Fable 5 orquestador)
 
 > Este archivo reemplaza a `PROYECTO-CONTEXTO.md` como fuente de verdad del estado del proyecto. Los documentos vinculantes son `docs/plan-maestro-usina-web.md` (decisiones D1–D9) y `docs/AUDITORIA-fase0.md` (gate G0 aprobado: reutilizar + modernizar).
 
 ---
 
-## Estado actual (fin de sesión 10-11 jul)
+## Estado actual (13-jul-2026)
 
-**La modernización está EN PRODUCCIÓN.** Emanuel mergeó el PR #1 a `master` y conectó el repo a Vercel (proyecto `usina-de-justicia`). El sitio corre en https://usina-de-justicia.vercel.app con el stack nuevo.
+**Modernización EN PRODUCCIÓN** (PR #1 mergeado; Vercel conectado; https://usina-de-justicia.vercel.app con pnpm 11 + Next 15.5 + React 19 + Tailwind 4).
 
-**El gate G1 está APROBADO (11-jul-2026).** Fase 1 cerrada: inventario en vivo completo, mapa de migración v1.1 final con todas las decisiones editoriales tomadas por Emanuel (ver `docs/MAPA-MIGRACION.md` §Decisiones y `docs/inventario/COLA-LARGA-decisiones.md`). Distribución final: prensa 404 · incidencia 129 · historias 127 · acompanamiento 121 · institucional 33 · observatorio 8 · IVUJUS→301 19. **Se puede arrancar Fase 2.**
+**Gate G1 ✅ APROBADO** (11-jul): mapa 16→6 final con todas las decisiones editoriales en `docs/MAPA-MIGRACION.md` + `docs/inventario/COLA-LARGA-decisiones.md`.
 
-## Qué se hizo
+**Gate G2 ✅ APROBADO Y EJECUTADO** (13-jul): reasignación de categorías corrida contra el WordPress de producción — **696/696 posts modificados, 0 errores**. Verificado en vivo: historias 127 · acompanamiento 121 · incidencia 129 · prensa 404 · observatorio 8 · institucional 34 (+1 por diseño: post 8926 conserva ambas categorías hasta el cutover). Estrategia ADITIVA: ninguna categoría vieja se quitó; el sitio Elementor actual no muestra ningún cambio visible (verificado). Los 19 posts IVUJUS quedaron intactos. Rollback posible: `docs/inventario/reasignacion-log.json` guarda el estado previo de cada post.
 
-### Modernización (mergeada a master vía PR #1) ✅
-| Cambio | Detalle |
-|---|---|
-| npm → **pnpm 11.11.0** | `pnpm-workspace.yaml` con `minimumReleaseAge: 10080` (7 días); solo `sharp` y `unrs-resolver` aprobados como build scripts |
-| Next 14.2 → **15.5.20** + React **19.2.7** | Codemod async-request-api (solo `programas/[slug]` lo necesitó); `wordpress.ts` intacto con `revalidate: 300` |
-| Tailwind 3.4 → **4.3.2** CSS-first | `tailwind.config.ts` eliminado, tokens en `@theme` de `globals.css`; solo paridad funcional |
+## Infraestructura de agentes sobre WordPress (Fase 2)
+- **Plugin `usina-headless` v0.3.0 activo** (`wp-plugin/` en el repo, se sube como zip por wp-admin): re-habilita Application Passwords (un plugin las tenía apagadas), corrige el pasaje del header Authorization a PHP (regla .htaccess + populate de PHP_AUTH en FastCGI/LSAPI), deshabilita XML-RPC, y expone `/wp-json/usina-headless/v1/status` con autodiagnóstico del pipeline de autenticación.
+- **Usuario `agente-migracion` (rol editor)** con Application Password activa; credenciales en variables de entorno del entorno remoto (`WP_APP_USER`/`WP_APP_PASSWORD`), nunca en repo/chat. Revocar al terminar la migración.
+- **SSH de Hostinger habilitado** pero inutilizable desde el entorno remoto (la red solo permite HTTPS); queda para sesiones locales. Todo lo de Fase 2 se hizo por REST API.
+- Backup completo previo verificado: `.wpress` ~2 GB (archivos + DB) en PC de Emanuel + copia en Drive.
 
-**Verificado en producción (Vercel):** build verde con el stack nuevo; smoke test OK con contenido real de WP: `/`, `/blog` (posts reales), `/blog/jesus-buffarini`, `/blog/categoria/historias`, `/contacto`.
-
-### Fase 1 — Inventario completo en vivo ✅
-- Emanuel agregó `usinadejusticia.org.ar` al network allowlist del entorno remoto → la extracción corrió completa el 11-jul.
-- `scripts/inventario.mjs` (ahora proxy-aware vía `undici` para entornos sandboxeados) exportó a `docs/inventario/`: **841 posts** (+16 desde marzo), **20 páginas**, **1.230 media** (114 PDF, 64 MP4), 16 categorías, 37 tags.
-- Flags detectados: 43 posts con .mp4 propio (56 archivos únicos), 150 con YouTube, 71 con PDF, 37 con patrón IVUJUS.
-- `docs/MAPA-MIGRACION.md` **v1.0** con datos reales + `docs/inventario/ANEXO-listas.md` con las listas post-por-post (77 cola larga, 37 IVUJUS, 43 con video).
+## Fixes de frontend (13-jul, en rama)
+- `/blog` ya no da 500 si la WP API falla (try/catch + estado vacío).
+- `/contacto` con metadata propia (title/description; corregida duplicación del sufijo del sitio).
+- Nuevo `POST /api/revalidate` (secret vía `REVALIDATE_SECRET`, revalida paths) — contraparte lista para el webhook del plugin.
 
 ## Decisiones tomadas
 1. Next fijado en **15.5.20** (el plan especifica 15.x; existe Next 16.2 — evaluar post-lanzamiento).
 2. `minimumReleaseAge: 10080` (7 días) como política supply-chain.
-3. Diseño visual actual intacto (paridad) — se reemplaza cuando llegue el de Claude Design.
-4. Regla de dedup para posts multi-categoría (63 casos): gana la categoría más específica (historias > acompanamiento > incidencia > prensa > institucional).
+3. Diseño visual actual intacto — se reemplaza en Fase 3 con el de Claude Design (Emanuel ya tiene una versión).
+4. Regla de dedup multi-categoría: historias > acompanamiento > incidencia > prensa > institucional.
+5. Categorías nuevas en WP: acompanamiento id 253 · incidencia 254 · prensa 255 · observatorio 256 · historias 211 (reusada) · institucional 6 (reusada).
 
 ## Pendientes
-1. ~~Gate G1~~ ✅ APROBADO 11-jul con todas las decisiones editoriales registradas en MAPA-MIGRACION.md.
-2. Deuda técnica menor para Fase 3: try/catch en `src/app/blog/page.tsx` (hoy 500 si la WP API falla); metadata propia en `/contacto` (usa el título genérico del sitio); migrar de `next lint` a ESLint CLI antes de Next 16.
-3. (Solo para trabajo local en Windows) reparar npm/corepack con `prompt-reparar-npm.md`.
-4. Borrar `PROYECTO-CONTEXTO.md` en Fase 3 (obsoleto; el inventario en vivo lo reemplaza).
+1. **Fase 2, restos:** CPT Documentos + webhook de revalidación en el plugin (v0.4) — conviene junto con `/recursos` en Fase 3. Forzar HTTPS/verificaciones de higiene ya cubiertas en lo esencial (XML-RPC off).
+2. **Fase 3 (siguiente):** diseño de Claude Design → tokens en `@theme` + componentes; árbol de rutas nuevo (`/noticias`, `/necesito-ayuda` ★, `/nosotros`, `/acompanamiento`, `/observatorio`, `/recursos`, `/en`); actualizar `CATEGORY_MAP` a las 6 categorías definitivas (IDs arriba); migrar contenido de páginas según MAPA-MIGRACION §4.
+3. Deuda menor: migrar de `next lint` a ESLint CLI antes de Next 16; borrar `PROYECTO-CONTEXTO.md` en Fase 3.
+4. Post-cutover (Fase 5): limpiar categorías viejas de los posts (log de reasignación como referencia), redirects 301 (IVUJUS + URLs viejas), revocar credenciales de agente.
+5. (Solo trabajo local en Windows) reparar npm/corepack con `prompt-reparar-npm.md`.
 
 ## Próximo paso exacto
-1. **Fase 2** (requiere credenciales de Emanuel: Application Password WP, SSH/token Hostinger — nunca en el repo): backup completo de WP como primer comando, plugin usina-headless, reasignación 16→6 con dry-run + gate G2. El mapa aprobado y COLA-LARGA-decisiones.md son el input directo del script de reasignación.
+**Arrancar Fase 3:** Emanuel comparte el diseño de Claude Design (link o export) → extracción de tokens (D8: navy #1E427C, gris #A7A8AC, blanco; nunca violeta) → construcción por prioridad: `/necesito-ayuda` → Home → `/noticias` (6 categorías nuevas + detalle) → resto del árbol. Rama con preview de Vercel por sección; gate G3 = navegación completa con contenido real verificada en móvil.
