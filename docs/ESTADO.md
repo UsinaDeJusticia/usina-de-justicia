@@ -1,50 +1,71 @@
 # ESTADO DEL PROYECTO — Rebuild Web Usina de Justicia
-**Última actualización:** 13 de julio de 2026 · **Sesión:** Modernización + Fases 1 y 2 (Claude Code remoto, Fable 5 orquestador)
+**Última actualización:** 14 de julio de 2026 · **Sesión:** Modernización + Fases 1, 2 y 3 (Claude Code remoto, orquestador Sonnet 5)
 
 > Este archivo reemplaza a `PROYECTO-CONTEXTO.md` como fuente de verdad del estado del proyecto. Los documentos vinculantes son `docs/plan-maestro-usina-web.md` (decisiones D1–D9) y `docs/AUDITORIA-fase0.md` (gate G0 aprobado: reutilizar + modernizar).
 
 ---
 
-## Estado actual (13-jul-2026)
+## Estado actual (14-jul-2026)
 
 **Modernización EN PRODUCCIÓN** (PR #1 mergeado; Vercel conectado; https://usina-de-justicia.vercel.app con pnpm 11 + Next 15.5 + React 19 + Tailwind 4).
 
 **Gate G1 ✅ APROBADO** (11-jul): mapa 16→6 final con todas las decisiones editoriales en `docs/MAPA-MIGRACION.md` + `docs/inventario/COLA-LARGA-decisiones.md`.
 
-**Gate G2 ✅ APROBADO Y EJECUTADO** (13-jul): reasignación de categorías corrida contra el WordPress de producción — **696/696 posts modificados, 0 errores**. Verificado en vivo: historias 127 · acompanamiento 121 · incidencia 129 · prensa 404 · observatorio 8 · institucional 34 (+1 por diseño: post 8926 conserva ambas categorías hasta el cutover). Estrategia ADITIVA: ninguna categoría vieja se quitó; el sitio Elementor actual no muestra ningún cambio visible (verificado). Los 19 posts IVUJUS quedaron intactos. Rollback posible: `docs/inventario/reasignacion-log.json` guarda el estado previo de cada post.
+**Gate G2 ✅ APROBADO Y EJECUTADO** (13-jul): reasignación de categorías corrida contra el WordPress de producción — 696/696 posts modificados, 0 errores. Estrategia ADITIVA: ninguna categoría vieja se quitó; el sitio Elementor actual no muestra ningún cambio visible. Los 19 posts IVUJUS quedaron intactos. Rollback posible vía `docs/inventario/reasignacion-log.json`.
+
+**Fase 3 (rediseño completo) ✅ TODAS LAS OLAS PUSHEADAS (13-14 jul).** Todo el árbol de navegación quedó en el diseño nuevo. **Pendiente: gate G3 — revisión completa de Emanuel en el teléfono** sobre el preview de la rama.
+
+## Árbol de navegación — estado final de la Fase 3
+
+| Ruta | Estado | Fuente de contenido |
+|---|---|---|
+| `/` (Home) | ✅ Rediseñada | Hero rotador 3 variantes + secciones institucionales + último post real de WP |
+| `/necesito-ayuda` ★ | ✅ Nueva | Copy 100% trazado a fuente real (ver `docs/COPY-necesito-ayuda.md`) — **pendiente que Emanuel la lea antes del launch** |
+| `/noticias` (ex `/blog`) | ✅ Renombrada + rediseñada | 841 posts reales, 6 categorías definitivas de WP (redirect 308 desde `/blog*`) |
+| `/nosotros` (ex `/sobre-nosotros`) | ✅ Renombrada + rediseñada + fusionada | WP 94 (historia/valores) + distinciones reales (extraídas de dentro de la propia página, ver hallazgo abajo) + agradecimientos (sección) + transparencia (PDFs reales) |
+| `/acompanamiento` | ✅ Nueva (reemplaza `/programas`, que era 100% placeholder inventado) | WP 103 + 44, distinta de `/necesito-ayuda` (institucional vs. urgente) |
+| `/observatorio` | ✅ Nueva | 8 posts reales de la categoría + link a Mapa del Delito (`mapa-delito-usina.vercel.app`, sin dominio propio aún) |
+| `/recursos` | ✅ Reescrita con datos reales | 88 documentos reales (71 posts con PDF) del inventario — v1 sin CPT, ver pendiente abajo |
+| `/donar`, `/legal/privacidad`, `/legal/terminos` | ✅ Restyle puro | Contenido intacto (bancarios, MercadoPago, Ley 25.326) |
+| `/contacto` | ✅ Restyle puro | Formulario sigue con submit simulado — ver pendiente abajo |
+| `/en` | ✅ Nueva, v1 mínima | Solo hechos ya verificados en español (fundación 2014, misión, contacto) — marcada en código como pendiente del contenido real de la presentación OEA (decisión D5) |
+
+**Componente nuevo reusable:** `src/components/documentos/DocumentCard.tsx`, extraído del patrón maduro de `/nosotros/transparencia` y reusado en `/recursos`.
+
+## Hallazgos de esta sesión (para tener en cuenta)
+1. **La página WP "Distinciones" (id 20992) es basura**: plantilla de Elementor sin publicar con contenido de relleno en inglés de un SaaS de reclutamiento, cero contenido real de Usina. Se descartó como fuente; las distinciones reales (Laurel de Plata, Socia Honoraria, Premio Defensor de la República, etc.) estaban dentro de la propia página "Nosotros" y de ahí se migraron.
+2. **`/nosotros/equipo` sigue con datos de placeholder** — no existe ningún roster real del equipo en ninguna fuente. **Necesito que Emanuel pase nombres, roles y fotos del equipo** para completar esta página antes del lanzamiento.
+3. **`/programas` era contenido 100% inventado** (4 "programas" hardcodeados sin conexión a WP) — se retiró del árbol y se reemplazó por `/acompanamiento`, con redirect 308.
+4. Los PDFs de las memorias en `/nosotros/transparencia` estaban desactualizados (URLs de 2022/2023 muertas); se corrigieron a las URLs reales vigentes y se agregaron 2024/2025. El botón de "Año 2026" queda deshabilitado ("Próximamente") porque WordPress mismo no tiene el archivo todavía.
 
 ## Infraestructura de agentes sobre WordPress (Fase 2)
-- **Plugin `usina-headless` v0.3.0 activo** (`wp-plugin/` en el repo, se sube como zip por wp-admin): re-habilita Application Passwords (un plugin las tenía apagadas), corrige el pasaje del header Authorization a PHP (regla .htaccess + populate de PHP_AUTH en FastCGI/LSAPI), deshabilita XML-RPC, y expone `/wp-json/usina-headless/v1/status` con autodiagnóstico del pipeline de autenticación.
-- **Usuario `agente-migracion` (rol editor)** con Application Password activa; credenciales en variables de entorno del entorno remoto (`WP_APP_USER`/`WP_APP_PASSWORD`), nunca en repo/chat. Revocar al terminar la migración.
-- **SSH de Hostinger habilitado** pero inutilizable desde el entorno remoto (la red solo permite HTTPS); queda para sesiones locales. Todo lo de Fase 2 se hizo por REST API.
-- Backup completo previo verificado: `.wpress` ~2 GB (archivos + DB) en PC de Emanuel + copia en Drive.
-
-## Fixes de frontend (13-jul, en rama)
-- `/blog` ya no da 500 si la WP API falla (try/catch + estado vacío).
-- `/contacto` con metadata propia (title/description; corregida duplicación del sufijo del sitio).
-- Nuevo `POST /api/revalidate` (secret vía `REVALIDATE_SECRET`, revalida paths) — contraparte lista para el webhook del plugin.
+- Plugin `usina-headless` v0.3.0 activo (`wp-plugin/`): re-habilita Application Passwords, corrige el pasaje del header Authorization a PHP, deshabilita XML-RPC, expone `/wp-json/usina-headless/v1/status`.
+- Usuario `agente-migracion` (rol editor) con Application Password activa; credenciales en variables de entorno del entorno remoto. Revocar al terminar la migración.
+- SSH de Hostinger habilitado pero inutilizable desde el entorno remoto (solo HTTPS); queda para sesiones locales.
+- Backup completo previo verificado: `.wpress` ~2 GB en PC de Emanuel + copia en Drive.
 
 ## Decisiones tomadas
-1. Next fijado en **15.5.20** (el plan especifica 15.x; existe Next 16.2 — evaluar post-lanzamiento).
+1. Next fijado en 15.5.20 (existe Next 16.2 — evaluar post-lanzamiento).
 2. `minimumReleaseAge: 10080` (7 días) como política supply-chain.
-3. Diseño visual actual intacto — se reemplaza en Fase 3 con el de Claude Design (Emanuel ya tiene una versión).
-4. Regla de dedup multi-categoría: historias > acompanamiento > incidencia > prensa > institucional.
-5. Categorías nuevas en WP: acompanamiento id 253 · incidencia 254 · prensa 255 · observatorio 256 · historias 211 (reusada) · institucional 6 (reusada).
+3. Categorías nuevas en WP: acompanamiento id 253 · incidencia 254 · prensa 255 · observatorio 256 · historias 211 (reusada) · institucional 6 (reusada).
+4. Hero de Home: rotador con las 3 variantes, densidad amplia, retratos SÍ (placeholder digno hasta tener consentimientos), acento ámbar SÍ.
+5. Formulario de `/contacto`: se mantiene simulado en esta ola (decisión explícita) — conectar un envío real requiere elegir un servicio de email (Resend/SendGrid/etc.) y su API key, pendiente para Emanuel.
+6. `/en`: v1 mínima con hechos verificados, sin esperar el contenido real de la OEA (decisión explícita).
+7. Orquestación: planificación/verificación en el hilo principal, ejecución delegada a agentes `general-purpose` con `model: sonnet` (política pedida por Emanuel); tareas mecánicas de solo lectura pueden bajar a `haiku`.
 
 ## Pendientes
-1. **Fase 2, restos:** CPT Documentos + webhook de revalidación en el plugin (v0.4) — conviene junto con `/recursos` en Fase 3. Forzar HTTPS/verificaciones de higiene ya cubiertas en lo esencial (XML-RPC off).
-2. **Fase 3 (siguiente):** diseño de Claude Design → tokens en `@theme` + componentes; árbol de rutas nuevo (`/noticias`, `/necesito-ayuda` ★, `/nosotros`, `/acompanamiento`, `/observatorio`, `/recursos`, `/en`); actualizar `CATEGORY_MAP` a las 6 categorías definitivas (IDs arriba); migrar contenido de páginas según MAPA-MIGRACION §4.
-3. Deuda menor: migrar de `next lint` a ESLint CLI antes de Next 16; borrar `PROYECTO-CONTEXTO.md` en Fase 3.
-4. Post-cutover (Fase 5): limpiar categorías viejas de los posts (log de reasignación como referencia), redirects 301 (IVUJUS + URLs viejas), revocar credenciales de agente.
-5. (Solo trabajo local en Windows) reparar npm/corepack con `prompt-reparar-npm.md`.
-
-## Fase 3 — EN CURSO (13-jul)
-- **Fundación aplicada:** tokens del design system en `@theme` (navy #1D437D, grises, ámbar solo AA, alias de compat para páginas viejas), Nunito/Nunito Sans vía next/font, logos oficiales, `src/components/ui/{Button,Badge}.tsx`. Design system completo versionado en `design-system/` (referencia vinculante: su README).
-- **Header + Footer + Home nuevos en preview:** hero rotador con las 3 variantes (crossfade 320ms, autoplay 9s, pausa en hover/foco, accesible, estático con prefers-reduced-motion), QueHacer, Pillars, Observatorio, Testimonios, Trayectoria, DonarCTA único. HeroEditorial conecta con el último post real de WP. Decisiones de Emanuel: rotador de 3 heroes · densidad amplia · retratos SÍ (pendiente: consentimientos de familias antes del launch; por ahora placeholder digno con iniciales) · acento ámbar SÍ.
-- Preview de la rama: https://usina-de-justicia-git-claude-usi-22815a-ejairsud-3412s-projects.vercel.app
-- **Gate G3 parcial (Home) pendiente:** revisión de Emanuel en móvil.
+1. **Gate G3 (Emanuel): revisar el preview completo en el teléfono** — es lo único que falta para cerrar la Fase 3. Preview: https://usina-de-justicia-git-claude-usi-22815a-ejairsud-3412s-projects.vercel.app
+2. **Contenido real que necesito de Emanuel:**
+   - Nombres/roles/fotos del equipo para `/nosotros/equipo`.
+   - Consentimientos de las familias para reemplazar los placeholders de retratos en Testimonios (Home).
+   - Material real de la presentación ante la OEA para completar `/en`.
+   - Decisión sobre el envío real de `/contacto` (servicio de email + API key).
+3. **Fase 2, resto:** CPT "Documentos" + webhook de revalidación en el plugin (v0.4) — cuando esté, `/recursos` deja de ser v1 basada en el inventario estático.
+4. Deuda menor: migrar de `next lint` a ESLint CLI antes de Next 16; borrar `PROYECTO-CONTEXTO.md`.
+5. Post-cutover (Fase 5): limpiar categorías viejas de los posts, redirects 301 finales (IVUJUS + URLs viejas), revocar credenciales de agente.
+6. (Solo trabajo local en Windows) reparar npm/corepack con `prompt-reparar-npm.md`.
 
 ## Próximo paso exacto
-1. Emanuel revisa el preview de la Home en el teléfono (gate G3 parcial) y da feedback.
-2. Siguientes páginas por prioridad del plan: `/necesito-ayuda` (nueva, FAQPage) → `/noticias` con las 6 categorías nuevas (renombre de /blog + CATEGORY_MAP definitivo) → `/nosotros` → resto del árbol.
-3.  Emanuel comparte el diseño de Claude Design (link o export) → extracción de tokens (D8: navy #1E427C, gris #A7A8AC, blanco; nunca violeta) → construcción por prioridad: `/necesito-ayuda` → Home → `/noticias` (6 categorías nuevas + detalle) → resto del árbol. Rama con preview de Vercel por sección; gate G3 = navegación completa con contenido real verificada en móvil.
+1. Emanuel revisa el preview completo (todas las páginas del árbol nuevo) en el teléfono — gate G3.
+2. Con G3 aprobado y el contenido pendiente del punto 2 (equipo, retratos, OEA) resuelto → Fase 4: SEO/GEO (JSON-LD, sitemap, redirects finales, hreflang ya preparado para `/en`).
+3. Abrir PR de esta rama a `master` cuando Emanuel lo indique (todas las olas de Fase 3 están pusheadas y con build verde).
