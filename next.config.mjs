@@ -47,9 +47,18 @@ const nextConfig = {
       { source: '/prensa', destination: '/noticias/categoria/prensa', permanent: true },
       { source: '/novedades', destination: '/noticias', permanent: true },
 
-      // === PROGRAMAS ===
-      { source: '/areas', destination: '/programas', permanent: true },
-      { source: '/areas-de-trabajo', destination: '/programas', permanent: true },
+      // === PROGRAMAS → ACOMPAÑAMIENTO ===
+      // `/programas` era un placeholder hardcodeado sin contenido real (ver
+      // docs/MAPA-MIGRACION.md §4: página WP 213 "no se migra, la estructura
+      // desaparece"). El árbol nuevo la reemplaza por /acompanamiento. Las 4
+      // rutas hijas viejas (asistencia-a-victimas, reformas-legislativas,
+      // capacitacion-y-formacion, litigio-estrategico) tampoco correspondían
+      // a contenido real — son hipótesis sin datos de tráfico, así que no se
+      // arman redirects específicos por slug; el wildcard alcanza.
+      { source: '/programas', destination: '/acompanamiento', permanent: true },
+      { source: '/programas/:slug*', destination: '/acompanamiento', permanent: true },
+      { source: '/areas', destination: '/acompanamiento', permanent: true },
+      { source: '/areas-de-trabajo', destination: '/acompanamiento', permanent: true },
 
       // === RECURSOS ===
       { source: '/publicaciones', destination: '/recursos', permanent: true },
