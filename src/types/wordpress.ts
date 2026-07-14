@@ -129,35 +129,44 @@ export interface PaginatedResponse<T> {
 // ============================================
 // MAPEO: Categorías WP → Secciones del nuevo sitio
 // ============================================
+//
+// Fase 2 (ya ejecutada en producción de WP): los 841 posts fueron
+// reasignados a 6 categorías NUEVAS y definitivas, creadas directamente en
+// WP con estos slugs: historias (id 211), acompanamiento (id 253),
+// incidencia (id 254), prensa (id 255), institucional (id 6), observatorio
+// (id 256). Cada post ya tiene asignada su categoría nueva por slug, así
+// que el mapeo correcto es identidad: el frontend consulta estas 6
+// categorías directamente, sin indirección. Ver docs/MAPA-MIGRACION.md §1.
 
 export const CATEGORY_MAP: Record<string, string | null> = {
-  // → HISTORIAS (casos de víctimas)
+  'historias': 'historias',
+  'acompanamiento': 'acompanamiento',
+  'incidencia': 'incidencia',
+  'prensa': 'prensa',
+  'institucional': 'institucional',
+  'observatorio': 'observatorio',
+}
+
+// Referencia histórica únicamente (Fase 1/2): el mapeo viejo de las 16
+// categorías originales de WP a una taxonomía intermedia de 6 secciones
+// (historias/medios/incidencia/actividades/institucional/informativo).
+// Ya no lo usa el frontend — queda documentado para la limpieza de
+// categorías legacy en Fase 5 (ver docs/MAPA-MIGRACION.md §1).
+export const LEGACY_CATEGORY_MAP: Record<string, string | null> = {
   'historias': 'historias',
   'acompanamiento-a-victimas-de-homicidio': 'historias',
-
-  // → MEDIOS
   'medios-y-entrevistas': 'medios',
-
-  // → INCIDENCIA
   'incidencia-en-politicas-publicas': 'incidencia',
   'debatesyconferencias': 'incidencia',
-
-  // → ACTIVIDADES
   'actividades': 'actividades',
   'eventos': 'actividades',
   'capacitacion': 'actividades',
-
-  // → INSTITUCIONAL
   'institucional': 'institucional',
   'distinciones-premios': 'institucional',
   'historias-de-los-miembros-de-uj': 'institucional',
   'publicaciones': 'institucional',
-
-  // → INFORMATIVO
   'boletin-informativo': 'informativo',
   'estadisticas': 'informativo',
-
-  // → IGNORAR
   'ig-publicaciones': null,
   'otras': null,
 }
@@ -168,34 +177,34 @@ export const SITE_SECTIONS: Record<string, {
   description: string
 }> = {
   historias: {
-    title: 'Historias de las familias',
+    title: 'Historias',
     slug: 'historias',
-    description: 'Las historias de las familias que acompañamos en su búsqueda de justicia',
+    description: 'Historias de las familias que acompañamos',
   },
-  medios: {
-    title: 'Medios y Entrevistas',
-    slug: 'medios',
-    description: 'Cobertura mediática y entrevistas a miembros de Usina de Justicia',
+  acompanamiento: {
+    title: 'Acompañamiento',
+    slug: 'acompanamiento',
+    description: 'Acompañamiento a víctimas de homicidio y femicidio',
   },
   incidencia: {
-    title: 'Incidencia en Políticas Públicas',
+    title: 'Incidencia',
     slug: 'incidencia',
-    description: 'Nuestra participación en debates, conferencias y políticas públicas',
+    description: 'Incidencia en políticas públicas y reforma penal',
   },
-  actividades: {
-    title: 'Actividades',
-    slug: 'actividades',
-    description: 'Eventos, cursos, capacitaciones y actividades de la asociación',
+  prensa: {
+    title: 'Prensa',
+    slug: 'prensa',
+    description: 'Medios y entrevistas a miembros de Usina de Justicia',
   },
   institucional: {
     title: 'Institucional',
     slug: 'institucional',
-    description: 'Información institucional, distinciones y publicaciones',
+    description: 'Distinciones, premios y comunicados institucionales',
   },
-  informativo: {
-    title: 'Informativo',
-    slug: 'informativo',
-    description: 'Boletines informativos, informes y estadísticas',
+  observatorio: {
+    title: 'Observatorio',
+    slug: 'observatorio',
+    description: 'Informes, publicaciones y datos',
   },
 }
 

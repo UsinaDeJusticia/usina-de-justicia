@@ -213,7 +213,11 @@ async function getCategoriasMap(): Promise<Map<number, Categoria>> {
   return new Map(data.map((cat) => [cat.id, wpCategoryToCategoria(cat)]))
 }
 
-// Obtener IDs de categorías WP que corresponden a una sección del sitio
+// Obtener IDs de categorías WP que corresponden a una sección del sitio.
+// Desde Fase 3, CATEGORY_MAP es identidad sobre las 6 categorías nuevas de
+// WP (historias/acompanamiento/incidencia/prensa/institucional/observatorio),
+// así que alcanza con matchear el slug de la sección directamente contra
+// las categorías reales — sin indirección.
 async function getCategoryIdsBySection(
   section: SiteSection
 ): Promise<number[]> {
