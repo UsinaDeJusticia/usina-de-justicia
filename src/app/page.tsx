@@ -13,6 +13,8 @@ export const metadata = generatePageMetadata({
   description:
     'Usina de Justicia es una asociación civil que defiende los derechos de las víctimas de homicidio y femicidio en Argentina. Acompañamos familias, promovemos reformas legislativas y trabajamos por una justicia con perspectiva de víctima.',
   path: '/',
+  // hreflang recíproco con la landing /en (v1 mínima, ver src/app/en/page.tsx).
+  languages: { en: '/en' },
 })
 
 export default async function Home() {

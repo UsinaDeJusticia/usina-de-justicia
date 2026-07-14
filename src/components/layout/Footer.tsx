@@ -93,6 +93,14 @@ export function Footer() {
               className={cnFocus('text-grey-600 hover:text-navy-700 rounded-xs')}
             >
               Términos de Uso
+            </Link>{' '}
+            ·{' '}
+            <Link
+              href="/en"
+              lang="en"
+              className={cnFocus('text-grey-600 hover:text-navy-700 rounded-xs')}
+            >
+              English
             </Link>
           </div>
 

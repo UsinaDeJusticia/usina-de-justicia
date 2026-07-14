@@ -12,6 +12,8 @@ interface PageSEO {
   path: string
   ogImage?: string
   noIndex?: boolean
+  /** hreflang recíproco, ej. { en: '/en' } en la Home apuntando a la landing en inglés. */
+  languages?: Record<string, string>
 }
 
 export function generatePageMetadata({
@@ -20,6 +22,7 @@ export function generatePageMetadata({
   path,
   ogImage,
   noIndex = false,
+  languages,
 }: PageSEO): Metadata {
   const url = `${siteConfig.url}${path}`
   const image = ogImage || siteConfig.ogImage
@@ -29,6 +32,7 @@ export function generatePageMetadata({
     description,
     alternates: {
       canonical: url,
+      ...(languages ? { languages } : {}),
     },
     openGraph: {
       title: `${title} — ${siteConfig.name}`,
