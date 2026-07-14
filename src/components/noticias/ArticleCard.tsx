@@ -2,6 +2,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { Calendar, ArrowRight } from 'lucide-react'
 import { formatDate } from '@/lib/utils'
+import { Badge } from '@/components/ui/Badge'
 import type { Articulo } from '@/types'
 
 interface ArticleCardProps {
@@ -10,44 +11,46 @@ interface ArticleCardProps {
 
 export function ArticleCard({ articulo }: ArticleCardProps) {
   return (
-    <article className="group bg-white border border-neutral-200 rounded-xl overflow-hidden hover:shadow-lg transition-all">
-      <div className="aspect-video bg-neutral-100 relative overflow-hidden">
-        {articulo.imagenDestacada ? (
-          <Image
-            src={articulo.imagenDestacada.url}
-            alt={articulo.imagenDestacada.alt}
-            fill
-            sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
-            className="object-cover group-hover:scale-105 transition-transform duration-300"
-          />
-        ) : (
-          <div className="w-full h-full flex items-center justify-center bg-primary-500/5">
-            <span className="text-h2 text-primary-500/20 font-bold">UJ</span>
-          </div>
-        )}
-      </div>
+    <article className="group bg-white border border-grey-200 rounded-xs overflow-hidden hover:shadow-md transition-shadow duration-base ease-out">
+      <Link href={`/noticias/${articulo.slug}`} className="block" tabIndex={-1}>
+        <div className="aspect-video bg-navy-50 relative overflow-hidden">
+          {articulo.imagenDestacada ? (
+            <Image
+              src={articulo.imagenDestacada.url}
+              alt={articulo.imagenDestacada.alt}
+              fill
+              sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+              className="object-cover group-hover:scale-105 transition-transform duration-slow ease-out"
+            />
+          ) : (
+            <div className="w-full h-full flex items-center justify-center">
+              <span className="font-display text-h1 text-navy-200 font-extrabold">UJ</span>
+            </div>
+          )}
+        </div>
+      </Link>
       <div className="p-6">
         <div className="flex items-center gap-3 mb-3">
-          <span className="px-2.5 py-1 rounded-full bg-primary-500/10 text-primary-500 text-body-sm font-medium">
-            {articulo.categoria.nombre}
-          </span>
-          <span className="flex items-center gap-1 text-body-sm text-neutral-400">
-            <Calendar className="w-3.5 h-3.5" />
+          <Badge tone="navy">{articulo.categoria.nombre}</Badge>
+          <span className="flex items-center gap-1 text-caption text-grey-500">
+            <Calendar className="w-3.5 h-3.5" aria-hidden="true" />
             {formatDate(articulo.fechaPublicacion)}
           </span>
         </div>
-        <h2 className="text-h4 text-neutral-900 group-hover:text-primary-500 transition-colors line-clamp-2">
-          <Link href={`/noticias/${articulo.slug}`}>{articulo.titulo}</Link>
-        </h2>
-        <p className="text-body-sm text-neutral-600 mt-2 line-clamp-3">
+        <h3 className="font-display font-bold text-h4 text-ink group-hover:text-navy-600 transition-colors duration-base ease-out line-clamp-2">
+          <Link href={`/noticias/${articulo.slug}`} className="no-underline hover:no-underline text-ink hover:text-navy-600">
+            {articulo.titulo}
+          </Link>
+        </h3>
+        <p className="text-body-sm text-grey-700 mt-2 line-clamp-3">
           {articulo.extracto}
         </p>
         <Link
           href={`/noticias/${articulo.slug}`}
-          className="inline-flex items-center gap-1 text-body-sm font-medium text-primary-500 mt-4"
+          className="inline-flex items-center gap-1 text-body-sm font-bold text-navy-600 no-underline hover:underline mt-4"
         >
           Leer más
-          <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+          <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform duration-base ease-out" aria-hidden="true" />
         </Link>
       </div>
     </article>

@@ -3,14 +3,17 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { notFound } from 'next/navigation'
 import { Breadcrumbs } from '@/components/layout/Breadcrumbs'
-import { Calendar, User, Clock, ArrowLeft, Tag } from 'lucide-react'
+import { Calendar, User, Clock, ArrowLeft, Tag as TagIcon } from 'lucide-react'
 import { formatDate } from '@/lib/utils'
+import { Badge } from '@/components/ui/Badge'
+import { ArticleCard } from '@/components/noticias/ArticleCard'
 import {
   getArticuloBySlug,
   getArticulos,
   cleanWPContent,
   estimateReadTime,
   extractFirstImage,
+  extractVideos,
 } from '@/lib/wordpress'
 
 // ============================================
@@ -78,6 +81,7 @@ export default async function NoticiaArticlePage({ params }: SlugPageProps) {
 
   const readTime = estimateReadTime(articulo.contenido)
   const cleanContent = cleanWPContent(articulo.contenido)
+  const videos = extractVideos(articulo.contenido)
 
   // Imagen: featured o la primera del contenido
   const heroImage =
@@ -97,7 +101,7 @@ export default async function NoticiaArticlePage({ params }: SlugPageProps) {
 
   return (
     <>
-      <div className="max-w-content mx-auto px-4">
+      <div className="max-w-content mx-auto px-4 md:px-10">
         <Breadcrumbs
           items={[
             { label: 'Noticias', href: '/noticias' },
@@ -110,34 +114,34 @@ export default async function NoticiaArticlePage({ params }: SlugPageProps) {
         />
       </div>
 
-      <article className="py-section">
+      <article className="py-16 md:py-20">
         <div className="max-w-narrow mx-auto px-4">
           {/* Header del artículo */}
           <header className="mb-8">
             {/* Categoría */}
             <Link
               href={`/noticias/categoria/${articulo.categoria.slug}`}
-              className="inline-block px-3 py-1 rounded-full bg-primary-500/10 text-primary-500 text-body-sm font-medium mb-4 hover:bg-primary-500/20 transition-colors"
+              className="inline-block no-underline hover:no-underline mb-4"
             >
-              {articulo.categoria.nombre}
+              <Badge tone="navy">{articulo.categoria.nombre}</Badge>
             </Link>
 
-            <h1 className="text-h1 lg:text-display text-neutral-900 mb-6">
+            <h1 className="font-display font-extrabold text-ink text-[clamp(1.875rem,4vw,2.75rem)] leading-tight mb-6">
               {articulo.titulo}
             </h1>
 
             {/* Meta: autor, fecha, lectura */}
-            <div className="flex flex-wrap items-center gap-4 text-body-sm text-neutral-500">
+            <div className="flex flex-wrap items-center gap-4 text-body-sm text-grey-600">
               <span className="flex items-center gap-1.5">
-                <User className="w-4 h-4" />
+                <User className="w-4 h-4" aria-hidden="true" />
                 {articulo.autor}
               </span>
               <span className="flex items-center gap-1.5">
-                <Calendar className="w-4 h-4" />
+                <Calendar className="w-4 h-4" aria-hidden="true" />
                 {formatDate(articulo.fechaPublicacion)}
               </span>
               <span className="flex items-center gap-1.5">
-                <Clock className="w-4 h-4" />
+                <Clock className="w-4 h-4" aria-hidden="true" />
                 {readTime} min de lectura
               </span>
             </div>
@@ -145,12 +149,12 @@ export default async function NoticiaArticlePage({ params }: SlugPageProps) {
 
           {/* Imagen principal */}
           {heroImage && (
-            <div className="relative aspect-video rounded-xl overflow-hidden mb-10">
+            <div className="relative aspect-video rounded-xs overflow-hidden mb-10 bg-navy-50">
               <Image
                 src={heroImage}
                 alt={articulo.imagenDestacada?.alt || articulo.titulo}
                 fill
-                sizes="(max-width: 768px) 100vw, 720px"
+                sizes="(max-width: 768px) 100vw, 800px"
                 className="object-cover"
                 priority
               />
@@ -159,28 +163,57 @@ export default async function NoticiaArticlePage({ params }: SlugPageProps) {
 
           {/* Contenido del artículo */}
           <div
-            className="prose prose-lg max-w-none
-              prose-headings:text-neutral-900 prose-headings:font-bold
-              prose-p:text-neutral-700 prose-p:leading-relaxed
-              prose-a:text-primary-500 prose-a:no-underline hover:prose-a:underline
-              prose-img:rounded-lg prose-img:mx-auto
-              prose-blockquote:border-l-primary-500 prose-blockquote:text-neutral-600
-              prose-strong:text-neutral-900
-              prose-hr:border-neutral-200"
+            className="prose prose-lg max-w-none font-body
+              prose-headings:font-display prose-headings:text-ink prose-headings:font-bold
+              prose-p:text-grey-800 prose-p:leading-relaxed
+              prose-a:text-navy-600 prose-a:no-underline hover:prose-a:underline
+              prose-img:rounded-xs prose-img:mx-auto
+              prose-blockquote:border-l-navy-600 prose-blockquote:text-grey-700
+              prose-strong:text-ink
+              prose-hr:border-grey-200"
             dangerouslySetInnerHTML={{ __html: cleanContent }}
           />
 
+          {/* Videos embebidos (YouTube / mp4) detectados en el contenido */}
+          {videos.length > 0 && (
+            <div className="grid gap-6 mt-10">
+              {videos.map((video, i) =>
+                video.type === 'youtube' ? (
+                  <div
+                    key={`${video.url}-${i}`}
+                    className="relative aspect-video rounded-xs overflow-hidden bg-ink"
+                  >
+                    <iframe
+                      src={video.url}
+                      title={`Video ${i + 1} — ${articulo.titulo}`}
+                      className="absolute inset-0 w-full h-full"
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                      allowFullScreen
+                    />
+                  </div>
+                ) : (
+                  <video
+                    key={`${video.url}-${i}`}
+                    src={video.url}
+                    controls
+                    className="w-full rounded-xs bg-ink"
+                  />
+                )
+              )}
+            </div>
+          )}
+
           {/* Tags */}
           {articulo.tags.length > 0 && (
-            <div className="flex flex-wrap items-center gap-2 mt-10 pt-8 border-t border-neutral-200">
-              <Tag className="w-4 h-4 text-neutral-400" />
+            <div className="flex flex-wrap items-center gap-2 mt-10 pt-8 border-t border-grey-200">
+              <TagIcon className="w-4 h-4 text-grey-400" aria-hidden="true" />
               {articulo.tags.map((tag) => (
                 <Link
                   key={tag.id}
                   href={`/noticias/tag/${tag.slug}`}
-                  className="px-3 py-1 rounded-full text-body-sm bg-neutral-100 text-neutral-600 hover:bg-neutral-200 transition-colors"
+                  className="no-underline hover:no-underline"
                 >
-                  {tag.nombre}
+                  <Badge tone="neutral">{tag.nombre}</Badge>
                 </Link>
               ))}
             </div>
@@ -190,9 +223,9 @@ export default async function NoticiaArticlePage({ params }: SlugPageProps) {
           <div className="mt-10">
             <Link
               href="/noticias"
-              className="inline-flex items-center gap-2 text-body-sm font-medium text-primary-500 hover:text-primary-600 transition-colors"
+              className="inline-flex items-center gap-2 text-body-sm font-bold text-navy-600 no-underline hover:underline"
             >
-              <ArrowLeft className="w-4 h-4" />
+              <ArrowLeft className="w-4 h-4" aria-hidden="true" />
               Volver a noticias
             </Link>
           </div>
@@ -200,42 +233,13 @@ export default async function NoticiaArticlePage({ params }: SlugPageProps) {
 
         {/* Artículos relacionados */}
         {relacionados.length > 0 && (
-          <section className="max-w-content mx-auto px-4 mt-16 pt-16 border-t border-neutral-200">
-            <h2 className="text-h2 text-neutral-900 mb-8">
+          <section className="max-w-content mx-auto px-4 md:px-10 mt-16 pt-16 border-t border-grey-200">
+            <h2 className="font-display font-bold text-h2 text-ink mb-8">
               Artículos relacionados
             </h2>
             <div className="grid md:grid-cols-3 gap-8">
               {relacionados.map((rel) => (
-                <article
-                  key={rel.id}
-                  className="group bg-white border border-neutral-200 rounded-xl overflow-hidden hover:shadow-lg transition-all"
-                >
-                  <div className="aspect-video bg-neutral-100 relative overflow-hidden">
-                    {rel.imagenDestacada ? (
-                      <Image
-                        src={rel.imagenDestacada.url}
-                        alt={rel.imagenDestacada.alt}
-                        fill
-                        sizes="(max-width: 768px) 100vw, 33vw"
-                        className="object-cover group-hover:scale-105 transition-transform duration-300"
-                      />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center bg-primary-500/5">
-                        <span className="text-h3 text-primary-500/20 font-bold">
-                          UJ
-                        </span>
-                      </div>
-                    )}
-                  </div>
-                  <div className="p-5">
-                    <span className="text-body-sm text-neutral-400">
-                      {formatDate(rel.fechaPublicacion)}
-                    </span>
-                    <h3 className="text-h4 text-neutral-900 group-hover:text-primary-500 transition-colors line-clamp-2 mt-1">
-                      <Link href={`/noticias/${rel.slug}`}>{rel.titulo}</Link>
-                    </h3>
-                  </div>
-                </article>
+                <ArticleCard key={rel.id} articulo={rel} />
               ))}
             </div>
           </section>

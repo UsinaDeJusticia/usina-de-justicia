@@ -2,10 +2,11 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { Breadcrumbs } from '@/components/layout/Breadcrumbs'
-import { ChevronLeft, FolderOpen } from 'lucide-react'
+import { ChevronLeft } from 'lucide-react'
 import { getArticulosByCategorySlug, getArticulosBySection, getWPCategories } from '@/lib/wordpress'
 import { SITE_SECTIONS } from '@/types/wordpress'
 import type { SiteSection } from '@/types/wordpress'
+import { Badge } from '@/components/ui/Badge'
 import { ArticleCard } from '@/components/noticias/ArticleCard'
 import { Pagination } from '@/components/noticias/Pagination'
 
@@ -78,7 +79,7 @@ export default async function CategoriaPage({
   const currentPage = Math.max(1, parseInt(sp.page || '1', 10))
   const perPage = 12
 
-  // Determinar si es sección agrupada o categoría WP
+  // Determinar si es una de las 6 secciones definitivas o una categoría WP suelta
   const isSection = categoria in SITE_SECTIONS
   let title: string
   let description: string | undefined
@@ -108,7 +109,7 @@ export default async function CategoriaPage({
 
   return (
     <>
-      <div className="max-w-content mx-auto px-4">
+      <div className="max-w-content mx-auto px-4 md:px-10">
         <Breadcrumbs
           items={[
             { label: 'Noticias', href: '/noticias' },
@@ -117,18 +118,20 @@ export default async function CategoriaPage({
         />
       </div>
 
-      <section className="py-section">
-        <div className="max-w-content mx-auto px-4">
-          <div className="flex items-center gap-3 mb-4">
-            <FolderOpen className="w-6 h-6 text-primary-500" />
-            <h1 className="text-h1 lg:text-display">{title}</h1>
+      <section className="py-16 md:py-20">
+        <div className="max-w-content mx-auto px-4 md:px-10">
+          <div className="mb-4">
+            <Badge tone="navy">{title}</Badge>
           </div>
+          <h1 className="font-display font-extrabold text-ink text-[clamp(2rem,4vw,2.75rem)] leading-tight mb-4">
+            {title}
+          </h1>
           {description && (
-            <p className="text-body-lg text-neutral-600 max-w-narrow mb-6">
+            <p className="text-body-lg text-grey-700 max-w-narrow mb-6">
               {description}
             </p>
           )}
-          <p className="text-body text-neutral-500 mb-12">
+          <p className="text-body text-grey-500 mb-10">
             {total} {total === 1 ? 'artículo' : 'artículos'} en esta categoría
           </p>
 
@@ -136,9 +139,9 @@ export default async function CategoriaPage({
           <div className="mb-8">
             <Link
               href="/noticias"
-              className="inline-flex items-center gap-1 text-body-sm text-primary-500 hover:text-primary-600 font-medium transition-colors"
+              className="inline-flex items-center gap-1 text-body-sm font-bold text-navy-600 no-underline hover:underline"
             >
-              <ChevronLeft className="w-4 h-4" />
+              <ChevronLeft className="w-4 h-4" aria-hidden="true" />
               Ver todas las categorías
             </Link>
           </div>
@@ -152,12 +155,12 @@ export default async function CategoriaPage({
             </div>
           ) : (
             <div className="text-center py-20">
-              <p className="text-body-lg text-neutral-500">
+              <p className="text-body-lg text-grey-500">
                 No hay artículos en esta categoría todavía.
               </p>
               <Link
                 href="/noticias"
-                className="inline-flex items-center gap-1 text-primary-500 hover:text-primary-600 font-medium mt-4 transition-colors"
+                className="inline-flex items-center gap-1 font-bold text-navy-600 no-underline hover:underline mt-4"
               >
                 Ver todos los artículos
               </Link>
@@ -178,4 +181,3 @@ export default async function CategoriaPage({
     </>
   )
 }
-

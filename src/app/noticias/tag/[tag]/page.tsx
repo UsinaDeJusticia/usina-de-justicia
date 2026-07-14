@@ -4,6 +4,7 @@ import { notFound } from 'next/navigation'
 import { Breadcrumbs } from '@/components/layout/Breadcrumbs'
 import { ChevronLeft, Tag as TagIcon } from 'lucide-react'
 import { getWPTags, getArticulosByTagSlug } from '@/lib/wordpress'
+import { Badge } from '@/components/ui/Badge'
 import { ArticleCard } from '@/components/noticias/ArticleCard'
 import { Pagination } from '@/components/noticias/Pagination'
 
@@ -71,7 +72,7 @@ export default async function TagPage({ params, searchParams }: TagPageProps) {
 
   return (
     <>
-      <div className="max-w-content mx-auto px-4">
+      <div className="max-w-content mx-auto px-4 md:px-10">
         <Breadcrumbs
           items={[
             { label: 'Noticias', href: '/noticias' },
@@ -80,13 +81,16 @@ export default async function TagPage({ params, searchParams }: TagPageProps) {
         />
       </div>
 
-      <section className="py-section">
-        <div className="max-w-content mx-auto px-4">
-          <div className="flex items-center gap-3 mb-4">
-            <TagIcon className="w-6 h-6 text-primary-500" />
-            <h1 className="text-h1 lg:text-display">{tagData.nombre}</h1>
+      <section className="py-16 md:py-20">
+        <div className="max-w-content mx-auto px-4 md:px-10">
+          <div className="flex items-center gap-2 mb-4">
+            <TagIcon className="w-5 h-5 text-navy-600" aria-hidden="true" />
+            <Badge tone="neutral">{tagData.nombre}</Badge>
           </div>
-          <p className="text-body text-neutral-500 mb-12">
+          <h1 className="font-display font-extrabold text-ink text-[clamp(2rem,4vw,2.75rem)] leading-tight mb-4">
+            {tagData.nombre}
+          </h1>
+          <p className="text-body text-grey-500 mb-10">
             {total} {total === 1 ? 'artículo' : 'artículos'} con esta etiqueta
           </p>
 
@@ -94,9 +98,9 @@ export default async function TagPage({ params, searchParams }: TagPageProps) {
           <div className="mb-8">
             <Link
               href="/noticias"
-              className="inline-flex items-center gap-1 text-body-sm text-primary-500 hover:text-primary-600 font-medium transition-colors"
+              className="inline-flex items-center gap-1 text-body-sm font-bold text-navy-600 no-underline hover:underline"
             >
-              <ChevronLeft className="w-4 h-4" />
+              <ChevronLeft className="w-4 h-4" aria-hidden="true" />
               Volver a noticias
             </Link>
           </div>
@@ -110,12 +114,12 @@ export default async function TagPage({ params, searchParams }: TagPageProps) {
             </div>
           ) : (
             <div className="text-center py-20">
-              <p className="text-body-lg text-neutral-500">
+              <p className="text-body-lg text-grey-500">
                 No hay artículos con esta etiqueta todavía.
               </p>
               <Link
                 href="/noticias"
-                className="inline-flex items-center gap-1 text-primary-500 hover:text-primary-600 font-medium mt-4 transition-colors"
+                className="inline-flex items-center gap-1 font-bold text-navy-600 no-underline hover:underline mt-4"
               >
                 Ver todos los artículos
               </Link>
@@ -136,4 +140,3 @@ export default async function TagPage({ params, searchParams }: TagPageProps) {
     </>
   )
 }
-

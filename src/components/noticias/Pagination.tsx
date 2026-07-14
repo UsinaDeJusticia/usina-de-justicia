@@ -19,7 +19,7 @@ export function Pagination({
   if (totalPages <= 1) {
     return (
       <div className="flex justify-center mt-12">
-        <p className="text-body-sm text-neutral-400">
+        <p className="text-body-sm text-grey-500">
           Mostrando {total} {total === 1 ? itemLabel.replace(/s$/, '') : itemLabel}
         </p>
       </div>
@@ -51,15 +51,15 @@ export function Pagination({
         {currentPage > 1 ? (
           <Link
             href={pageUrl(currentPage - 1)}
-            className="flex items-center gap-1 px-3 py-2 rounded-lg text-body-sm text-neutral-600 hover:bg-neutral-100 transition-colors"
+            className="flex items-center gap-1 px-3 py-2 rounded-xs text-body-sm font-bold text-ink no-underline hover:bg-navy-50 hover:no-underline transition-colors duration-base ease-out"
             aria-label="Página anterior"
           >
-            <ChevronLeft className="w-4 h-4" />
+            <ChevronLeft className="w-4 h-4" aria-hidden="true" />
             Anterior
           </Link>
         ) : (
-          <span className="flex items-center gap-1 px-3 py-2 rounded-lg text-body-sm text-neutral-300 cursor-not-allowed">
-            <ChevronLeft className="w-4 h-4" />
+          <span className="flex items-center gap-1 px-3 py-2 rounded-xs text-body-sm text-grey-300 cursor-not-allowed">
+            <ChevronLeft className="w-4 h-4" aria-hidden="true" />
             Anterior
           </span>
         )}
@@ -69,13 +69,11 @@ export function Pagination({
           <>
             <Link
               href={pageUrl(1)}
-              className="w-10 h-10 flex items-center justify-center rounded-lg text-body-sm text-neutral-600 hover:bg-neutral-100 transition-colors"
+              className="w-10 h-10 flex items-center justify-center rounded-xs text-body-sm font-bold text-ink no-underline hover:bg-navy-50 hover:no-underline transition-colors duration-base ease-out"
             >
               1
             </Link>
-            {startPage > 2 && (
-              <span className="text-neutral-400 px-1">…</span>
-            )}
+            {startPage > 2 && <span className="text-grey-400 px-1">…</span>}
           </>
         )}
 
@@ -84,10 +82,10 @@ export function Pagination({
           <Link
             key={page}
             href={pageUrl(page)}
-            className={`w-10 h-10 flex items-center justify-center rounded-lg text-body-sm transition-colors ${
+            className={`w-10 h-10 flex items-center justify-center rounded-xs text-body-sm font-bold no-underline hover:no-underline transition-colors duration-base ease-out ${
               page === currentPage
-                ? 'bg-primary-500 text-white font-medium'
-                : 'text-neutral-600 hover:bg-neutral-100'
+                ? 'bg-navy-600 text-white'
+                : 'text-ink hover:bg-navy-50'
             }`}
             aria-current={page === currentPage ? 'page' : undefined}
           >
@@ -99,11 +97,11 @@ export function Pagination({
         {endPage < totalPages && (
           <>
             {endPage < totalPages - 1 && (
-              <span className="text-neutral-400 px-1">…</span>
+              <span className="text-grey-400 px-1">…</span>
             )}
             <Link
               href={pageUrl(totalPages)}
-              className="w-10 h-10 flex items-center justify-center rounded-lg text-body-sm text-neutral-600 hover:bg-neutral-100 transition-colors"
+              className="w-10 h-10 flex items-center justify-center rounded-xs text-body-sm font-bold text-ink no-underline hover:bg-navy-50 hover:no-underline transition-colors duration-base ease-out"
             >
               {totalPages}
             </Link>
@@ -114,21 +112,21 @@ export function Pagination({
         {currentPage < totalPages ? (
           <Link
             href={pageUrl(currentPage + 1)}
-            className="flex items-center gap-1 px-3 py-2 rounded-lg text-body-sm text-neutral-600 hover:bg-neutral-100 transition-colors"
+            className="flex items-center gap-1 px-3 py-2 rounded-xs text-body-sm font-bold text-ink no-underline hover:bg-navy-50 hover:no-underline transition-colors duration-base ease-out"
             aria-label="Página siguiente"
           >
             Siguiente
-            <ChevronRight className="w-4 h-4" />
+            <ChevronRight className="w-4 h-4" aria-hidden="true" />
           </Link>
         ) : (
-          <span className="flex items-center gap-1 px-3 py-2 rounded-lg text-body-sm text-neutral-300 cursor-not-allowed">
+          <span className="flex items-center gap-1 px-3 py-2 rounded-xs text-body-sm text-grey-300 cursor-not-allowed">
             Siguiente
-            <ChevronRight className="w-4 h-4" />
+            <ChevronRight className="w-4 h-4" aria-hidden="true" />
           </span>
         )}
       </div>
 
-      <p className="text-body-sm text-neutral-400">
+      <p className="text-body-sm text-grey-500">
         Página {currentPage} de {totalPages} — {total} {itemLabel} en total
       </p>
     </nav>
