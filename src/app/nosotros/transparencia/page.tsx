@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import { Breadcrumbs } from '@/components/layout/Breadcrumbs'
-import { FileText, Download, CheckCircle, BarChart3, Clock } from 'lucide-react'
+import { FileText, CheckCircle, BarChart3 } from 'lucide-react'
+import { DocumentCard } from '@/components/documentos/DocumentCard'
 
 export const metadata: Metadata = {
   title: 'Transparencia',
@@ -133,38 +134,12 @@ export default function TransparenciaPage() {
 
           <div className="space-y-4">
             {informes.map((informe) => (
-              <div
+              <DocumentCard
                 key={informe.id}
-                className="flex items-center justify-between gap-4 p-5 bg-white border border-grey-200 rounded-xs hover:border-navy-300 hover:shadow-md transition-all duration-base ease-out"
-              >
-                <div className="flex items-center gap-4 min-w-0">
-                  <div className="w-10 h-10 rounded-xs bg-navy-50 text-navy-600 flex items-center justify-center shrink-0">
-                    <FileText className="w-5 h-5" aria-hidden="true" />
-                  </div>
-                  <div className="min-w-0">
-                    <h3 className="font-display font-bold text-body text-ink truncate">
-                      {informe.titulo}
-                    </h3>
-                    <p className="text-body-sm text-grey-600">Memoria y Balance certificado</p>
-                  </div>
-                </div>
-                {informe.url ? (
-                  <a
-                    href={informe.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1.5 text-navy-600 hover:text-navy-700 text-body-sm font-bold transition-colors duration-base ease-out shrink-0"
-                  >
-                    <Download className="w-4 h-4" aria-hidden="true" />
-                    Descargar
-                  </a>
-                ) : (
-                  <span className="inline-flex items-center gap-1.5 text-grey-500 text-body-sm font-bold shrink-0">
-                    <Clock className="w-4 h-4" aria-hidden="true" />
-                    Próximamente
-                  </span>
-                )}
-              </div>
+                titulo={informe.titulo}
+                meta="Memoria y Balance certificado"
+                url={informe.url}
+              />
             ))}
           </div>
         </div>
