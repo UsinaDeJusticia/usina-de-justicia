@@ -54,19 +54,6 @@ export interface Tag {
   slug: string
 }
 
-// --- Programas ---
-
-export interface Programa extends SEOFields {
-  id: string
-  titulo: string
-  slug: string
-  descripcionCorta: string
-  contenido: string
-  imagen?: ImageAsset
-  icono?: string // nombre de icono Lucide
-  orden: number
-}
-
 // --- Recursos ---
 
 export type TipoRecurso = 'publicacion' | 'informe' | 'guia' | 'herramienta'

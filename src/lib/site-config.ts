@@ -33,13 +33,16 @@ export const siteConfig = {
   },
 
   // Nav principal portada del design system (design-system/home/Header.jsx).
-  // Los items del árbol nuevo que todavía no tienen ruta propia se mapean a
-  // su equivalente actual; cada mapeo temporal queda marcado con
-  // "TODO Fase 3" para cuando se creen las rutas dedicadas.
+  // `/programas` (placeholder hardcodeado, sin contenido real — ver
+  // docs/MAPA-MIGRACION.md §4) se retira del árbol: "Acompañamiento" pasa a
+  // apuntar a la sección propia /acompanamiento y "Observatorio" a su ruta
+  // dedicada /observatorio. "Incidencia" vive como categoría de noticias
+  // (no tiene página propia), así que apunta a /noticias/categoria/incidencia.
   mainNav: [
     { label: 'Nosotros', href: '/nosotros' },
-    { label: 'Programas', href: '/programas' },
-    { label: 'Observatorio', href: '/#observatorio' }, // TODO Fase 3: crear ruta dedicada /observatorio
+    { label: 'Acompañamiento', href: '/acompanamiento' },
+    { label: 'Incidencia', href: '/noticias/categoria/incidencia' },
+    { label: 'Observatorio', href: '/observatorio' },
     { label: 'Noticias', href: '/noticias' },
     { label: 'IVUJUS', href: 'https://ivujus.org.ar/', external: true },
     { label: 'Contacto', href: '/contacto' },
@@ -59,16 +62,20 @@ export const siteConfig = {
       { label: 'Equipo', href: '/nosotros/equipo' },
       { label: 'Transparencia institucional', href: '/nosotros/transparencia' },
     ],
-    programas: [
-      { label: 'Acompañamiento', href: '/programas/asistencia-a-victimas' },
-      { label: 'Incidencia', href: '/programas/reformas-legislativas' },
-      { label: 'Capacitación', href: '/programas/capacitacion-y-formacion' },
+    // "Capacitación" se retiró: en el sitio viejo apuntaba a
+    // /programas/capacitacion-y-formacion, contenido placeholder sin fuente
+    // real (lo propio de Usina en esa categoría es cola larga editorial;
+    // el resto es IVUJUS → 301, ver MAPA-MIGRACION.md §3). IVUJUS sigue
+    // linkeado porque tiene sitio propio real (ivujus.org.ar).
+    acompanamiento: [
+      { label: 'Acompañamiento', href: '/acompanamiento' },
+      { label: 'Incidencia', href: '/noticias/categoria/incidencia' },
       { label: 'IVUJUS', href: 'https://ivujus.org.ar/', external: true },
     ],
     observatorio: [
+      { label: 'Publicaciones', href: '/observatorio' },
       { label: 'Informes', href: '/recursos' },
       { label: 'Amicus curiae', href: '/noticias/categoria/incidencia' },
-      { label: 'Base de sentencias', href: '/#observatorio' }, // TODO Fase 3: ruta /observatorio
       { label: 'Prensa', href: '/noticias/categoria/prensa' },
     ],
     contacto: [

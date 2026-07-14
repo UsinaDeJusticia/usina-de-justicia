@@ -20,7 +20,7 @@ const socialLinks: Array<{
 
 const footerColumns = [
   { title: 'Institución', links: siteConfig.footerNav.institucion },
-  { title: 'Programas', links: siteConfig.footerNav.programas },
+  { title: 'Acompañamiento', links: siteConfig.footerNav.acompanamiento },
   { title: 'Observatorio', links: siteConfig.footerNav.observatorio },
   { title: 'Contacto', links: siteConfig.footerNav.contacto },
 ]

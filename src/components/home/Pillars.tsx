@@ -10,7 +10,7 @@ const pillars = [
     description:
       'Contención emocional y asesoramiento jurídico para familiares de víctimas de homicidio y femicidio.',
     label: 'Conocer el programa',
-    href: '/programas/asistencia-a-victimas',
+    href: '/acompanamiento',
   },
   {
     Icon: Gavel,
@@ -18,7 +18,7 @@ const pillars = [
     description:
       'Amicus curiae, proyectos de ley y participación activa en la aplicación de la Ley 27.372.',
     label: 'Ver incidencia',
-    href: '/programas/reformas-legislativas',
+    href: '/noticias/categoria/incidencia',
   },
   {
     Icon: BookOpen,
