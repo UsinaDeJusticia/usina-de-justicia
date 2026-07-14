@@ -37,7 +37,7 @@ export const siteConfig = {
   // su equivalente actual; cada mapeo temporal queda marcado con
   // "TODO Fase 3" para cuando se creen las rutas dedicadas.
   mainNav: [
-    { label: 'Nosotros', href: '/sobre-nosotros' }, // TODO Fase 3: renombrar ruta a /nosotros
+    { label: 'Nosotros', href: '/nosotros' },
     { label: 'Programas', href: '/programas' },
     { label: 'Observatorio', href: '/#observatorio' }, // TODO Fase 3: crear ruta dedicada /observatorio
     { label: 'Noticias', href: '/noticias' },
@@ -55,9 +55,9 @@ export const siteConfig = {
   // los sub-ítems sin página propia apuntan al equivalente real más cercano.
   footerNav: {
     institucion: [
-      { label: 'Nosotros', href: '/sobre-nosotros' },
-      { label: 'Equipo', href: '/sobre-nosotros/equipo' },
-      { label: 'Transparencia institucional', href: '/sobre-nosotros/transparencia' },
+      { label: 'Nosotros', href: '/nosotros' },
+      { label: 'Equipo', href: '/nosotros/equipo' },
+      { label: 'Transparencia institucional', href: '/nosotros/transparencia' },
     ],
     programas: [
       { label: 'Acompañamiento', href: '/programas/asistencia-a-victimas' },

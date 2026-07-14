@@ -1,0 +1,261 @@
+import type { Metadata } from 'next'
+import Link from 'next/link'
+import { Breadcrumbs } from '@/components/layout/Breadcrumbs'
+import { Trayectoria } from '@/components/home/Trayectoria'
+import {
+  Users,
+  Target,
+  ArrowRight,
+  Heart,
+  Handshake,
+  ShieldCheck,
+  Scale,
+  Eye,
+} from 'lucide-react'
+
+export const metadata: Metadata = {
+  title: 'Nosotros',
+  description:
+    'Usina de Justicia es una Asociación Civil apartidaria que desde 2014 acompaña a las víctimas de homicidio y femicidio y trabaja por una justicia que contemple sus derechos.',
+  alternates: {
+    canonical: 'https://www.usinadejusticia.org.ar/nosotros',
+  },
+  openGraph: {
+    title: 'Nosotros — Usina de Justicia',
+    description:
+      'Asociación Civil apartidaria que desde 2014 acompaña a las víctimas de homicidio y femicidio en Argentina.',
+    url: 'https://www.usinadejusticia.org.ar/nosotros',
+  },
+}
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'AboutPage',
+  name: 'Nosotros — Usina de Justicia',
+  description:
+    'Historia, misión y valores de Usina de Justicia, Asociación Civil por los derechos de las víctimas de homicidio y femicidio.',
+  url: 'https://www.usinadejusticia.org.ar/nosotros',
+  mainEntity: {
+    '@type': 'NGO',
+    name: 'Usina de Justicia',
+    foundingDate: '2014-11-12',
+    description:
+      'Asociación Civil apartidaria que acompaña a las víctimas de homicidio y femicidio y trabaja por una justicia justa.',
+    url: 'https://www.usinadejusticia.org.ar',
+  },
+}
+
+// Copy aprobado en la migración previa (fuente: página WP "Nosotros", id 94).
+const valores = [
+  {
+    nombre: 'Integridad',
+    icon: ShieldCheck,
+    descripcion:
+      'Actuamos con honestidad y coherencia en cada acción que emprendemos.',
+  },
+  {
+    nombre: 'Solidaridad',
+    icon: Heart,
+    descripcion:
+      'Acompañamos a las familias con empatía, desde el dolor compartido.',
+  },
+  {
+    nombre: 'Compromiso',
+    icon: Handshake,
+    descripcion:
+      'Sostenemos nuestra labor con dedicación constante y voluntaria.',
+  },
+  {
+    nombre: 'Equidad',
+    icon: Scale,
+    descripcion:
+      'Trabajamos para que todas las víctimas tengan acceso igualitario a la justicia.',
+  },
+  {
+    nombre: 'Transparencia',
+    icon: Eye,
+    descripcion:
+      'Rendimos cuentas de nuestra gestión y recursos de forma abierta.',
+  },
+]
+
+// Nuestra historia (origen, previo a la fundación) — fuente: página WP
+// "Nosotros" (id 94), sección de texto libre debajo del image-box "Nuestra
+// historia". Se completa con el dato de Emma Cibotti, cofundadora que se
+// separó de la organización al año siguiente de la fundación, ausente en la
+// migración previa.
+const hitos = [
+  {
+    año: '2011',
+    titulo: 'El origen',
+    descripcion:
+      'Usina de Justicia se gestó cuando Diana Cohen Agrest, Doctora en Filosofía (UBA) y colaboradora de medios gráficos nacionales, recibió la noticia del asesinato de su hijo Ezequiel, un joven estudiante de 26 años a punto de graduarse, en un robo. Ese dolor se transformó en la decisión de estudiar por qué el sistema penal no había podido evitarlo y en luchar por justicia.',
+  },
+  {
+    año: '2013',
+    titulo: 'La voz escrita',
+    descripcion:
+      'Se publica "Ausencia Perpetua. Inseguridad y Trampas de la (in)Justicia", un libro que visibiliza la realidad de las víctimas en el sistema judicial argentino y le valió a Diana el reconocimiento de profesionales del Derecho.',
+  },
+  {
+    año: '2014',
+    titulo: 'La exposición que conmovió',
+    descripcion:
+      'La fotógrafa Patricia Terán propone una muestra con los rostros de jóvenes muertos en democracia, olvidados y sin reconocimiento. El Centro Recoleta cobija la exposición, para la cual los padres de esos jóvenes aportaron una foto de sus hijos.',
+  },
+  {
+    año: '2014',
+    titulo: 'Fundación oficial',
+    descripcion:
+      'El 12 de noviembre de 2014 se funda oficialmente Usina de Justicia como Asociación Civil. En sus comienzos fue acompañada por una segunda fundadora, Emma Cibotti, madre de una víctima vial, quien al año siguiente se separó de Usina de Justicia para continuar su tarea en su propia asociación de víctimas de siniestros viales.',
+  },
+]
+
+const objetivos = [
+  'Acompañar a los familiares de víctimas de homicidio y femicidio, brindándoles apoyo emocional y asesoramiento legal.',
+  'Promover los derechos y alentar la participación de las víctimas en el proceso penal y en la ejecución de las penas, en paridad de condiciones con las del imputado y el agente fiscal.',
+  'Impulsar políticas públicas para mejorar la prevención de conductas delictivas graves.',
+]
+
+export default function NosotrosPage() {
+  return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+
+      <div className="max-w-content mx-auto px-4 md:px-10">
+        <Breadcrumbs items={[{ label: 'Nosotros', href: '/nosotros' }]} />
+      </div>
+
+      {/* Hero */}
+      <section className="pb-16 md:pb-20 pt-2 md:pt-4">
+        <div className="max-w-content mx-auto px-4 md:px-10">
+          <p className="text-[12px] font-bold tracking-[0.14em] uppercase text-navy-600 mb-2.5">
+            Usina de Justicia
+          </p>
+          <h1 className="font-display font-extrabold text-ink text-[clamp(2rem,4vw,2.75rem)] leading-tight mb-4">
+            Nosotros
+          </h1>
+          <p className="text-body-lg text-grey-700 max-w-narrow leading-relaxed">
+            Somos un grupo de víctimas que han perdido un ser querido en situaciones
+            violentas y profesionales de distintas especialidades que voluntariamente
+            trabajan y apoyan nuestra labor.
+          </p>
+          <p className="mt-4 text-body-lg text-grey-700 max-w-narrow leading-relaxed">
+            Somos una Asociación Civil apartidaria que desde 2014 trabajamos para
+            acompañar a las víctimas de homicidio y femicidio y recuperar una Justicia
+            justa que contemple a estas víctimas.
+          </p>
+        </div>
+      </section>
+
+      {/* Objetivos */}
+      <section className="py-16 md:py-20 bg-ivory border-t border-grey-200">
+        <div className="max-w-content mx-auto px-4 md:px-10">
+          <div className="flex items-center gap-3 mb-8">
+            <div className="w-10 h-10 rounded-xs bg-navy-50 flex items-center justify-center shrink-0">
+              <Target className="w-5 h-5 text-navy-600" aria-hidden="true" />
+            </div>
+            <h2 className="font-display font-bold text-h2 text-ink">Nuestros objetivos</h2>
+          </div>
+          <div className="grid md:grid-cols-3 gap-5">
+            {objetivos.map((obj, i) => (
+              <div key={i} className="p-6 bg-white border border-grey-200 rounded-xs">
+                <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-navy-600 text-white text-body-sm font-bold mb-4">
+                  {i + 1}
+                </span>
+                <p className="text-body-sm text-grey-700 leading-relaxed">{obj}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Valores */}
+      <section className="py-16 md:py-20">
+        <div className="max-w-content mx-auto px-4 md:px-10">
+          <h2 className="font-display font-bold text-h2 text-ink text-center mb-10">
+            Nuestros valores
+          </h2>
+          <div className="grid grid-cols-2 md:grid-cols-5 gap-6">
+            {valores.map((valor) => {
+              const Icon = valor.icon
+              return (
+                <div key={valor.nombre} className="text-center">
+                  <div className="w-14 h-14 rounded-xl bg-navy-50 text-navy-600 flex items-center justify-center mx-auto mb-3">
+                    <Icon className="w-6 h-6" aria-hidden="true" />
+                  </div>
+                  <h3 className="font-display font-bold text-body text-ink mb-1">
+                    {valor.nombre}
+                  </h3>
+                  <p className="text-body-sm text-grey-700">{valor.descripcion}</p>
+                </div>
+              )
+            })}
+          </div>
+        </div>
+      </section>
+
+      {/* Nuestra historia (origen) */}
+      <section className="py-16 md:py-20 bg-ivory border-t border-grey-200">
+        <div className="max-w-narrow mx-auto px-4 md:px-10">
+          <h2 className="font-display font-bold text-h2 text-ink mb-10">Nuestra historia</h2>
+          <ol className="relative pl-7 list-none m-0 p-0">
+            <div className="absolute left-[6px] top-2 bottom-2 w-0.5 bg-navy-100" aria-hidden="true" />
+            {hitos.map((hito, i) => (
+              <li key={`${hito.año}-${hito.titulo}`} className={`relative ${i === hitos.length - 1 ? '' : 'pb-9'}`}>
+                <span className="absolute -left-[27px] top-1.5 w-3.5 h-3.5 rounded-full bg-white border-2 border-warning" />
+                <div className="font-display font-extrabold text-[22px] text-warning">{hito.año}</div>
+                <div className="font-display font-bold text-body text-ink mt-0.5 mb-1.5">{hito.titulo}</div>
+                <div className="text-body-sm text-grey-700 leading-relaxed">{hito.descripcion}</div>
+              </li>
+            ))}
+          </ol>
+        </div>
+      </section>
+
+      {/* Timeline institucional (mismo componente que en Home) */}
+      <Trayectoria />
+
+      {/* Links a subpáginas */}
+      <section className="py-16 md:py-20 bg-ivory border-t border-grey-200">
+        <div className="max-w-content mx-auto px-4 md:px-10">
+          <div className="grid md:grid-cols-2 gap-5">
+            <Link
+              href="/nosotros/equipo"
+              className="group block bg-white border border-grey-200 rounded-xs p-7 no-underline hover:no-underline hover:border-navy-300 hover:shadow-md transition-all duration-base ease-out"
+            >
+              <Users className="w-7 h-7 text-navy-600 mb-4" strokeWidth={1.75} aria-hidden="true" />
+              <h2 className="font-display font-bold text-navy-800 text-xl mb-2">Nuestro equipo</h2>
+              <p className="text-body-sm text-grey-700 leading-relaxed">
+                Conocé a las personas que hacen posible nuestro trabajo diario por los
+                derechos de las víctimas.
+              </p>
+              <span className="inline-flex items-center gap-1.5 text-body-sm font-bold text-navy-600 mt-5">
+                Conocer al equipo
+                <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform duration-base ease-out" aria-hidden="true" />
+              </span>
+            </Link>
+
+            <Link
+              href="/nosotros/transparencia"
+              className="group block bg-white border border-grey-200 rounded-xs p-7 no-underline hover:no-underline hover:border-navy-300 hover:shadow-md transition-all duration-base ease-out"
+            >
+              <Eye className="w-7 h-7 text-navy-600 mb-4" strokeWidth={1.75} aria-hidden="true" />
+              <h2 className="font-display font-bold text-navy-800 text-xl mb-2">Transparencia institucional</h2>
+              <p className="text-body-sm text-grey-700 leading-relaxed">
+                Memorias y balances certificados, disponibles para consulta pública.
+              </p>
+              <span className="inline-flex items-center gap-1.5 text-body-sm font-bold text-navy-600 mt-5">
+                Ver documentos
+                <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform duration-base ease-out" aria-hidden="true" />
+              </span>
+            </Link>
+          </div>
+        </div>
+      </section>
+    </>
+  )
+}

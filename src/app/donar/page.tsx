@@ -137,7 +137,7 @@ export default function DonarPage() {
             nuestros informes de gestión y estados contables.
           </p>
           <Link
-            href="/sobre-nosotros/transparencia"
+            href="/nosotros/transparencia"
             className="inline-flex items-center gap-2 text-primary-500 hover:text-primary-600 font-semibold transition-colors"
           >
             Ver informes de transparencia

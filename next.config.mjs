@@ -16,13 +16,21 @@ const nextConfig = {
   async redirects() {
     return [
       // === INSTITUCIONAL ===
-      { source: '/quienes-somos', destination: '/sobre-nosotros', permanent: true },
-      { source: '/mision', destination: '/sobre-nosotros', permanent: true },
-      { source: '/mision-y-vision', destination: '/sobre-nosotros', permanent: true },
-      { source: '/vision', destination: '/sobre-nosotros', permanent: true },
-      { source: '/autoridades', destination: '/sobre-nosotros/equipo', permanent: true },
-      { source: '/equipo', destination: '/sobre-nosotros/equipo', permanent: true },
-      { source: '/staff', destination: '/sobre-nosotros/equipo', permanent: true },
+      // Fase 3: /sobre-nosotros se renombra a /nosotros (fusiona además el
+      // contenido real de distinciones y agradecimientos de WordPress).
+      { source: '/sobre-nosotros', destination: '/nosotros', permanent: true },
+      { source: '/sobre-nosotros/equipo', destination: '/nosotros/equipo', permanent: true },
+      { source: '/sobre-nosotros/transparencia', destination: '/nosotros/transparencia', permanent: true },
+      { source: '/quienes-somos', destination: '/nosotros', permanent: true },
+      { source: '/mision', destination: '/nosotros', permanent: true },
+      { source: '/mision-y-vision', destination: '/nosotros', permanent: true },
+      { source: '/vision', destination: '/nosotros', permanent: true },
+      { source: '/distinciones', destination: '/nosotros/distinciones', permanent: true },
+      { source: '/agradecimientos', destination: '/nosotros', permanent: true },
+      { source: '/transparencia-institucional', destination: '/nosotros/transparencia', permanent: true },
+      { source: '/autoridades', destination: '/nosotros/equipo', permanent: true },
+      { source: '/equipo', destination: '/nosotros/equipo', permanent: true },
+      { source: '/staff', destination: '/nosotros/equipo', permanent: true },
 
       // === BLOG → NOTICIAS (Fase 3: /blog se renombra a /noticias) ===
       { source: '/blog', destination: '/noticias', permanent: true },
