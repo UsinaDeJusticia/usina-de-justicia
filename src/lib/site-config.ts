@@ -44,6 +44,7 @@ export const siteConfig = {
     { label: 'Incidencia', href: '/noticias/categoria/incidencia' },
     { label: 'Observatorio', href: '/observatorio' },
     { label: 'Noticias', href: '/noticias' },
+    { label: 'Recursos', href: '/recursos' },
     { label: 'IVUJUS', href: 'https://ivujus.org.ar/', external: true },
     { label: 'Contacto', href: '/contacto' },
   ],

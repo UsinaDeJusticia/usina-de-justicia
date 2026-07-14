@@ -16,13 +16,6 @@ export interface ImageAsset {
   height: number
 }
 
-export interface FileAsset {
-  url: string
-  name: string
-  size: number // en KB
-  format: string // pdf, doc, etc
-}
-
 // --- Blog / Artículos ---
 
 export interface Articulo extends SEOFields {
@@ -52,22 +45,6 @@ export interface Tag {
   id: string
   nombre: string
   slug: string
-}
-
-// --- Recursos ---
-
-export type TipoRecurso = 'publicacion' | 'informe' | 'guia' | 'herramienta'
-
-export interface Recurso extends SEOFields {
-  id: string
-  titulo: string
-  slug: string
-  descripcion: string
-  tipo: TipoRecurso
-  archivo: FileAsset
-  imagenPortada?: ImageAsset
-  fechaPublicacion: string
-  tags: Tag[]
 }
 
 // --- Equipo ---
