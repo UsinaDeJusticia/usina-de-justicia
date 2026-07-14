@@ -12,6 +12,11 @@ export const siteConfig = {
   contact: {
     email: 'info@usinadejusticia.org.ar',
     phone: '+54 11 6422-2228',
+    // Deep link de WhatsApp para el mismo teléfono de arriba (prefijo 54 +
+    // 9 de celular argentino + característica 11 + número, sin espacios ni
+    // guiones). Si no es el número real de WhatsApp de la organización,
+    // ajustar acá.
+    whatsapp: 'https://wa.me/5491164222228',
     address: '',
   },
 
@@ -42,7 +47,7 @@ export const siteConfig = {
 
   // CTAs del header (design-system/home/Header.jsx: "Necesito ayuda" + "Donar").
   headerCta: {
-    help: { label: 'Necesito ayuda', href: '/#quehacer' }, // TODO Fase 3: crear ruta /necesito-ayuda
+    help: { label: 'Necesito ayuda', href: '/necesito-ayuda' },
     donate: { label: 'Donar', href: '/donar' },
   },
 
@@ -67,6 +72,7 @@ export const siteConfig = {
       { label: 'Prensa', href: '/blog/categoria/medios' },
     ],
     contacto: [
+      { label: 'Necesito ayuda', href: '/necesito-ayuda' },
       { label: 'Escribinos', href: '/contacto' },
       { label: 'Sumate como voluntario', href: '/contacto' }, // TODO Fase 3: formulario de voluntariado
       { label: 'Convenios', href: '/contacto' }, // TODO Fase 3: página de convenios institucionales
