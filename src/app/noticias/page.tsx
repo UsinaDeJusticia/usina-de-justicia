@@ -3,14 +3,14 @@ import Link from 'next/link'
 import { Breadcrumbs } from '@/components/layout/Breadcrumbs'
 import { getArticulos } from '@/lib/wordpress'
 import { SITE_SECTIONS } from '@/types/wordpress'
-import { ArticleCard } from '@/components/blog/ArticleCard'
-import { Pagination } from '@/components/blog/Pagination'
+import { ArticleCard } from '@/components/noticias/ArticleCard'
+import { Pagination } from '@/components/noticias/Pagination'
 
 export const metadata: Metadata = {
-  title: 'Blog',
+  title: 'Noticias',
   description:
     'Noticias, comunicados, artículos de opinión y cobertura de prensa sobre derechos de las víctimas del delito en Argentina.',
-  alternates: { canonical: 'https://www.usinadejusticia.org.ar/blog' },
+  alternates: { canonical: 'https://www.usinadejusticia.org.ar/noticias' },
 }
 
 // Secciones agrupadas para los filtros
@@ -22,11 +22,11 @@ function getSectionFilters() {
 }
 
 // Next.js 14: searchParams para paginación
-interface BlogPageProps {
+interface NoticiasPageProps {
   searchParams: Promise<{ page?: string }>
 }
 
-export default async function BlogPage({ searchParams }: BlogPageProps) {
+export default async function NoticiasPage({ searchParams }: NoticiasPageProps) {
   const params = await searchParams
   const currentPage = Math.max(1, parseInt(params.page || '1', 10))
   const perPage = 12
@@ -51,12 +51,12 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
   return (
     <>
       <div className="max-w-content mx-auto px-4">
-        <Breadcrumbs items={[{ label: 'Blog', href: '/blog' }]} />
+        <Breadcrumbs items={[{ label: 'Noticias', href: '/noticias' }]} />
       </div>
 
       <section className="py-section">
         <div className="max-w-content mx-auto px-4">
-          <h1 className="text-h1 lg:text-display mb-4">Blog</h1>
+          <h1 className="text-h1 lg:text-display mb-4">Noticias</h1>
           <p className="text-body-lg text-neutral-600 max-w-narrow mb-10">
             Noticias, comunicados y artículos sobre los derechos de las víctimas
             del delito en Argentina.
@@ -65,7 +65,7 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
           {/* Filtro de categorías */}
           <div className="flex flex-wrap gap-2 mb-12">
             <Link
-              href="/blog"
+              href="/noticias"
               className="px-4 py-2 rounded-full text-body-sm font-medium border border-primary-500 bg-primary-500 text-white transition-colors"
             >
               Todas
@@ -73,7 +73,7 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
             {sectionFilters.map((section) => (
               <Link
                 key={section.slug}
-                href={`/blog/categoria/${section.slug}`}
+                href={`/noticias/categoria/${section.slug}`}
                 className="px-4 py-2 rounded-full text-body-sm font-medium border border-neutral-200 text-neutral-600 hover:border-primary-500 hover:text-primary-500 transition-colors"
               >
                 {section.nombre}
@@ -109,7 +109,7 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
               currentPage={currentPage}
               totalPages={totalPages}
               total={total}
-              basePath="/blog"
+              basePath="/noticias"
             />
           )}
         </div>

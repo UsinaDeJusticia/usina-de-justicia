@@ -16,7 +16,7 @@ const MAX = 100
 
 const links = [
   { title: 'Informe anual 2025', meta: 'PDF · 82 páginas', href: '/recursos' },
-  { title: 'Amicus curiae presentados', meta: '14 · 2 admitidos en 2026', href: '/blog/categoria/incidencia' },
+  { title: 'Amicus curiae presentados', meta: '14 · 2 admitidos en 2026', href: '/noticias/categoria/incidencia' },
   { title: 'Base pública de sentencias', meta: '1.204 resoluciones indexadas', href: '/recursos' },
 ]
 

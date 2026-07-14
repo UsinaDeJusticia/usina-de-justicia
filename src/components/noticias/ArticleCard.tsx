@@ -37,13 +37,13 @@ export function ArticleCard({ articulo }: ArticleCardProps) {
           </span>
         </div>
         <h2 className="text-h4 text-neutral-900 group-hover:text-primary-500 transition-colors line-clamp-2">
-          <Link href={`/blog/${articulo.slug}`}>{articulo.titulo}</Link>
+          <Link href={`/noticias/${articulo.slug}`}>{articulo.titulo}</Link>
         </h2>
         <p className="text-body-sm text-neutral-600 mt-2 line-clamp-3">
           {articulo.extracto}
         </p>
         <Link
-          href={`/blog/${articulo.slug}`}
+          href={`/noticias/${articulo.slug}`}
           className="inline-flex items-center gap-1 text-body-sm font-medium text-primary-500 mt-4"
         >
           Leer más

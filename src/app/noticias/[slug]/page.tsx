@@ -50,7 +50,7 @@ export async function generateMetadata({
     title: articulo.seoTitle || articulo.titulo,
     description: articulo.seoDescription || articulo.extracto,
     alternates: {
-      canonical: `https://www.usinadejusticia.org.ar/blog/${slug}`,
+      canonical: `https://www.usinadejusticia.org.ar/noticias/${slug}`,
     },
     openGraph: {
       title: articulo.titulo,
@@ -68,7 +68,7 @@ export async function generateMetadata({
 // PÁGINA
 // ============================================
 
-export default async function BlogArticlePage({ params }: SlugPageProps) {
+export default async function NoticiaArticlePage({ params }: SlugPageProps) {
   const { slug } = await params
   const articulo = await getArticuloBySlug(slug)
 
@@ -100,12 +100,12 @@ export default async function BlogArticlePage({ params }: SlugPageProps) {
       <div className="max-w-content mx-auto px-4">
         <Breadcrumbs
           items={[
-            { label: 'Blog', href: '/blog' },
+            { label: 'Noticias', href: '/noticias' },
             {
               label: articulo.categoria.nombre,
-              href: `/blog/categoria/${articulo.categoria.slug}`,
+              href: `/noticias/categoria/${articulo.categoria.slug}`,
             },
-            { label: articulo.titulo, href: `/blog/${slug}` },
+            { label: articulo.titulo, href: `/noticias/${slug}` },
           ]}
         />
       </div>
@@ -116,7 +116,7 @@ export default async function BlogArticlePage({ params }: SlugPageProps) {
           <header className="mb-8">
             {/* Categoría */}
             <Link
-              href={`/blog/categoria/${articulo.categoria.slug}`}
+              href={`/noticias/categoria/${articulo.categoria.slug}`}
               className="inline-block px-3 py-1 rounded-full bg-primary-500/10 text-primary-500 text-body-sm font-medium mb-4 hover:bg-primary-500/20 transition-colors"
             >
               {articulo.categoria.nombre}
@@ -177,7 +177,7 @@ export default async function BlogArticlePage({ params }: SlugPageProps) {
               {articulo.tags.map((tag) => (
                 <Link
                   key={tag.id}
-                  href={`/blog/tag/${tag.slug}`}
+                  href={`/noticias/tag/${tag.slug}`}
                   className="px-3 py-1 rounded-full text-body-sm bg-neutral-100 text-neutral-600 hover:bg-neutral-200 transition-colors"
                 >
                   {tag.nombre}
@@ -186,14 +186,14 @@ export default async function BlogArticlePage({ params }: SlugPageProps) {
             </div>
           )}
 
-          {/* Volver al blog */}
+          {/* Volver a noticias */}
           <div className="mt-10">
             <Link
-              href="/blog"
+              href="/noticias"
               className="inline-flex items-center gap-2 text-body-sm font-medium text-primary-500 hover:text-primary-600 transition-colors"
             >
               <ArrowLeft className="w-4 h-4" />
-              Volver al blog
+              Volver a noticias
             </Link>
           </div>
         </div>
@@ -232,7 +232,7 @@ export default async function BlogArticlePage({ params }: SlugPageProps) {
                       {formatDate(rel.fechaPublicacion)}
                     </span>
                     <h3 className="text-h4 text-neutral-900 group-hover:text-primary-500 transition-colors line-clamp-2 mt-1">
-                      <Link href={`/blog/${rel.slug}`}>{rel.titulo}</Link>
+                      <Link href={`/noticias/${rel.slug}`}>{rel.titulo}</Link>
                     </h3>
                   </div>
                 </article>

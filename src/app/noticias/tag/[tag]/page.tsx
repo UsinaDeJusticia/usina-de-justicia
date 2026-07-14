@@ -4,8 +4,8 @@ import { notFound } from 'next/navigation'
 import { Breadcrumbs } from '@/components/layout/Breadcrumbs'
 import { ChevronLeft, Tag as TagIcon } from 'lucide-react'
 import { getWPTags, getArticulosByTagSlug } from '@/lib/wordpress'
-import { ArticleCard } from '@/components/blog/ArticleCard'
-import { Pagination } from '@/components/blog/Pagination'
+import { ArticleCard } from '@/components/noticias/ArticleCard'
+import { Pagination } from '@/components/noticias/Pagination'
 
 // ============================================
 // GENERACIÓN ESTÁTICA: pre-renderizar los tags más usados
@@ -40,10 +40,10 @@ export async function generateMetadata({
   if (!tagData) return { title: 'Etiqueta no encontrada' }
 
   return {
-    title: `${tagData.nombre} — Blog`,
+    title: `${tagData.nombre} — Noticias`,
     description: `Artículos etiquetados con "${tagData.nombre}" — Usina de Justicia`,
     alternates: {
-      canonical: `https://www.usinadejusticia.org.ar/blog/tag/${tag}`,
+      canonical: `https://www.usinadejusticia.org.ar/noticias/tag/${tag}`,
     },
   }
 }
@@ -74,8 +74,8 @@ export default async function TagPage({ params, searchParams }: TagPageProps) {
       <div className="max-w-content mx-auto px-4">
         <Breadcrumbs
           items={[
-            { label: 'Blog', href: '/blog' },
-            { label: `Tag: ${tagData.nombre}`, href: `/blog/tag/${tag}` },
+            { label: 'Noticias', href: '/noticias' },
+            { label: `Tag: ${tagData.nombre}`, href: `/noticias/tag/${tag}` },
           ]}
         />
       </div>
@@ -90,14 +90,14 @@ export default async function TagPage({ params, searchParams }: TagPageProps) {
             {total} {total === 1 ? 'artículo' : 'artículos'} con esta etiqueta
           </p>
 
-          {/* Volver al blog */}
+          {/* Volver a noticias */}
           <div className="mb-8">
             <Link
-              href="/blog"
+              href="/noticias"
               className="inline-flex items-center gap-1 text-body-sm text-primary-500 hover:text-primary-600 font-medium transition-colors"
             >
               <ChevronLeft className="w-4 h-4" />
-              Volver al blog
+              Volver a noticias
             </Link>
           </div>
 
@@ -114,7 +114,7 @@ export default async function TagPage({ params, searchParams }: TagPageProps) {
                 No hay artículos con esta etiqueta todavía.
               </p>
               <Link
-                href="/blog"
+                href="/noticias"
                 className="inline-flex items-center gap-1 text-primary-500 hover:text-primary-600 font-medium mt-4 transition-colors"
               >
                 Ver todos los artículos
@@ -128,7 +128,7 @@ export default async function TagPage({ params, searchParams }: TagPageProps) {
               currentPage={currentPage}
               totalPages={totalPages}
               total={total}
-              basePath={`/blog/tag/${tag}`}
+              basePath={`/noticias/tag/${tag}`}
             />
           )}
         </div>

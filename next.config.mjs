@@ -24,16 +24,20 @@ const nextConfig = {
       { source: '/equipo', destination: '/sobre-nosotros/equipo', permanent: true },
       { source: '/staff', destination: '/sobre-nosotros/equipo', permanent: true },
 
-      // === BLOG (consolidación editorial) ===
-      { source: '/noticias', destination: '/blog', permanent: true },
-      { source: '/noticias/:slug', destination: '/blog/:slug', permanent: true },
-      { source: '/comunicados', destination: '/blog/categoria/comunicados', permanent: true },
-      { source: '/comunicados/:slug', destination: '/blog/:slug', permanent: true },
-      { source: '/articulos', destination: '/blog/categoria/opinion', permanent: true },
-      { source: '/articulos/:slug', destination: '/blog/:slug', permanent: true },
-      { source: '/opinion', destination: '/blog/categoria/opinion', permanent: true },
-      { source: '/prensa', destination: '/blog/categoria/prensa', permanent: true },
-      { source: '/novedades', destination: '/blog', permanent: true },
+      // === BLOG → NOTICIAS (Fase 3: /blog se renombra a /noticias) ===
+      { source: '/blog', destination: '/noticias', permanent: true },
+      { source: '/blog/categoria/:categoria*', destination: '/noticias/categoria/:categoria*', permanent: true },
+      { source: '/blog/tag/:tag*', destination: '/noticias/tag/:tag*', permanent: true },
+      { source: '/blog/:slug*', destination: '/noticias/:slug*', permanent: true },
+
+      // === NOTICIAS (consolidación editorial, pre-existente) ===
+      { source: '/comunicados', destination: '/noticias/categoria/comunicados', permanent: true },
+      { source: '/comunicados/:slug', destination: '/noticias/:slug', permanent: true },
+      { source: '/articulos', destination: '/noticias/categoria/opinion', permanent: true },
+      { source: '/articulos/:slug', destination: '/noticias/:slug', permanent: true },
+      { source: '/opinion', destination: '/noticias/categoria/opinion', permanent: true },
+      { source: '/prensa', destination: '/noticias/categoria/prensa', permanent: true },
+      { source: '/novedades', destination: '/noticias', permanent: true },
 
       // === PROGRAMAS ===
       { source: '/areas', destination: '/programas', permanent: true },

@@ -6,8 +6,8 @@ import { ChevronLeft, FolderOpen } from 'lucide-react'
 import { getArticulosByCategorySlug, getArticulosBySection, getWPCategories } from '@/lib/wordpress'
 import { SITE_SECTIONS } from '@/types/wordpress'
 import type { SiteSection } from '@/types/wordpress'
-import { ArticleCard } from '@/components/blog/ArticleCard'
-import { Pagination } from '@/components/blog/Pagination'
+import { ArticleCard } from '@/components/noticias/ArticleCard'
+import { Pagination } from '@/components/noticias/Pagination'
 
 // ============================================
 // GENERACIÓN ESTÁTICA: pre-renderizar todas las categorías
@@ -43,10 +43,10 @@ export async function generateMetadata({
   if (categoria in SITE_SECTIONS) {
     const section = SITE_SECTIONS[categoria as SiteSection]
     return {
-      title: `${section.title} — Blog`,
+      title: `${section.title} — Noticias`,
       description: `${section.description} — Usina de Justicia`,
       alternates: {
-        canonical: `https://www.usinadejusticia.org.ar/blog/categoria/${categoria}`,
+        canonical: `https://www.usinadejusticia.org.ar/noticias/categoria/${categoria}`,
       },
     }
   }
@@ -57,10 +57,10 @@ export async function generateMetadata({
   if (!cat) return { title: 'Categoría no encontrada' }
 
   return {
-    title: `${cat.nombre} — Blog`,
+    title: `${cat.nombre} — Noticias`,
     description: `Artículos sobre ${cat.nombre.toLowerCase()} — Usina de Justicia`,
     alternates: {
-      canonical: `https://www.usinadejusticia.org.ar/blog/categoria/${categoria}`,
+      canonical: `https://www.usinadejusticia.org.ar/noticias/categoria/${categoria}`,
     },
   }
 }
@@ -111,8 +111,8 @@ export default async function CategoriaPage({
       <div className="max-w-content mx-auto px-4">
         <Breadcrumbs
           items={[
-            { label: 'Blog', href: '/blog' },
-            { label: title, href: `/blog/categoria/${categoria}` },
+            { label: 'Noticias', href: '/noticias' },
+            { label: title, href: `/noticias/categoria/${categoria}` },
           ]}
         />
       </div>
@@ -132,10 +132,10 @@ export default async function CategoriaPage({
             {total} {total === 1 ? 'artículo' : 'artículos'} en esta categoría
           </p>
 
-          {/* Volver al blog */}
+          {/* Volver a noticias */}
           <div className="mb-8">
             <Link
-              href="/blog"
+              href="/noticias"
               className="inline-flex items-center gap-1 text-body-sm text-primary-500 hover:text-primary-600 font-medium transition-colors"
             >
               <ChevronLeft className="w-4 h-4" />
@@ -156,7 +156,7 @@ export default async function CategoriaPage({
                 No hay artículos en esta categoría todavía.
               </p>
               <Link
-                href="/blog"
+                href="/noticias"
                 className="inline-flex items-center gap-1 text-primary-500 hover:text-primary-600 font-medium mt-4 transition-colors"
               >
                 Ver todos los artículos
@@ -170,7 +170,7 @@ export default async function CategoriaPage({
               currentPage={currentPage}
               totalPages={totalPages}
               total={total}
-              basePath={`/blog/categoria/${categoria}`}
+              basePath={`/noticias/categoria/${categoria}`}
             />
           )}
         </div>

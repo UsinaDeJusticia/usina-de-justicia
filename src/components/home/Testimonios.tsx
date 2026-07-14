@@ -63,7 +63,7 @@ export function Testimonios() {
 
         <div className="text-center mt-9">
           <Link
-            href="/blog/categoria/historias"
+            href="/noticias/categoria/historias"
             className="text-navy-600 font-bold text-body-sm underline underline-offset-4"
           >
             Ver todos los testimonios →

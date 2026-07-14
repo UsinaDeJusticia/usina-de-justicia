@@ -7,7 +7,7 @@ import { NextResponse } from 'next/server'
 // El plugin de WP dispara este endpoint al publicar/editar contenido.
 // ============================================
 
-const DEFAULT_PATHS = ['/', '/blog']
+const DEFAULT_PATHS = ['/', '/noticias']
 
 interface RevalidateBody {
   secret?: string

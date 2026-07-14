@@ -40,7 +40,7 @@ export const siteConfig = {
     { label: 'Nosotros', href: '/sobre-nosotros' }, // TODO Fase 3: renombrar ruta a /nosotros
     { label: 'Programas', href: '/programas' },
     { label: 'Observatorio', href: '/#observatorio' }, // TODO Fase 3: crear ruta dedicada /observatorio
-    { label: 'Noticias', href: '/blog' }, // TODO Fase 3: evaluar renombrar ruta a /noticias
+    { label: 'Noticias', href: '/noticias' },
     { label: 'IVUJUS', href: 'https://ivujus.org.ar/', external: true },
     { label: 'Contacto', href: '/contacto' },
   ],
@@ -67,9 +67,9 @@ export const siteConfig = {
     ],
     observatorio: [
       { label: 'Informes', href: '/recursos' },
-      { label: 'Amicus curiae', href: '/blog/categoria/incidencia' },
+      { label: 'Amicus curiae', href: '/noticias/categoria/incidencia' },
       { label: 'Base de sentencias', href: '/#observatorio' }, // TODO Fase 3: ruta /observatorio
-      { label: 'Prensa', href: '/blog/categoria/medios' },
+      { label: 'Prensa', href: '/noticias/categoria/prensa' },
     ],
     contacto: [
       { label: 'Necesito ayuda', href: '/necesito-ayuda' },

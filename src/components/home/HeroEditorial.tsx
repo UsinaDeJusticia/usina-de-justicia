@@ -61,7 +61,7 @@ export function HeroEditorial({ latestArticle }: HeroEditorialProps) {
                   {latestArticle.categoria.nombre}
                 </p>
                 <h2 className="font-display text-xl font-bold leading-snug mt-1.5">
-                  <Link href={`/blog/${latestArticle.slug}`} className="text-white no-underline hover:underline">
+                  <Link href={`/noticias/${latestArticle.slug}`} className="text-white no-underline hover:underline">
                     {latestArticle.titulo}
                   </Link>
                 </h2>
