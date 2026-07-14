@@ -11,6 +11,7 @@ import {
   ShieldCheck,
   Scale,
   Eye,
+  Award,
 } from 'lucide-react'
 
 export const metadata: Metadata = {
@@ -117,6 +118,69 @@ const objetivos = [
   'Impulsar políticas públicas para mejorar la prevención de conductas delictivas graves.',
 ]
 
+// Agradecimientos — fuente: página WP "Agradecimientos" (id 22579), sección
+// "Voces de Gratitud". Por su extensión acotada (9 testimonios cortos), la
+// decisión editorial (MAPA-MIGRACION.md §4) es fusionarla como sección de
+// /nosotros en lugar de crear una ruta propia.
+const agradecimientos = [
+  {
+    texto:
+      'Gracias por haber acompañado en un momento del proceso judicial por el Femicidio de mi hija Chiara Páez. Que el amor y la luz de esta Navidad nos inspire a seguir luchando por un mundo más justo.',
+    nombre: 'Verónica Camargo',
+    rol: 'Familia de víctima',
+  },
+  {
+    texto: 'Gracias por ser la voz de tantos ciudadanos que quedamos perplejos ante semejante injusticia.',
+    nombre: 'lucylorenzogranados',
+    rol: 'Seguidora',
+  },
+  {
+    texto: '¡Que el maravilloso trabajo de Usina tenga sus merecidos frutos! Maravillosa la tarea que hacen.',
+    nombre: 'Monica Haftel',
+    rol: 'Ciudadana',
+  },
+  {
+    texto:
+      'La vida de las familias de víctimas es un antes y después. Un placer ser protagonistas de un cambio en esta JUSTICIA INJUSTA de este país. ¡Por un 2026 lleno de JUSTICIA JUSTA PARA TODOS!',
+    nombre: 'Victoria C.',
+    rol: 'Hermana de víctima',
+  },
+  {
+    texto: 'Estimados e imprescindibles, mis bendiciones, y gracias por lo que hacen.',
+    nombre: 'Graciela',
+    rol: 'Comunidad',
+  },
+  {
+    texto: 'Gracias por el gran apoyo que brindan, en nuestro caso por ELVIRA FABARO!!!',
+    nombre: 'Seguidor',
+    rol: 'Agradecimiento',
+  },
+  {
+    texto: 'Gracias a vos y a todo el equipo de Usina de justicia por estar siempre.',
+    nombre: 'Nora R.',
+    rol: 'Viuda de víctima',
+  },
+  {
+    texto: 'Gracias por lo que hacen.',
+    nombre: 'gra_gracegra',
+    rol: 'Seguidora',
+  },
+  {
+    texto: 'Felicitaciones por su noble e inmensa tarea.',
+    nombre: 'Liliana Ponte',
+    rol: 'Colaboradora',
+  },
+]
+
+function initials(nombre: string) {
+  return nombre
+    .split(' ')
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((p) => p[0]?.toUpperCase())
+    .join('')
+}
+
 export default function NosotrosPage() {
   return (
     <>
@@ -219,10 +283,50 @@ export default function NosotrosPage() {
       {/* Timeline institucional (mismo componente que en Home) */}
       <Trayectoria />
 
-      {/* Links a subpáginas */}
+      {/* Voces de gratitud (agradecimientos) */}
       <section className="py-16 md:py-20 bg-ivory border-t border-grey-200">
         <div className="max-w-content mx-auto px-4 md:px-10">
-          <div className="grid md:grid-cols-2 gap-5">
+          <div className="max-w-[760px] mb-11">
+            <p className="text-[12px] font-bold tracking-[0.14em] uppercase text-navy-600">
+              Agradecimientos
+            </p>
+            <h2 className="font-display font-extrabold text-ink text-[clamp(1.875rem,3.2vw,2.75rem)] mt-2.5 mb-3.5">
+              Voces de gratitud.
+            </h2>
+            <p className="text-body text-grey-700 leading-relaxed">
+              Palabras que nos inspiran a seguir construyendo una justicia más humana.
+            </p>
+          </div>
+
+          <ul className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5 list-none p-0 m-0">
+            {agradecimientos.map((a) => (
+              <li
+                key={`${a.nombre}-${a.texto.slice(0, 12)}`}
+                className="bg-white border border-grey-200 rounded-xs p-6 flex flex-col"
+              >
+                <p className="text-body-sm text-grey-800 leading-relaxed flex-1">“{a.texto}”</p>
+                <div className="flex items-center gap-3 mt-5 pt-4 border-t border-grey-100">
+                  <div
+                    className="w-9 h-9 rounded-full bg-navy-600 text-white flex items-center justify-center font-display font-bold text-[13px] shrink-0"
+                    aria-hidden="true"
+                  >
+                    {initials(a.nombre)}
+                  </div>
+                  <div className="min-w-0">
+                    <p className="font-display font-bold text-caption text-navy-700 truncate">{a.nombre}</p>
+                    <p className="text-[11px] text-grey-600 uppercase tracking-[0.06em] font-bold">{a.rol}</p>
+                  </div>
+                </div>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </section>
+
+      {/* Links a subpáginas */}
+      <section className="py-16 md:py-20">
+        <div className="max-w-content mx-auto px-4 md:px-10">
+          <div className="grid md:grid-cols-3 gap-5">
             <Link
               href="/nosotros/equipo"
               className="group block bg-white border border-grey-200 rounded-xs p-7 no-underline hover:no-underline hover:border-navy-300 hover:shadow-md transition-all duration-base ease-out"
@@ -235,6 +339,22 @@ export default function NosotrosPage() {
               </p>
               <span className="inline-flex items-center gap-1.5 text-body-sm font-bold text-navy-600 mt-5">
                 Conocer al equipo
+                <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform duration-base ease-out" aria-hidden="true" />
+              </span>
+            </Link>
+
+            <Link
+              href="/nosotros/distinciones"
+              className="group block bg-white border border-grey-200 rounded-xs p-7 no-underline hover:no-underline hover:border-navy-300 hover:shadow-md transition-all duration-base ease-out"
+            >
+              <Award className="w-7 h-7 text-navy-600 mb-4" strokeWidth={1.75} aria-hidden="true" />
+              <h2 className="font-display font-bold text-navy-800 text-xl mb-2">Distinciones</h2>
+              <p className="text-body-sm text-grey-700 leading-relaxed">
+                Reconocimientos institucionales, premios y declaraciones de interés
+                recibidos por Usina de Justicia.
+              </p>
+              <span className="inline-flex items-center gap-1.5 text-body-sm font-bold text-navy-600 mt-5">
+                Ver distinciones
                 <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform duration-base ease-out" aria-hidden="true" />
               </span>
             </Link>
