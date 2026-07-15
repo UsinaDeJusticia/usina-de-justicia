@@ -5,7 +5,6 @@ export const metadata: Metadata = {
   title: 'Términos de Uso',
   description: 'Términos y condiciones de uso del sitio web de Usina de Justicia.',
   alternates: { canonical: 'https://www.usinadejusticia.org.ar/legal/terminos' },
-  robots: { index: true, follow: true },
 }
 
 export default function TerminosPage() {

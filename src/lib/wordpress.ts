@@ -325,6 +325,51 @@ export async function searchArticulos(
 }
 
 // ============================================
+// API: SITEMAP (payload mínimo, todas las páginas en paralelo)
+// ============================================
+
+export interface SitemapPostEntry {
+  slug: string
+  modified: string
+}
+
+/**
+ * Todos los posts publicados con el payload mínimo (`slug` + `modified` vía
+ * `_fields`) para src/app/sitemap.ts. La primera llamada revela
+ * X-WP-TotalPages; el resto de las páginas se piden en paralelo con
+ * Promise.all (no secuencial) porque son ~9 llamadas con per_page=100 sobre
+ * ~840 posts. No pasa por el caché en memoria de arriba (cache/getCached):
+ * sitemap.ts se genera una sola vez por build/revalidate, así que no hace
+ * falta memoizar entre requests.
+ */
+export async function getAllPublishedPostSlugs(): Promise<SitemapPostEntry[]> {
+  const perPage = 100
+  const baseParams = {
+    per_page: perPage,
+    status: 'publish',
+    _fields: 'slug,modified',
+    orderby: 'date',
+    order: 'desc',
+  } as const
+
+  const { data: firstPage, headers } = await wpFetch<SitemapPostEntry[]>(
+    '/posts',
+    { ...baseParams, page: 1 }
+  )
+
+  const totalPages = parseInt(headers.get('X-WP-TotalPages') || '1', 10)
+  if (totalPages <= 1) return firstPage
+
+  const restPages = await Promise.all(
+    Array.from({ length: totalPages - 1 }, (_, i) =>
+      wpFetch<SitemapPostEntry[]>('/posts', { ...baseParams, page: i + 2 })
+    )
+  )
+
+  return [firstPage, ...restPages.map((r) => r.data)].flat()
+}
+
+// ============================================
 // API: TAGS
 // ============================================
 

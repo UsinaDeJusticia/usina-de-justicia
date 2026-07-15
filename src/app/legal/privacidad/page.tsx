@@ -5,7 +5,6 @@ export const metadata: Metadata = {
   title: 'Política de Privacidad',
   description: 'Política de privacidad y protección de datos personales de Usina de Justicia.',
   alternates: { canonical: 'https://www.usinadejusticia.org.ar/legal/privacidad' },
-  robots: { index: true, follow: true },
 }
 
 export default function PrivacidadPage() {
