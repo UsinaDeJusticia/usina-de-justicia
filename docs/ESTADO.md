@@ -13,7 +13,9 @@
 
 **Gate G2 ✅ APROBADO Y EJECUTADO** (13-jul): reasignación de categorías corrida contra el WordPress de producción — 696/696 posts modificados, 0 errores. Estrategia ADITIVA: ninguna categoría vieja se quitó; el sitio Elementor actual no muestra ningún cambio visible. Los 19 posts IVUJUS quedaron intactos. Rollback posible vía `docs/inventario/reasignacion-log.json`.
 
-**Fase 3 (rediseño completo) ✅ TODAS LAS OLAS PUSHEADAS (13-14 jul).** Todo el árbol de navegación quedó en el diseño nuevo. **Pendiente: gate G3 — revisión completa de Emanuel en el teléfono** sobre el preview de la rama.
+**Fase 3 (rediseño completo) ✅ COMPLETA — Gate G3 ✅ APROBADO (15-jul):** Emanuel revisó el sitio completo en su celular sobre el preview de la rama y lo aprobó ("se ve excelente"). Todo el árbol de navegación en el diseño nuevo.
+
+**Gate G4 ✅ COMPLETO (15-jul):** optimización integral verificada — Lighthouse ≥96 en Performance y 100 en SEO en las 5 plantillas clave (ver sección Optimización).
 
 ## Árbol de navegación — estado final de la Fase 3
 
@@ -31,6 +33,19 @@
 | `/en` | ✅ Nueva, v1 mínima | Solo hechos ya verificados en español (fundación 2014, misión, contacto) — marcada en código como pendiente del contenido real de la presentación OEA (decisión D5) |
 
 **Componente nuevo reusable:** `src/components/documentos/DocumentCard.tsx`, extraído del patrón maduro de `/nosotros/transparencia` y reusado en `/recursos`.
+
+## Pendientes APARCADOS por decisión de Emanuel (15-jul) — se retoman después
+Ninguno bloquea el trabajo técnico; varios sí bloquean el CUTOVER final:
+1. **Wikidata**: crear la entrada siguiendo `docs/WIKIDATA.md` (~15 min) y pasar el Q-ID para conectarlo al sameAs (TODO esperándolo en src/app/layout.tsx).
+2. **Logo SVG**: el adjunto no llegó — reenviar el vectorial.
+3. **Dirección postal**: confirmar la sede social registrada (primera página de la Memoria y Balance legalizada) para el JSON-LD del NGO.
+4. **Equipo**: nombres, roles y fotos reales para `/nosotros/equipo` (hoy placeholder) — bloquea launch de esa página.
+5. **Retratos**: consentimientos de las familias para reemplazar los placeholders de Testimonios.
+6. **`/en`**: material real de la presentación OEA para completar la landing.
+7. **Formulario de contacto**: elegir servicio de email (Resend/SendGrid/etc.) + API key para el envío real.
+8. **Lectura editorial de `/necesito-ayuda`** (`docs/COPY-necesito-ayuda.md`) antes del launch.
+9. **PR a master**: la rama acumula todo el trabajo (Fases 1-4) — abrir cuando Emanuel lo pida.
+10. **Cutover DNS** (Fase 5 del plan maestro): congelar publicación → www→Vercel + apex redirect → smoke test → HSTS includeSubDomains como paso 2 → revocar credenciales de agente.
 
 ## Hallazgos de esta sesión (para tener en cuenta)
 1. **La página WP "Distinciones" (id 20992) es basura**: plantilla de Elementor sin publicar con contenido de relleno en inglés de un SaaS de reclutamiento, cero contenido real de Usina. Se descartó como fuente; las distinciones reales (Laurel de Plata, Socia Honoraria, Premio Defensor de la República, etc.) estaban dentro de la propia página "Nosotros" y de ahí se migraron.
