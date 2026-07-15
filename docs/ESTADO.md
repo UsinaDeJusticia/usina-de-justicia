@@ -82,13 +82,13 @@ Reportes JSON completos en el scratchpad de la sesión. Post real usado:
 
 | Página | Performance | SEO | Accessibility | Best Practices |
 |---|---|---|---|---|
-| `/` (Home) | **74** | 100 | 97 | 100 |
+| `/` (Home) | ~~74~~ → **97** (Ola E) | 100 | 97 | 100 |
 | `/necesito-ayuda` | 97 | 100 | 96 | 100 |
 | `/noticias` | 98 | 100 | 96 | 100 |
 | `/noticias/[slug]` | 97 | 100 | 96 | 100 |
 | `/donar` | 99 | 100 | 96 | 100 |
 
-**4 de 5 pasan el gate.** Home queda debajo en Performance (SEO y
+**GATE G4 ✅ COMPLETO: 5 de 5 pasan** tras la Ola E (fix quirúrgico de Home: fetchPriority explícito en la imagen LCP + minimumCacheTTL + hidratación diferida del rotador — LCP 3.7s→2.5s, CLS 0.072→0, TBT 540ms→~70ms, sin regresión en el resto). El texto siguiente describe el estado PREVIO a la Ola E: Home quedaba debajo en Performance (SEO y
 Accessibility sí cumplen ahí). Core Web Vitals de laboratorio (más estables
 que el score compuesto en localhost sin CDN): LCP 3.7s / CLS 0.072 / TBT
 540ms en Home, contra LCP 2.0–2.7s / CLS 0 / TBT 50–80ms en el resto.
