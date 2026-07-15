@@ -64,6 +64,31 @@ const nextConfig = {
       { source: '/noticias/categoria/otras', destination: '/noticias/categoria/institucional', permanent: true },
       { source: '/noticias/categoria/ig-publicaciones', destination: '/noticias/categoria/institucional', permanent: true },
 
+      // === NOTICIAS: paginación vieja por query string → segmento de ruta ===
+      // Fase B (perf): /noticias, /noticias/categoria/[categoria] y
+      // /noticias/tag/[tag] dejan de leer `?page=N` (searchParams es lo que
+      // forzaba SSR puro) y pasan a /pagina/N como segmento de ruta
+      // estático. `page=1` no necesita regla acá: cae en /pagina/1, y ese
+      // page.tsx hace redirect() a la ruta base.
+      {
+        source: '/noticias',
+        has: [{ type: 'query', key: 'page', value: '(?<page>\\d+)' }],
+        destination: '/noticias/pagina/:page',
+        permanent: true,
+      },
+      {
+        source: '/noticias/categoria/:categoria',
+        has: [{ type: 'query', key: 'page', value: '(?<page>\\d+)' }],
+        destination: '/noticias/categoria/:categoria/pagina/:page',
+        permanent: true,
+      },
+      {
+        source: '/noticias/tag/:tag',
+        has: [{ type: 'query', key: 'page', value: '(?<page>\\d+)' }],
+        destination: '/noticias/tag/:tag/pagina/:page',
+        permanent: true,
+      },
+
       // === NOTICIAS (consolidación editorial, pre-existente) ===
       { source: '/comunicados', destination: '/noticias/categoria/comunicados', permanent: true },
       { source: '/comunicados/:slug', destination: '/noticias/:slug', permanent: true },

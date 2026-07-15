@@ -7,6 +7,12 @@ interface PaginationProps {
   total: number
   basePath: string
   itemLabel?: string // "artículos", "resultados", etc.
+  /**
+   * Constructor de URL por página. Opcional — por defecto usa `?page=N`
+   * sobre basePath (comportamiento previo). Las rutas de /noticias que
+   * paginan por segmento (/pagina/N) pasan la suya propia acá.
+   */
+  buildPageUrl?: (page: number) => string
 }
 
 export function Pagination({
@@ -15,6 +21,7 @@ export function Pagination({
   total,
   basePath,
   itemLabel = 'artículos',
+  buildPageUrl,
 }: PaginationProps) {
   if (totalPages <= 1) {
     return (
@@ -38,6 +45,7 @@ export function Pagination({
   )
 
   function pageUrl(page: number): string {
+    if (buildPageUrl) return buildPageUrl(page)
     return page === 1 ? basePath : `${basePath}?page=${page}`
   }
 
