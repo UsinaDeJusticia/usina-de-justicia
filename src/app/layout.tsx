@@ -53,7 +53,7 @@ const organizationSchema = {
   name: siteConfig.name,
   description: siteConfig.description,
   url: siteConfig.url,
-  logo: `${siteConfig.url}/images/logo.png`,
+  logo: `${siteConfig.url}/images/logo_uj.png`,
   contactPoint: {
     '@type': 'ContactPoint',
     email: siteConfig.contact.email,
