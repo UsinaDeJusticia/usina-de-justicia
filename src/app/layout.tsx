@@ -47,13 +47,24 @@ export const metadata: Metadata = {
   },
 }
 
+// Entidad NGO consolidada (Fase 4 / Ola C): un solo lugar de verdad para el
+// schema.org de la organización, con `@id` estable para que otras páginas
+// (ej. /nosotros AboutPage.mainEntity) la referencien por `{ "@id": ... }`
+// en vez de declarar un NGO anidado y duplicado.
 const organizationSchema = {
   '@context': 'https://schema.org',
   '@type': 'NGO',
+  '@id': `${siteConfig.url}/#organization`,
   name: siteConfig.name,
   description: siteConfig.description,
   url: siteConfig.url,
   logo: `${siteConfig.url}/images/logo_uj.png`,
+  foundingDate: '2014-11-12',
+  founder: {
+    '@type': 'Person',
+    name: 'Diana Cohen Agrest',
+    sameAs: 'https://www.wikidata.org/wiki/Q23907251',
+  },
   contactPoint: {
     '@type': 'ContactPoint',
     email: siteConfig.contact.email,
@@ -62,11 +73,9 @@ const organizationSchema = {
     areaServed: 'AR',
     availableLanguage: 'Spanish',
   },
-  address: {
-    '@type': 'PostalAddress',
-    addressCountry: 'AR',
-    addressLocality: siteConfig.contact.address,
-  },
+  // TODO: address pendiente de confirmación de la sede social registrada.
+  // TODO: agregar sameAs a la entrada de Wikidata de Usina cuando exista
+  // (docs/WIKIDATA.md).
   sameAs: Object.values(siteConfig.social).filter(Boolean),
 }
 

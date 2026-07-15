@@ -4,7 +4,7 @@ import { siteConfig } from '@/lib/site-config'
 import { Hero } from '@/components/necesito-ayuda/Hero'
 import { PrimerosPasos } from '@/components/necesito-ayuda/PrimerosPasos'
 import { QueOfrecemos } from '@/components/necesito-ayuda/QueOfrecemos'
-import { FAQ } from '@/components/necesito-ayuda/FAQ'
+import { FAQ, faqItems } from '@/components/necesito-ayuda/FAQ'
 import { CTAFinal } from '@/components/necesito-ayuda/CTAFinal'
 
 // /necesito-ayuda — decisión D4 del plan: la página de máxima prioridad del
@@ -32,9 +32,29 @@ export const metadata: Metadata = {
   },
 }
 
+// FAQPage a partir de `faqItems`, ya exportado desde el propio componente
+// <FAQ> — cero duplicación de copy entre el contenido visible y el JSON-LD.
+const faqJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: faqItems.map(({ question, answer }) => ({
+    '@type': 'Question',
+    name: question,
+    acceptedAnswer: {
+      '@type': 'Answer',
+      text: answer,
+    },
+  })),
+}
+
 export default function NecesitoAyudaPage() {
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
+      />
+
       <div className="max-w-content mx-auto px-4 md:px-10">
         <Breadcrumbs items={[{ label: 'Necesito ayuda', href: '/necesito-ayuda' }]} />
       </div>

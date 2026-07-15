@@ -39,6 +39,25 @@ export const metadata: Metadata = {
 // propio todavía — se linkea tal cual, con nota de que está en desarrollo.
 const MAPA_DELITO_URL = 'https://mapa-delito-usina.vercel.app'
 
+// Dataset: `creator` referencia por @id al NGO consolidado del layout raíz
+// (src/app/layout.tsx). `isBasedOn` apunta a la fuente oficial de
+// estadísticas criminales (SNIC, Ministerio de Seguridad de la Nación) que
+// alimenta el trabajo del observatorio; `distribution` es el Mapa del
+// Delito ya linkeado más abajo en esta misma página.
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Dataset',
+  name: 'Observatorio de Usina de Justicia',
+  description,
+  creator: { '@id': `${siteConfig.url}/#organization` },
+  isBasedOn: 'https://www.argentina.gob.ar/seguridad/estadisticascriminales',
+  distribution: {
+    '@type': 'DataDownload',
+    encodingFormat: 'text/html',
+    contentUrl: MAPA_DELITO_URL,
+  },
+}
+
 export default async function ObservatorioPage() {
   const { data: articulos, total } = await getArticulosBySection('observatorio', {
     perPage: 24,
@@ -46,6 +65,11 @@ export default async function ObservatorioPage() {
 
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+
       <div className="max-w-content mx-auto px-4 md:px-10">
         <Breadcrumbs items={[{ label: 'Observatorio', href: '/observatorio' }]} />
       </div>

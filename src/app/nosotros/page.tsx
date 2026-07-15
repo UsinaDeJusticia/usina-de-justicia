@@ -29,6 +29,10 @@ export const metadata: Metadata = {
   },
 }
 
+// mainEntity referencia por @id al NGO consolidado del layout raíz
+// (src/app/layout.tsx) en vez de declarar un segundo NGO anidado y
+// duplicado — patrón estándar de JSON-LD para reusar una entidad ya
+// definida en otra parte del mismo documento/sitio.
 const jsonLd = {
   '@context': 'https://schema.org',
   '@type': 'AboutPage',
@@ -37,12 +41,7 @@ const jsonLd = {
     'Historia, misión y valores de Usina de Justicia, Asociación Civil por los derechos de las víctimas de homicidio y femicidio.',
   url: 'https://www.usinadejusticia.org.ar/nosotros',
   mainEntity: {
-    '@type': 'NGO',
-    name: 'Usina de Justicia',
-    foundingDate: '2014-11-12',
-    description:
-      'Asociación Civil apartidaria que acompaña a las víctimas de homicidio y femicidio y trabaja por una justicia justa.',
-    url: 'https://www.usinadejusticia.org.ar',
+    '@id': 'https://www.usinadejusticia.org.ar/#organization',
   },
 }
 

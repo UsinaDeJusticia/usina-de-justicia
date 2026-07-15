@@ -7,6 +7,7 @@ import { Calendar, User, Clock, ArrowLeft, Tag as TagIcon } from 'lucide-react'
 import { formatDate } from '@/lib/utils'
 import { Badge } from '@/components/ui/Badge'
 import { ArticleCard } from '@/components/noticias/ArticleCard'
+import { siteConfig } from '@/lib/site-config'
 import {
   getArticuloBySlug,
   getArticulos,
@@ -14,6 +15,7 @@ import {
   estimateReadTime,
   extractFirstImage,
 } from '@/lib/wordpress'
+import type { Articulo } from '@/types'
 
 // ============================================
 // GENERACIÓN ESTÁTICA: los 100 más recientes se pre-renderizan (1 sola
@@ -68,6 +70,38 @@ export async function generateMetadata({
 }
 
 // ============================================
+// JSON-LD: NewsArticle
+// ============================================
+
+// El autor por defecto de wordpress.ts (wpPostToArticulo) cuando WP no trae
+// un autor embebido es exactamente el nombre de la organización — se usa
+// ese mismo valor como heurística para decidir Person vs Organization, sin
+// necesitar un campo nuevo en el tipo Articulo.
+function buildNewsArticleJsonLd(articulo: Articulo, slug: string) {
+  const url = `${siteConfig.url}/noticias/${slug}`
+  const esOrganizacion = articulo.autor === siteConfig.name
+
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'NewsArticle',
+    headline: articulo.titulo,
+    description: articulo.extracto,
+    datePublished: articulo.fechaPublicacion,
+    dateModified: articulo.updatedAt,
+    articleSection: articulo.categoria.nombre,
+    author: esOrganizacion
+      ? { '@id': `${siteConfig.url}/#organization` }
+      : { '@type': 'Person', name: articulo.autor },
+    publisher: { '@id': `${siteConfig.url}/#organization` },
+    ...(articulo.imagenDestacada && {
+      image: [articulo.imagenDestacada.url],
+    }),
+    mainEntityOfPage: { '@type': 'WebPage', '@id': url },
+    isAccessibleForFree: true,
+  }
+}
+
+// ============================================
 // PÁGINA
 // ============================================
 
@@ -100,6 +134,13 @@ export default async function NoticiaArticlePage({ params }: SlugPageProps) {
 
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(buildNewsArticleJsonLd(articulo, slug)),
+        }}
+      />
+
       <div className="max-w-content mx-auto px-4 md:px-10">
         <Breadcrumbs
           items={[
