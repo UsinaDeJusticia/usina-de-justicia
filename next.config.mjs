@@ -93,6 +93,42 @@ const nextConfig = {
           { key: 'X-Frame-Options', value: 'DENY' },
           { key: 'X-Content-Type-Options', value: 'nosniff' },
           { key: 'Referrer-Policy', value: 'origin-when-cross-origin' },
+          // Sin includeSubDomains ni preload: decisión deliberada. WordPress
+          // se va a mudar a un subdominio propio (p. ej. wp.usinadejusticia
+          // .org.ar) en el cutover, y ese subdominio no tiene por qué
+          // heredar HSTS del dominio principal todavía. Cuando el cutover
+          // esté estable se puede endurecer a includeSubDomains + preload.
+          {
+            key: 'Strict-Transport-Security',
+            value: 'max-age=31536000',
+          },
+          {
+            key: 'Permissions-Policy',
+            value:
+              'camera=(), microphone=(), geolocation=(), payment=(), usb=()',
+          },
+          // CSP v1 pragmática. 'unsafe-inline' en script-src/style-src es
+          // una concesión consciente: hay JSON-LD y scripts inline de Next,
+          // y el contenido de WP/next-font trae estilos inline. El upgrade
+          // futuro es generar nonces por request vía middleware y sacar
+          // 'unsafe-inline'.
+          {
+            key: 'Content-Security-Policy',
+            value: [
+              "default-src 'self'",
+              "script-src 'self' 'unsafe-inline'",
+              "style-src 'self' 'unsafe-inline'",
+              "img-src 'self' data: https://usinadejusticia.org.ar",
+              "font-src 'self'",
+              "frame-src https://www.youtube.com https://www.youtube-nocookie.com https://www.canva.com https://www.facebook.com https://www.yumpu.com",
+              "media-src 'self' https://usinadejusticia.org.ar",
+              "connect-src 'self' https://usinadejusticia.org.ar",
+              "object-src 'none'",
+              "base-uri 'self'",
+              "form-action 'self'",
+              "frame-ancestors 'none'",
+            ].join('; '),
+          },
         ],
       },
     ]
