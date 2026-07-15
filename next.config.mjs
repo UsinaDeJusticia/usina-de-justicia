@@ -16,6 +16,62 @@ const nextConfig = {
 
   async redirects() {
     return [
+      // === WORDPRESS VIEJO: IVUJUS (Fase 4 / Ola C — SEO técnico) ===
+      // Estas 22 reglas van PRIMERO, antes que cualquier otra (Next.js aplica
+      // la primera que matchea): 19 posts + 3 páginas planas que pertenecen
+      // 100% al curso/campus virtual de IVUJUS (sub-marca con sitio propio,
+      // ivujus.org.ar), reasignados en la Fase 2 al destino "IVUJUS-301" (ver
+      // docs/inventario/COLA-LARGA-decisiones.md sección IVUJUS y
+      // docs/inventario/REASIGNACION-dryrun.json). Si la regla wildcard de
+      // fecha de más abajo los agarrara primero, terminarían apuntando a
+      // /noticias/:slug (404, porque esos posts no se migran a este sitio).
+      //
+      // El post 22365 tiene un slug con emoji percent-encoded tal cual viene
+      // en WP (%e2%9a%96%ef%b8%8f%f0%9f%92%bb = ⚖️💻) — se usa literal, sin
+      // decodificar, porque así llega el pathname crudo de la request.
+      { source: '/2026/04/03/para-que-puedas-organizar-tu-agenda-y-aprovechar-al-maximo-cada-jornada-compartimos-el-cronograma-oficial-del-primer-simposio-americano-y-europeo-de-victimologia-penal', destination: 'https://ivujus.org.ar/', permanent: true },
+      { source: '/2026/04/03/primer-simposio-americano-y-europeo-de-victimologia-penal-inscripciones-abiertas', destination: 'https://ivujus.org.ar/', permanent: true },
+      { source: '/2025/11/12/%e2%9a%96%ef%b8%8f%f0%9f%92%bb-asi-vivimos-la-jornada-hacia-un-derecho-cientifico-en-el-cpacf', destination: 'https://ivujus.org.ar/', permanent: true },
+      { source: '/2025/11/10/hacia-un-derecho-cientifico-medicion-cualitativa-en-la-era-del-algoritmo', destination: 'https://ivujus.org.ar/', permanent: true },
+      { source: '/2024/07/01/encuentro-con-la-universidad-nacional-de-asuncion-para-conversar-sobre-la-formacion-en-victimologia', destination: 'https://ivujus.org.ar/', permanent: true },
+      { source: '/2023/09/21/hoy-ultima-jornada-donde-usina-de-justicia-participa-activamente-en-el-dictado-del-curso-sobre-victimas-en-el-colegio-publico-de-abogados-de-la-capital-federal-cpacf', destination: 'https://ivujus.org.ar/', permanent: true },
+      { source: '/2023/07/31/ministerios-publicos-fiscales-otras-entidades-y-profesionales-particulares-ya-se-sumaron-a-la-capacitacion-en-campus-virtual-de-usina-de-justicia-ley-de-victimas-en-el-marco-de-la-victimologia', destination: 'https://ivujus.org.ar/', permanent: true },
+      { source: '/2023/07/01/usina-de-justicia-lanzo-su-nuevo-campus-virtual', destination: 'https://ivujus.org.ar/', permanent: true },
+      { source: '/2023/04/20/usina-de-justicia-participa-activamente-en-la-capacitacion-en-victimas-de-delito-de-acuerdo-al-convenio-celebrado-con-el-colegio-publico-de-la-abogacia-de-la-capital-federal', destination: 'https://ivujus.org.ar/', permanent: true },
+      { source: '/2023/04/18/nota-en-agencia-universitaria-de-noticias-comenzo-una-capacitacion-inedita-para-la-proteccion-de-victimas-de-delito-el-programa-fue-lanzada-por-usina-de-justicia-en-colaboracion-con-la-facultad-de', destination: 'https://ivujus.org.ar/', permanent: true },
+      { source: '/2023/04/08/nota-en-infobae-se-lanzo-por-primera-vez-en-el-pais-un-programa-universitario-de-capacitacion-en-victimas-de-delitos', destination: 'https://ivujus.org.ar/', permanent: true },
+      { source: '/2023/04/03/usina-de-justicia-en-colaboracion-con-la-uade-comenzara-el-jueves-13-de-abril-con-el-programa-de-capacitacion-en-victimas-de-delito', destination: 'https://ivujus.org.ar/', permanent: true },
+      { source: '/2023/03/17/capacitacion-en-victimas-de-delito-colegio-publico-de-abogados-con-la-participacion-de-usina-en-el-dictado-de-la-capacitacion', destination: 'https://ivujus.org.ar/', permanent: true },
+      { source: '/2023/03/08/colegio-publico-de-la-abogacia-de-la-capital-federal-16-de-marzo-capacitacion-en-victimas-de-delito-presentadora-mariana-romano-y-participa-en-la-apertura-a-cargo-de-diana-cohen-agrest', destination: 'https://ivujus.org.ar/', permanent: true },
+      { source: '/2019/10/30/uj-dicto-clases-en-la-facultad-de-derecho-uba', destination: 'https://ivujus.org.ar/', permanent: true },
+      { source: '/2019/10/03/uj-estuvo-presente-en-la-capacitacion-de-victimas-de-la-subsecretaria-de-justicia-caba', destination: 'https://ivujus.org.ar/', permanent: true },
+      { source: '/2019/03/07/participamos-en-la-jornada-dialogando-ba-proteccion-de-victimas-en-la-facultad-de-derecho-de-la-universidad-de-buenos-aires', destination: 'https://ivujus.org.ar/', permanent: true },
+      { source: '/2017/11/08/ministerio-seguridad-la-nacion-capacitacion-fuerzas-seguridad', destination: 'https://ivujus.org.ar/', permanent: true },
+      { source: '/2016/05/05/seminario-en-la-udemm', destination: 'https://ivujus.org.ar/', permanent: true },
+      // Páginas planas (no posts de blog) del curso/campus de IVUJUS.
+      { source: '/capacitacion', destination: 'https://ivujus.org.ar/', permanent: true },
+      { source: '/inscripcion-al-curso-de-victimologia', destination: 'https://ivujus.org.ar/', permanent: true },
+      { source: '/preinscripcion-al-curso', destination: 'https://ivujus.org.ar/', permanent: true },
+
+      // === WORDPRESS VIEJO: posts por fecha → /noticias/:slug ===
+      // Cubre los ~822 posts restantes (841 totales del inventario - 19
+      // IVUJUS de arriba). Verificado: 0 colisiones de slug contra las rutas
+      // del árbol nuevo. DEBE ir después de las 22 reglas de IVUJUS: Next.js
+      // usa la primera regla que matchea, y este wildcard matchea cualquier
+      // /:year/:month/:day/:slug, incluidos los de IVUJUS.
+      {
+        source: '/:year(\\d{4})/:month(\\d{2})/:day(\\d{2})/:slug',
+        destination: '/noticias/:slug',
+        permanent: true,
+      },
+
+      // === PÁGINAS WP viejas sin redirect (docs/MAPA-MIGRACION.md §4) ===
+      // /nosotros ya existe como ruta nueva (mismo slug, no hace falta
+      // redirect). /colaborar → /donar ya está más abajo, en === DONACIONES
+      // ===; no se duplica acá.
+      { source: '/acompanamiento-a-la-victima', destination: '/acompanamiento', permanent: true },
+      { source: '/acompanamos-a-las-victimas', destination: '/acompanamiento', permanent: true },
+
       // === INSTITUCIONAL ===
       // Fase 3: /sobre-nosotros se renombra a /nosotros (fusiona además el
       // contenido real de distinciones y agradecimientos de WordPress).
