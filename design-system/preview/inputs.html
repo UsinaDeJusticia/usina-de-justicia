@@ -1,0 +1,25 @@
+<!doctype html>
+<!-- @dsCard group="Components" name="Inputs" subtitle="Text, select, textarea, error state" viewport="700x300" --><html><head><meta charset="utf-8"><title>Inputs</title>
+<link rel="stylesheet" href="../colors_and_type.css">
+<style>
+body{margin:0;padding:22px;background:#fff;font-family:var(--font-body);}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;}
+.field{display:flex;flex-direction:column;gap:6px;}
+label{font-size:12px;font-weight:700;color:var(--fg-1);}
+.hint{font-size:11px;color:var(--fg-3);}
+.err{font-size:11px;color:var(--uj-danger);}
+input,select,textarea{font-family:var(--font-body);font-size:14px;padding:9px 12px;border:1px solid var(--border-strong);border-radius:4px;background:#fff;color:var(--fg-1);outline:none;transition:border-color var(--dur-fast) var(--ease-out),box-shadow var(--dur-fast);}
+input:focus,select:focus,textarea:focus{border-color:var(--uj-navy-600);box-shadow:0 0 0 3px var(--uj-navy-100);}
+input.err-state{border-color:var(--uj-danger);}
+input.err-state:focus{box-shadow:0 0 0 3px var(--uj-danger-bg);}
+</style></head><body>
+<div class="grid">
+  <div class="field"><label>Nombre y apellido de la víctima</label><input type="text" placeholder="Ej. Ezequiel Agrest"></div>
+  <div class="field"><label>Fecha del hecho</label><input type="text" value="12/11/2024"></div>
+  <div class="field"><label>Fuero</label>
+    <select><option>Criminal y Correccional</option><option>Penal Juvenil</option></select>
+  </div>
+  <div class="field"><label>DNI del familiar</label><input type="text" class="err-state" value="12.3"><div class="err">DNI incompleto — 7 u 8 dígitos.</div></div>
+  <div class="field" style="grid-column:1/-1;"><label>Observaciones</label><textarea rows="2" placeholder="Notas del acompañamiento…"></textarea><div class="hint">Uso interno. No se muestra al familiar.</div></div>
+</div>
+</body></html>

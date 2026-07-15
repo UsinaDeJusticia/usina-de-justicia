@@ -1,0 +1,29 @@
+<!doctype html>
+<!-- @dsCard group="Brand" name="Logos" subtitle="UJ, IVUJUS, 10 años — on light, ivory, navy" viewport="700x360" -->
+<html><head><meta charset="utf-8"><title>UJ Logos</title>
+<link rel="stylesheet" href="../colors_and_type.css">
+<style>
+  body{margin:0;background:#fff;font-family:var(--font-body);}
+  .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border-1);border:1px solid var(--border-1);}
+  .cell{background:#fff;padding:20px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;min-height:160px;}
+  .cell.dark{background:var(--uj-navy-600);}
+  .cell.ivory{background:var(--uj-ivory);}
+  .cell img{max-width:100%;max-height:90px;object-fit:contain;}
+  .tag{font-size:11px;color:var(--fg-3);letter-spacing:.08em;text-transform:uppercase;font-weight:600;}
+  .tag.on-dark{color:rgba(255,255,255,.75);}
+</style></head>
+<body>
+<div class="grid">
+  <div class="cell"><img src="../assets/logo_uj.png" alt=""><div class="tag">UJ primary · light</div></div>
+  <div class="cell ivory"><img src="../assets/logo_uj.png" alt=""><div class="tag">UJ on ivory</div></div>
+  <div class="cell dark"><img src="../assets/logo_uj.png" alt=""><div class="tag on-dark">UJ on navy (check contrast)</div></div>
+  <div class="cell"><img src="../assets/logo_ivujus.png" alt="" style="max-height:110px"><div class="tag">IVUJUS institute</div></div>
+  <div class="cell ivory"><img src="../assets/10anos.png" alt=""><div class="tag">10 años lockup</div></div>
+  <div class="cell dark" style="flex-direction:row;gap:14px;">
+    <img src="../assets/logo_uj.png" alt="" style="max-height:44px;filter:brightness(0) invert(1);">
+    <div style="width:1px;height:40px;background:rgba(255,255,255,.3);"></div>
+    <img src="../assets/logo_ivujus.png" alt="" style="max-height:52px;filter:brightness(0) invert(1);">
+    <div class="tag on-dark" style="width:100%;margin-top:8px;">co-lockup (proposed)</div>
+  </div>
+</div>
+</body></html>

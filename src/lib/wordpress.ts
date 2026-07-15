@@ -2,6 +2,7 @@
 // Servicio de conexión a la WP REST API de usinadejusticia.org.ar
 // Transforma respuestas WP → tipos Articulo/Categoria/Tag de @/types
 
+import sanitizeHtml from 'sanitize-html'
 import type { Articulo, Categoria, Tag, ImageAsset } from '@/types'
 import type {
   WPPost,
@@ -11,7 +12,7 @@ import type {
   PaginatedResponse,
   SiteSection,
 } from '@/types/wordpress'
-import { CATEGORY_MAP } from '@/types/wordpress'
+import { CATEGORY_MAP, SITE_SECTIONS } from '@/types/wordpress'
 
 // ============================================
 // CONFIGURACIÓN
@@ -144,16 +145,22 @@ function wpPostToArticulo(
     }
   }
 
-  // Categoría principal (la primera que encontremos en el mapeo)
+  // Categoría principal: preferir la categoría nueva (una de las 6 de
+  // SITE_SECTIONS) sobre la legacy. Hasta la limpieza de Fase 5, cada post
+  // trae ambas categorías asignadas en WP, y `wp.categories` no garantiza
+  // ningún orden — sin este filtro, `postCategorias[0]` termina mostrando la
+  // legacy (ver bug verificado en vivo con el post 22629: mostraba
+  // "medios-y-entrevistas" en vez de "prensa").
   const postCategorias = wp.categories
     .map((catId) => categoriasMap.get(catId))
     .filter((cat): cat is Categoria => cat !== undefined)
 
-  const categoria = postCategorias[0] || {
-    id: '0',
-    nombre: 'Sin categoría',
-    slug: 'sin-categoria',
-  }
+  const categoria = postCategorias.find((c) => c.slug in SITE_SECTIONS) ??
+    postCategorias[0] ?? {
+      id: '0',
+      nombre: 'Sin categoría',
+      slug: 'sin-categoria',
+    }
 
   // Tags desde _embedded
   const embeddedTerms = wp._embedded?.['wp:term'] || []
@@ -213,7 +220,11 @@ async function getCategoriasMap(): Promise<Map<number, Categoria>> {
   return new Map(data.map((cat) => [cat.id, wpCategoryToCategoria(cat)]))
 }
 
-// Obtener IDs de categorías WP que corresponden a una sección del sitio
+// Obtener IDs de categorías WP que corresponden a una sección del sitio.
+// Desde Fase 3, CATEGORY_MAP es identidad sobre las 6 categorías nuevas de
+// WP (historias/acompanamiento/incidencia/prensa/institucional/observatorio),
+// así que alcanza con matchear el slug de la sección directamente contra
+// las categorías reales — sin indirección.
 async function getCategoryIdsBySection(
   section: SiteSection
 ): Promise<number[]> {
@@ -314,6 +325,51 @@ export async function searchArticulos(
 }
 
 // ============================================
+// API: SITEMAP (payload mínimo, todas las páginas en paralelo)
+// ============================================
+
+export interface SitemapPostEntry {
+  slug: string
+  modified: string
+}
+
+/**
+ * Todos los posts publicados con el payload mínimo (`slug` + `modified` vía
+ * `_fields`) para src/app/sitemap.ts. La primera llamada revela
+ * X-WP-TotalPages; el resto de las páginas se piden en paralelo con
+ * Promise.all (no secuencial) porque son ~9 llamadas con per_page=100 sobre
+ * ~840 posts. No pasa por el caché en memoria de arriba (cache/getCached):
+ * sitemap.ts se genera una sola vez por build/revalidate, así que no hace
+ * falta memoizar entre requests.
+ */
+export async function getAllPublishedPostSlugs(): Promise<SitemapPostEntry[]> {
+  const perPage = 100
+  const baseParams = {
+    per_page: perPage,
+    status: 'publish',
+    _fields: 'slug,modified',
+    orderby: 'date',
+    order: 'desc',
+  } as const
+
+  const { data: firstPage, headers } = await wpFetch<SitemapPostEntry[]>(
+    '/posts',
+    { ...baseParams, page: 1 }
+  )
+
+  const totalPages = parseInt(headers.get('X-WP-TotalPages') || '1', 10)
+  if (totalPages <= 1) return firstPage
+
+  const restPages = await Promise.all(
+    Array.from({ length: totalPages - 1 }, (_, i) =>
+      wpFetch<SitemapPostEntry[]>('/posts', { ...baseParams, page: i + 2 })
+    )
+  )
+
+  return [firstPage, ...restPages.map((r) => r.data)].flat()
+}
+
+// ============================================
 // API: TAGS
 // ============================================
 
@@ -353,9 +409,155 @@ export async function getArticulosByTagSlug(
 // UTILIDADES DE CONTENIDO
 // ============================================
 
-/** Limpia HTML de Elementor/Gutenberg para renderizar limpio */
+// ============================================
+// SANITIZACIÓN DE HTML (seguridad)
+// ============================================
+//
+// Allowlist verificada contra contenido real de la API de WP. No agrandar
+// ni achicar sin volver a auditar los posts publicados: los 5 hostnames de
+// iframe y el set de estilos permitidos cubren exactamente lo que aparece
+// hoy en producción (embeds de YouTube/Canva/Facebook/Yumpu, videos mp4,
+// columnas/cajas de Elementor con dimensiones y sombras inline).
+//
+// Validadores de valor de estilo: solo números+unidades o palabras clave
+// fijas — nunca url() ni expression(), que quedan excluidos por construcción
+// al no matchear ninguno de los regex de abajo.
+const NUM_UNIT = /^-?\d+(\.\d+)?(px|%|rem|em|vh|vw)$/
+const SHORTHAND_NUM_UNIT = /^(-?\d+(\.\d+)?(px|%|rem|em|vh|vw)?\s*){1,4}$/
+const ASPECT_RATIO = /^\d+(\.\d+)?\s*\/\s*\d+(\.\d+)?$/
+const POSITION_VALUE = /^(relative|absolute)$/
+const OVERFLOW_VALUE = /^(visible|hidden|scroll|auto)$/
+const COLOR_VALUE = /(#[0-9a-fA-F]{3,8}|rgba?\([\d.,\s%]+\)|[a-zA-Z]+)/
+const BORDER_VALUE = new RegExp(
+  `^\\d+(\\.\\d+)?(px|em|rem)\\s+(none|solid|dashed|dotted|double|groove|ridge|inset|outset)\\s+${COLOR_VALUE.source}$`
+)
+const BOX_SHADOW_VALUE = new RegExp(
+  `^(inset\\s+)?-?\\d+(\\.\\d+)?(px|em|rem)?(\\s+-?\\d+(\\.\\d+)?(px|em|rem)?){1,3}\\s+${COLOR_VALUE.source}(\\s+inset)?$`
+)
+
+const SANITIZE_OPTIONS: sanitizeHtml.IOptions = {
+  allowedTags: [
+    'p',
+    'br',
+    'hr',
+    'h1',
+    'h2',
+    'h3',
+    'h4',
+    'h5',
+    'h6',
+    'ul',
+    'ol',
+    'li',
+    'strong',
+    'em',
+    'b',
+    'i',
+    'a',
+    'img',
+    'figure',
+    'figcaption',
+    'blockquote',
+    'video',
+    'iframe',
+    'table',
+    'thead',
+    'tbody',
+    'tr',
+    'td',
+    'th',
+    'div',
+    'span',
+  ],
+  // Nunca 'script', bajo ninguna condición.
+  allowedAttributes: {
+    a: ['href', 'title', 'target', 'rel'],
+    img: [
+      'src',
+      'srcset',
+      'sizes',
+      'alt',
+      'width',
+      'height',
+      'loading',
+      'decoding',
+      'fetchpriority',
+    ],
+    video: ['src', 'controls', 'width', 'height', 'style', 'poster'],
+    iframe: [
+      'src',
+      'title',
+      'width',
+      'height',
+      'frameborder',
+      'allow',
+      'allowfullscreen',
+      'referrerpolicy',
+      'loading',
+    ],
+    // 'class' se remueve deliberadamente (comportamiento previo para
+    // elementor/wp-block); 'style' e 'id' sí se preservan.
+    '*': ['style', 'id'],
+  },
+  allowedIframeHostnames: [
+    'www.youtube.com',
+    'www.youtube-nocookie.com',
+    'www.canva.com',
+    'www.facebook.com',
+    'www.yumpu.com',
+  ],
+  allowedStyles: {
+    '*': {
+      height: [NUM_UNIT],
+      width: [NUM_UNIT],
+      'aspect-ratio': [ASPECT_RATIO],
+      position: [POSITION_VALUE],
+      top: [NUM_UNIT],
+      left: [NUM_UNIT],
+      'padding-top': [NUM_UNIT],
+      'padding-bottom': [NUM_UNIT],
+      'margin-top': [NUM_UNIT],
+      'margin-bottom': [NUM_UNIT],
+      'border-radius': [SHORTHAND_NUM_UNIT],
+      'box-shadow': [BOX_SHADOW_VALUE],
+      overflow: [OVERFLOW_VALUE],
+      border: [BORDER_VALUE],
+      padding: [SHORTHAND_NUM_UNIT],
+      margin: [SHORTHAND_NUM_UNIT],
+    },
+  },
+  transformTags: {
+    a: (tagName, attribs) => {
+      if (attribs.target === '_blank') {
+        return { tagName, attribs: { ...attribs, rel: 'noopener noreferrer' } }
+      }
+      return { tagName, attribs }
+    },
+  },
+}
+
+/**
+ * Sanitiza y limpia el HTML de WordPress (Elementor/Gutenberg) para
+ * renderizar de forma segura.
+ *
+ * 1) sanitize-html aplica la allowlist real de tags/atributos/estilos de
+ *    arriba — esta es la barrera de seguridad contra XSS (scripts, atributos
+ *    on*, href/src con esquemas peligrosos, iframes a hosts no confiables,
+ *    estilos con url()/expression(), etc.)
+ * 2) Encima se aplica la limpieza cosmética de remanentes de Elementor/
+ *    Gutenberg y se decoran los <hr> con las clases de Tailwind del diseño
+ *    (esto corre DESPUÉS del paso de sanitización, así que la clase que le
+ *    agregamos nosotros mismos al <hr> no vuelve a pasar por el allowlist).
+ *
+ * Nota de comportamiento esperado: los embeds de Twitter/TikTok (patrón
+ * blockquote + <script> de oEmbed) degradan a una cita con link, porque
+ * <script> nunca está permitido — es el fallback previsto del formato, no
+ * un bug.
+ */
 export function cleanWPContent(html: string): string {
-  return html
+  const sanitized = sanitizeHtml(html, SANITIZE_OPTIONS)
+
+  return sanitized
     .replace(/\s*class="elementor-[^"]*"/g, '')
     .replace(/\s*data-elementor-[^=]*="[^"]*"/g, '')
     .replace(/\s*data-widget_type="[^"]*"/g, '')

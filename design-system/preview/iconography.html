@@ -1,0 +1,36 @@
+<!doctype html>
+<!-- @dsCard group="Brand" name="Iconography" subtitle="Lucide · stroke 1.75 · 16/20/24/32" viewport="700x260" --><html><head><meta charset="utf-8"><title>Iconography</title>
+<link rel="stylesheet" href="../colors_and_type.css">
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<style>
+body{margin:0;padding:22px;background:#fff;font-family:var(--font-body);}
+.title{font-family:var(--font-display);font-weight:700;font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:var(--uj-navy-600);margin:0 0 14px;}
+.grid{display:grid;grid-template-columns:repeat(10,1fr);gap:14px;color:var(--uj-navy-800);}
+.cell{display:flex;flex-direction:column;align-items:center;gap:6px;}
+.cell .name{font-size:10px;color:var(--fg-3);font-family:var(--font-mono);}
+.cell svg{stroke-width:1.75;}
+.sizes{display:flex;gap:18px;align-items:end;margin-top:20px;color:var(--uj-navy-800);}
+.sizes .s{display:flex;flex-direction:column;align-items:center;gap:4px;}
+.sizes .lbl{font-size:10px;font-family:var(--font-mono);color:var(--fg-3);}
+</style></head><body>
+<div class="title">Iconography · Lucide · stroke 1.75 · currentColor</div>
+<div class="grid">
+  <div class="cell"><i data-lucide="folder-open"></i><div class="name">folder-open</div></div>
+  <div class="cell"><i data-lucide="file-text"></i><div class="name">file-text</div></div>
+  <div class="cell"><i data-lucide="users"></i><div class="name">users</div></div>
+  <div class="cell"><i data-lucide="heart-handshake"></i><div class="name">accompany</div></div>
+  <div class="cell"><i data-lucide="gavel"></i><div class="name">gavel</div></div>
+  <div class="cell"><i data-lucide="scale"></i><div class="name">scale</div></div>
+  <div class="cell"><i data-lucide="bar-chart-3"></i><div class="name">chart</div></div>
+  <div class="cell"><i data-lucide="map-pin"></i><div class="name">map-pin</div></div>
+  <div class="cell"><i data-lucide="calendar"></i><div class="name">calendar</div></div>
+  <div class="cell"><i data-lucide="search"></i><div class="name">search</div></div>
+</div>
+<div class="sizes">
+  <div class="s"><i data-lucide="scale" style="width:16px;height:16px"></i><span class="lbl">16</span></div>
+  <div class="s"><i data-lucide="scale" style="width:20px;height:20px"></i><span class="lbl">20</span></div>
+  <div class="s"><i data-lucide="scale" style="width:24px;height:24px"></i><span class="lbl">24</span></div>
+  <div class="s"><i data-lucide="scale" style="width:32px;height:32px"></i><span class="lbl">32</span></div>
+</div>
+<script>lucide.createIcons();</script>
+</body></html>

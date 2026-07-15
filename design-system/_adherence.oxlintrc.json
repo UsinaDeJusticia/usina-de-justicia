@@ -1,0 +1,291 @@
+{
+  "plugins": [
+    "react",
+    "import"
+  ],
+  "rules": {
+    "react/forbid-elements": [
+      "warn",
+      {
+        "forbid": []
+      }
+    ],
+    "no-restricted-imports": [
+      "warn",
+      {
+        "patterns": [
+          {
+            "group": [
+              "components/**",
+              "home/**",
+              "ivujus/**",
+              "ui_kits/plataforma/**"
+            ],
+            "message": "Import design-system components from 'index.js', not component internals."
+          }
+        ]
+      }
+    ],
+    "no-restricted-syntax": [
+      "warn",
+      {
+        "selector": "Literal[value=/#[0-9a-fA-F]{3,8}\\b/]",
+        "message": "Raw hex color — use a design-system color token via var()."
+      },
+      {
+        "selector": "Literal[value=/\\b\\d+px\\b/]",
+        "message": "Raw px value — use a design-system spacing token via var()."
+      },
+      {
+        "selector": "Literal[value=/font-family\\s*:\\s*(?!['\\\"]?(?:Nunito|Nunito Sans))/i]",
+        "message": "Font not provided by the design system. Available: Nunito, Nunito Sans."
+      },
+      {
+        "selector": "JSXOpeningElement[name.name='Badge'] > JSXAttribute > JSXIdentifier[name!=/^(?:tone|style|children|key|ref|className|style|children)$/]",
+        "message": "<Badge> doesn't accept that prop. Declared props: tone, style, children."
+      },
+      {
+        "selector": "JSXOpeningElement[name.name='Badge'] > JSXAttribute[name.name='tone'] > Literal[value!=/^(?:navy|ochre|neutral|solid)$/]",
+        "message": "<Badge> tone must be one of 'navy' | 'ochre' | 'neutral' | 'solid'."
+      },
+      {
+        "selector": "JSXOpeningElement[name.name='Button'] > JSXAttribute > JSXIdentifier[name!=/^(?:variant|size|href|onClick|style|children|key|ref|className|style|children)$/]",
+        "message": "<Button> doesn't accept that prop. Declared props: variant, size, href, onClick, style, children."
+      },
+      {
+        "selector": "JSXOpeningElement[name.name='Button'] > JSXAttribute[name.name='variant'] > Literal[value!=/^(?:primary|secondary|ghost|danger)$/]",
+        "message": "<Button> variant must be one of 'primary' | 'secondary' | 'ghost' | 'danger'."
+      },
+      {
+        "selector": "JSXOpeningElement[name.name='Button'] > JSXAttribute[name.name='size'] > Literal[value!=/^(?:sm|md|lg)$/]",
+        "message": "<Button> size must be one of 'sm' | 'md' | 'lg'."
+      }
+    ]
+  },
+  "overrides": [
+    {
+      "files": [
+        "**/index.js"
+      ],
+      "rules": {
+        "no-restricted-imports": "off"
+      }
+    }
+  ],
+  "x-omelette": {
+    "components": {
+      "Badge": {
+        "replaces": []
+      },
+      "Button": {
+        "replaces": []
+      }
+    },
+    "tokens": [
+      "--bg-1",
+      "--bg-2",
+      "--bg-3",
+      "--bg-brand",
+      "--bg-brand-subtle",
+      "--border-1",
+      "--border-2",
+      "--border-strong",
+      "--dur-base",
+      "--dur-fast",
+      "--dur-slow",
+      "--ease-out",
+      "--fg-1",
+      "--fg-2",
+      "--fg-3",
+      "--fg-inverse",
+      "--focus-ring",
+      "--font-body",
+      "--font-display",
+      "--font-mono",
+      "--fs-body",
+      "--fs-body-lg",
+      "--fs-body-sm",
+      "--fs-caption",
+      "--fs-display",
+      "--fs-h1",
+      "--fs-h2",
+      "--fs-h3",
+      "--fs-h4",
+      "--ivu-bordeaux",
+      "--ivu-bordeaux-100",
+      "--ivu-bordeaux-200",
+      "--ivu-bordeaux-50",
+      "--ivu-bordeaux-500",
+      "--ivu-bordeaux-600",
+      "--ivu-bordeaux-700",
+      "--ivu-bordeaux-800",
+      "--ivu-bordeaux-900",
+      "--ivu-ink",
+      "--ivu-ochre",
+      "--ivu-ochre-100",
+      "--ivu-ochre-50",
+      "--ivu-ochre-600",
+      "--ivu-parchment",
+      "--lh-body",
+      "--lh-relaxed",
+      "--lh-snug",
+      "--lh-tight",
+      "--radius-lg",
+      "--radius-md",
+      "--radius-pill",
+      "--radius-sm",
+      "--radius-xs",
+      "--shadow-lg",
+      "--shadow-md",
+      "--shadow-sm",
+      "--space-0",
+      "--space-1",
+      "--space-2",
+      "--space-3",
+      "--space-4",
+      "--space-5",
+      "--space-6",
+      "--space-7",
+      "--space-8",
+      "--space-9",
+      "--uj-danger",
+      "--uj-danger-bg",
+      "--uj-grey",
+      "--uj-grey-100",
+      "--uj-grey-200",
+      "--uj-grey-300",
+      "--uj-grey-400",
+      "--uj-grey-50",
+      "--uj-grey-500",
+      "--uj-grey-600",
+      "--uj-grey-700",
+      "--uj-grey-800",
+      "--uj-grey-900",
+      "--uj-info",
+      "--uj-info-bg",
+      "--uj-ink",
+      "--uj-ivory",
+      "--uj-navy",
+      "--uj-navy-100",
+      "--uj-navy-200",
+      "--uj-navy-300",
+      "--uj-navy-400",
+      "--uj-navy-50",
+      "--uj-navy-500",
+      "--uj-navy-600",
+      "--uj-navy-700",
+      "--uj-navy-800",
+      "--uj-navy-900",
+      "--uj-success",
+      "--uj-success-bg",
+      "--uj-warning",
+      "--uj-warning-bg",
+      "--uj-white"
+    ],
+    "tokenKinds": {
+      "--uj-navy": "color",
+      "--uj-navy-900": "color",
+      "--uj-navy-800": "color",
+      "--uj-navy-700": "color",
+      "--uj-navy-600": "color",
+      "--uj-navy-500": "color",
+      "--uj-navy-400": "color",
+      "--uj-navy-300": "color",
+      "--uj-navy-200": "color",
+      "--uj-navy-100": "color",
+      "--uj-navy-50": "color",
+      "--uj-grey": "color",
+      "--uj-grey-900": "color",
+      "--uj-grey-800": "color",
+      "--uj-grey-700": "color",
+      "--uj-grey-600": "color",
+      "--uj-grey-500": "color",
+      "--uj-grey-400": "color",
+      "--uj-grey-300": "color",
+      "--uj-grey-200": "color",
+      "--uj-grey-100": "color",
+      "--uj-grey-50": "color",
+      "--uj-white": "color",
+      "--uj-ivory": "color",
+      "--uj-ink": "color",
+      "--uj-success": "color",
+      "--uj-success-bg": "color",
+      "--uj-warning": "color",
+      "--uj-warning-bg": "color",
+      "--uj-danger": "color",
+      "--uj-danger-bg": "color",
+      "--uj-info": "color",
+      "--uj-info-bg": "color",
+      "--fg-1": "color",
+      "--fg-2": "color",
+      "--fg-3": "color",
+      "--fg-inverse": "color",
+      "--bg-1": "color",
+      "--bg-2": "color",
+      "--bg-3": "color",
+      "--bg-brand": "color",
+      "--bg-brand-subtle": "color",
+      "--border-1": "color",
+      "--border-2": "color",
+      "--border-strong": "color",
+      "--focus-ring": "color",
+      "--radius-xs": "radius",
+      "--radius-sm": "radius",
+      "--radius-md": "radius",
+      "--radius-lg": "radius",
+      "--radius-pill": "radius",
+      "--shadow-sm": "shadow",
+      "--shadow-md": "shadow",
+      "--shadow-lg": "shadow",
+      "--space-0": "spacing",
+      "--space-1": "spacing",
+      "--space-2": "spacing",
+      "--space-3": "spacing",
+      "--space-4": "spacing",
+      "--space-5": "spacing",
+      "--space-6": "spacing",
+      "--space-7": "spacing",
+      "--space-8": "spacing",
+      "--space-9": "spacing",
+      "--font-display": "font",
+      "--font-body": "font",
+      "--font-mono": "font",
+      "--fs-display": "spacing",
+      "--fs-h1": "spacing",
+      "--fs-h2": "spacing",
+      "--fs-h3": "spacing",
+      "--fs-h4": "spacing",
+      "--fs-body-lg": "spacing",
+      "--fs-body": "spacing",
+      "--fs-body-sm": "spacing",
+      "--fs-caption": "spacing",
+      "--lh-tight": "other",
+      "--lh-snug": "other",
+      "--lh-body": "other",
+      "--lh-relaxed": "other",
+      "--ivu-bordeaux": "color",
+      "--ivu-bordeaux-900": "color",
+      "--ivu-bordeaux-800": "color",
+      "--ivu-bordeaux-700": "color",
+      "--ivu-bordeaux-600": "color",
+      "--ivu-bordeaux-500": "color",
+      "--ivu-bordeaux-200": "color",
+      "--ivu-bordeaux-100": "color",
+      "--ivu-bordeaux-50": "color",
+      "--ivu-ochre": "color",
+      "--ivu-ochre-600": "color",
+      "--ivu-ochre-100": "color",
+      "--ivu-ochre-50": "color",
+      "--ivu-parchment": "color",
+      "--ivu-ink": "color",
+      "--ease-out": "other",
+      "--dur-fast": "other",
+      "--dur-base": "other",
+      "--dur-slow": "other"
+    },
+    "fontFamilies": [
+      "Nunito",
+      "Nunito Sans"
+    ]
+  }
+}

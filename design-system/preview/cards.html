@@ -1,0 +1,37 @@
+<!doctype html>
+<!-- @dsCard group="Components" name="Cards" subtitle="Case record card + policy card" viewport="700x240" --><html><head><meta charset="utf-8"><title>Card</title>
+<link rel="stylesheet" href="../colors_and_type.css">
+<style>
+body{margin:0;padding:20px;background:var(--uj-grey-50);font-family:var(--font-body);}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.card{background:#fff;border:1px solid var(--border-1);border-radius:8px;padding:16px;box-shadow:var(--shadow-sm);}
+.eyebrow{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:var(--uj-navy-600);margin-bottom:6px;}
+.t{font-family:var(--font-display);font-weight:700;font-size:17px;color:var(--fg-1);margin:0 0 4px;}
+.m{font-size:13px;color:var(--fg-2);}
+.foot{display:flex;justify-content:space-between;align-items:center;margin-top:12px;padding-top:12px;border-top:1px solid var(--border-1);}
+.kv{display:flex;gap:16px;}
+.kv div{font-size:11px;color:var(--fg-3);}
+.kv b{display:block;font-size:14px;color:var(--fg-1);font-weight:700;}
+.badge{display:inline-flex;padding:3px 9px;border-radius:999px;font-size:11px;font-weight:700;background:var(--uj-navy-50);color:var(--uj-navy-800);}
+</style></head><body>
+<div class="grid">
+  <div class="card">
+    <div class="eyebrow">Expediente · 1.204/2024</div>
+    <h3 class="t">Néstor Alejandro Valdez</h3>
+    <div class="m">Homicidio en ocasión de robo · enero de 2012 · CABA</div>
+    <div class="foot">
+      <div class="kv"><div>Familiares<b>3</b></div><div>Audiencias<b>7</b></div></div>
+      <span class="badge">En seguimiento</span>
+    </div>
+  </div>
+  <div class="card">
+    <div class="eyebrow">Política pública</div>
+    <h3 class="t">Amicus curiae · Ley 27.372</h3>
+    <div class="m">Presentado ante la Comisión de Asuntos Constitucionales.</div>
+    <div class="foot">
+      <div class="kv"><div>Adhesiones<b>12</b></div><div>Jurisdicción<b>Nacional</b></div></div>
+      <span class="badge" style="background:var(--uj-success-bg);color:var(--uj-success);">Admitido</span>
+    </div>
+  </div>
+</div>
+</body></html>

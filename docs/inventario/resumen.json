@@ -1,0 +1,95 @@
+{
+  "generado": "2026-07-10T23:54:06.302Z",
+  "api": "https://usinadejusticia.org.ar/wp-json/wp/v2",
+  "totalPosts": 841,
+  "totalPages": 20,
+  "totalMedia": 1230,
+  "totalCategorias": 16,
+  "totalTags": 37,
+  "porCategoria": {
+    "acompanamiento-a-victimas-de-homicidio": {
+      "nombre": "Acompañamiento a víctimas de homicidio y femicidio",
+      "id": 35,
+      "count": 124
+    },
+    "actividades": {
+      "nombre": "ACTIVIDADES",
+      "id": 36,
+      "count": 17
+    },
+    "boletin-informativo": {
+      "nombre": "Boletín informativo",
+      "id": 204,
+      "count": 2
+    },
+    "capacitacion": {
+      "nombre": "Cursos y Capacitaciones",
+      "id": 37,
+      "count": 15
+    },
+    "debatesyconferencias": {
+      "nombre": "Debates y conferencias",
+      "id": 216,
+      "count": 21
+    },
+    "distinciones-premios": {
+      "nombre": "Distinciones y Premios",
+      "id": 223,
+      "count": 17
+    },
+    "eventos": {
+      "nombre": "Eventos de Usina de Justicia",
+      "id": 224,
+      "count": 8
+    },
+    "historias": {
+      "nombre": "Historias de las familias que acompañamos",
+      "id": 211,
+      "count": 121
+    },
+    "historias-de-los-miembros-de-uj": {
+      "nombre": "Historias de los miembros de UJ",
+      "id": 214,
+      "count": 7
+    },
+    "incidencia-en-politicas-publicas": {
+      "nombre": "Incidencia en Políticas Públicas",
+      "id": 38,
+      "count": 126
+    },
+    "estadisticas": {
+      "nombre": "INFORMES Y ESTADISTICAS",
+      "id": 1,
+      "count": 2
+    },
+    "ig-publicaciones": {
+      "nombre": "Instagram Publicaciones",
+      "id": 219,
+      "count": 0
+    },
+    "institucional": {
+      "nombre": "INSTITUCIONAL",
+      "id": 6,
+      "count": 6
+    },
+    "medios-y-entrevistas": {
+      "nombre": "Medios y entrevistas a Miembros de Usina de Justicia",
+      "id": 9,
+      "count": 434
+    },
+    "otras": {
+      "nombre": "otras",
+      "id": 212,
+      "count": 3
+    },
+    "publicaciones": {
+      "nombre": "Publicaciones",
+      "id": 208,
+      "count": 6
+    }
+  },
+  "postsConMp4Propio": 43,
+  "postsConYouTube": 150,
+  "postsConPdf": 71,
+  "postsPosibleIvujus": 37
+}

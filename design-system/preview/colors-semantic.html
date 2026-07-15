@@ -1,0 +1,38 @@
+<!doctype html>
+<!-- @dsCard group="Colors" name="Semantic colors" subtitle="Success, warning, danger, info — fills + tints" viewport="700x220" --><html><head><meta charset="utf-8"><title>Semantic</title>
+<link rel="stylesheet" href="../colors_and_type.css">
+<style>
+  body{margin:0;padding:18px;background:#fff;font-family:var(--font-body);}
+  .row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;}
+  .sw{border-radius:8px;overflow:hidden;border:1px solid var(--border-1);}
+  .chip{height:70px;display:flex;align-items:flex-end;justify-content:flex-start;padding:10px 12px;color:#fff;font-weight:700;font-size:13px;}
+  .bg{height:44px;display:flex;align-items:center;padding:0 12px;font-size:12px;font-weight:600;}
+  .meta{padding:8px 10px;}
+  .name{font-weight:700;font-size:12px;}
+  .hex{font-family:var(--font-mono);font-size:11px;color:var(--fg-3);}
+  .title{font-family:var(--font-display);font-weight:700;font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:var(--uj-navy-600);margin:0 0 12px;}
+</style></head><body>
+<div class="title">Semantic</div>
+<div class="row">
+  <div class="sw">
+    <div class="chip" style="background:#2F7D5B">success</div>
+    <div class="bg" style="background:#E8F2EC;color:#2F7D5B">success-bg</div>
+    <div class="meta"><div class="name">success · #2F7D5B</div><div class="hex">bg #E8F2EC</div></div>
+  </div>
+  <div class="sw">
+    <div class="chip" style="background:#B8811C">warning</div>
+    <div class="bg" style="background:#FAF1DE;color:#7A5411">warning-bg</div>
+    <div class="meta"><div class="name">warning · #B8811C</div><div class="hex">bg #FAF1DE</div></div>
+  </div>
+  <div class="sw">
+    <div class="chip" style="background:#A6342E">danger</div>
+    <div class="bg" style="background:#F7E6E4;color:#A6342E">danger-bg</div>
+    <div class="meta"><div class="name">danger · #A6342E</div><div class="hex">bg #F7E6E4</div></div>
+  </div>
+  <div class="sw">
+    <div class="chip" style="background:#1D437D">info</div>
+    <div class="bg" style="background:#F3F6FB;color:#1D437D">info-bg</div>
+    <div class="meta"><div class="name">info · navy-600</div><div class="hex">bg navy-50</div></div>
+  </div>
+</div>
+</body></html>

@@ -12,9 +12,10 @@
     "clsx": "^2.1.1",
     "lucide-react": "^0.577.0",
     "next": "15.5.20",
-    "next-sitemap": "^4.2.3",
     "react": "^19",
     "react-dom": "^19",
+    "sanitize-html": "^2.17.0",
+    "sharp": "^0.35.3",
     "tailwind-merge": "^3.5.0"
   },
   "devDependencies": {
@@ -22,11 +23,13 @@
     "@types/node": "^20.19.37",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@types/sanitize-html": "^2.16.1",
     "eslint": "^8",
     "eslint-config-next": "15.5.20",
     "postcss": "^8",
     "tailwindcss": "^4.3.2",
-    "typescript": "^5"
+    "typescript": "^5",
+    "undici": "^8.6.0"
   },
   "packageManager": "pnpm@11.11.0+sha512.4463f65fd80ed80d69bc1d4bf163ee94f605c7380fc318bb5b2ebe15f8cd12d49c51a4d59e951b401e764d3b6ca751cbf51bc50ed7001a6bcb4935e684c34882"
 }

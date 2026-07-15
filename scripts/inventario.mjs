@@ -13,6 +13,17 @@ import { fileURLToPath } from 'node:url'
 
 const API = process.env.WP_API_URL || 'https://usinadejusticia.org.ar/wp-json/wp/v2'
 const OUT_DIR = join(dirname(fileURLToPath(import.meta.url)), '..', 'docs', 'inventario')
+
+// El fetch nativo de Node ignora HTTP(S)_PROXY; en entornos con proxy obligatorio
+// (ej. Claude Code remoto) usamos undici si está instalado. Sin proxy no hace falta.
+if (process.env.HTTPS_PROXY || process.env.https_proxy) {
+  try {
+    const { setGlobalDispatcher, EnvHttpProxyAgent } = await import('undici')
+    setGlobalDispatcher(new EnvHttpProxyAgent())
+  } catch {
+    console.warn('HTTPS_PROXY seteado pero undici no está instalado (pnpm add -D undici)')
+  }
+}
 const PER_PAGE = 100
 
 // ---------- fetch con reintentos ----------

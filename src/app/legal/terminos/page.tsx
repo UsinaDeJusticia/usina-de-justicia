@@ -5,7 +5,6 @@ export const metadata: Metadata = {
   title: 'Términos de Uso',
   description: 'Términos y condiciones de uso del sitio web de Usina de Justicia.',
   alternates: { canonical: 'https://www.usinadejusticia.org.ar/legal/terminos' },
-  robots: { index: true, follow: true },
 }
 
 export default function TerminosPage() {
@@ -20,14 +19,14 @@ export default function TerminosPage() {
         />
       </div>
 
-      <section className="py-section">
-        <div className="max-w-narrow mx-auto px-4">
-          <h1 className="text-h1 mb-8">Términos de Uso</h1>
-          <p className="text-body-sm text-neutral-400 mb-8">
+      <section className="py-16 md:py-20">
+        <div className="max-w-narrow mx-auto px-4 md:px-10">
+          <h1 className="font-display font-extrabold text-ink text-h1 mb-8">Términos de Uso</h1>
+          <p className="text-body-sm text-grey-500 mb-8">
             Última actualización: marzo 2026
           </p>
 
-          <div className="prose prose-lg max-w-none text-neutral-700 prose-headings:text-neutral-900 prose-h2:text-h3 prose-h2:mt-10 prose-h2:mb-4">
+          <div className="prose prose-lg max-w-none text-grey-700 prose-headings:font-display prose-headings:text-ink prose-h2:text-h3 prose-h2:mt-10 prose-h2:mb-4">
             <h2>Aceptación de los términos</h2>
             <p>
               Al acceder y utilizar el sitio web de Usina de Justicia

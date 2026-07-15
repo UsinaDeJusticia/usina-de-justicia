@@ -1,148 +1,141 @@
 import Link from 'next/link'
 import Image from 'next/image'
-import { Heart, Mail } from 'lucide-react'
+import { Facebook, Instagram } from 'lucide-react'
 import { siteConfig } from '@/lib/site-config'
 
-const socialIcons: Record<string, string> = {
-  instagram: 'Instagram',
-  facebook: 'Facebook',
-  tiktok: 'TikTok',
-  twitter: 'X',
-}
+// Portado de design-system/home/Footer.jsx (FooterUJ): logo + 4 columnas de
+// navegación + barra legal/social. X (ex-Twitter) no tiene ícono outline en
+// lucide-react — se usa un glifo SVG propio, igual que en el JSX de
+// referencia, en vez de un ícono ajeno al set.
+const socialLinks: Array<{
+  key: keyof typeof siteConfig.social
+  label: string
+  Icon?: typeof Facebook
+}> = [
+  { key: 'facebook', label: 'Facebook', Icon: Facebook },
+  { key: 'twitter', label: 'X' },
+  { key: 'instagram', label: 'Instagram', Icon: Instagram },
+  { key: 'tiktok', label: 'TikTok' },
+]
+
+const footerColumns = [
+  { title: 'Institución', links: siteConfig.footerNav.institucion },
+  { title: 'Acompañamiento', links: siteConfig.footerNav.acompanamiento },
+  { title: 'Observatorio', links: siteConfig.footerNav.observatorio },
+  { title: 'Contacto', links: siteConfig.footerNav.contacto },
+]
+
+const focusRing =
+  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-navy-600 focus-visible:ring-offset-2 focus-visible:ring-offset-white'
 
 export function Footer() {
   const currentYear = new Date().getFullYear()
 
   return (
-    <footer className="bg-primary-500 text-white">
-      {/* CTA Banner */}
-      <div className="bg-accent-500">
-        <div className="max-w-content mx-auto px-4 py-8 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div>
-            <h3 className="text-h4 font-semibold">Tu aporte hace la diferencia</h3>
-            <p className="text-body-sm text-white/80 mt-1">
-              Ayudanos a defender los derechos de las víctimas del delito
-            </p>
-          </div>
-          <Link
-            href="/donar"
-            className="inline-flex items-center gap-2 bg-white text-accent-500 hover:bg-neutral-100 px-6 py-3 rounded-lg font-semibold transition-colors"
-          >
-            <Heart className="w-4 h-4" />
-            Doná ahora
+    <footer className="bg-white border-t border-grey-200">
+      <div className="max-w-content mx-auto px-4 md:px-10 py-12 md:py-14 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-[1.3fr_repeat(4,1fr)] gap-10">
+        <div>
+          <Link href="/" className={cnFocus('inline-flex no-underline rounded-xs')}>
+            <Image
+              src="/images/logo_uj.png"
+              alt={siteConfig.name}
+              width={172}
+              height={75}
+              className="h-11 w-auto"
+            />
           </Link>
+          <p className="mt-3.5 text-body-sm text-grey-700 leading-relaxed max-w-[320px]">
+            Asociación Civil apartidaria por los derechos de las víctimas de homicidio y femicidio.
+          </p>
         </div>
+
+        {footerColumns.map((col) => (
+          <div key={col.title}>
+            <h2 className="text-[11px] font-bold tracking-[0.12em] uppercase text-navy-700 mb-3.5">
+              {col.title}
+            </h2>
+            <ul className="flex flex-col gap-2">
+              {col.links.map((link) => (
+                <li key={link.label}>
+                  <Link
+                    href={link.href}
+                    {...('external' in link && link.external
+                      ? { target: '_blank', rel: 'noopener noreferrer' }
+                      : {})}
+                    className={cnFocus(
+                      'text-body-sm text-grey-700 no-underline hover:text-navy-700 hover:underline hover:underline-offset-2 rounded-xs'
+                    )}
+                  >
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))}
       </div>
 
-      {/* Contenido principal del footer */}
-      <div className="max-w-content mx-auto px-4 py-12 lg:py-16">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10 lg:gap-8">
-          {/* Columna 1: Logo + descripción */}
-          <div className="sm:col-span-2 lg:col-span-1">
-            <Link href="/">
-              <Image
-                src="/images/logo.png"
-                alt={siteConfig.name}
-                width={160}
-                height={45}
-                className="h-10 w-auto brightness-0 invert"
-              />
+      <div className="border-t border-grey-200">
+        <div className="max-w-content mx-auto px-4 md:px-10 py-5 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div className="text-center sm:text-left text-caption text-grey-600">
+            © {currentYear} Asociación Civil Usina de Justicia · CABA, Argentina
+            <span className="hidden sm:inline"> · </span>
+            <br className="sm:hidden" />
+            <Link
+              href="/legal/privacidad"
+              className={cnFocus('text-grey-600 hover:text-navy-700 rounded-xs')}
+            >
+              Política de Privacidad
+            </Link>{' '}
+            ·{' '}
+            <Link
+              href="/legal/terminos"
+              className={cnFocus('text-grey-600 hover:text-navy-700 rounded-xs')}
+            >
+              Términos de Uso
+            </Link>{' '}
+            ·{' '}
+            <Link
+              href="/en"
+              lang="en"
+              className={cnFocus('text-grey-600 hover:text-navy-700 rounded-xs')}
+            >
+              English
             </Link>
-            <p className="mt-4 text-body-sm text-white/70 leading-relaxed">
-              Defendemos los derechos de las víctimas del delito en Argentina. 
-              Trabajamos por una justicia que escuche, proteja y repare.
-            </p>
-            {siteConfig.contact.email && (
+          </div>
+
+          <div className="flex items-center gap-4 text-grey-700">
+            {socialLinks.map(({ key, label, Icon }) => (
               <a
-                href={`mailto:${siteConfig.contact.email}`}
-                className="inline-flex items-center gap-2 mt-4 text-body-sm text-white/80 hover:text-white transition-colors"
+                key={key}
+                href={siteConfig.social[key]}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label={`Seguinos en ${label}`}
+                title={label}
+                className={cnFocus('hover:text-navy-700 no-underline rounded-xs transition-colors duration-base ease-out')}
               >
-                <Mail className="w-4 h-4" />
-                {siteConfig.contact.email}
+                {Icon ? (
+                  <Icon className="w-4 h-4" strokeWidth={1.75} aria-hidden="true" />
+                ) : label === 'X' ? (
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                    <path d="M18 3h3l-7.5 8.5L22 21h-6l-4.5-6-5 6H3l8-9.2L2 3h6l4 5.5L18 3z" />
+                  </svg>
+                ) : (
+                  // TikTok tampoco tiene ícono outline en lucide-react.
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                    <path d="M16.6 3c.4 2 1.7 3.6 3.6 4.1v3c-1.3 0-2.5-.4-3.6-1.1v6.8a5.9 5.9 0 1 1-5-5.8v3.1a2.8 2.8 0 1 0 2 2.7V3h3z" />
+                  </svg>
+                )}
               </a>
-            )}
+            ))}
           </div>
-
-          {/* Columna 2: Institucional */}
-          <div>
-            <h4 className="text-body font-semibold mb-4">Institucional</h4>
-            <ul className="space-y-3">
-              {siteConfig.footerNav.institucional.map((link) => (
-                <li key={link.href}>
-                  <Link
-                    href={link.href}
-                    className="text-body-sm text-white/70 hover:text-white transition-colors"
-                  >
-                    {link.label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* Columna 3: Contenido */}
-          <div>
-            <h4 className="text-body font-semibold mb-4">Contenido</h4>
-            <ul className="space-y-3">
-              {siteConfig.footerNav.contenido.map((link) => (
-                <li key={link.href}>
-                  <Link
-                    href={link.href}
-                    className="text-body-sm text-white/70 hover:text-white transition-colors"
-                  >
-                    {link.label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* Columna 4: Redes + Legal */}
-          <div>
-            <h4 className="text-body font-semibold mb-4">Seguinos</h4>
-            <div className="flex flex-wrap gap-3 mb-8">
-              {Object.entries(siteConfig.social).map(([network, url]) => (
-                <a
-                  key={network}
-                  href={url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 text-white text-body-sm transition-colors"
-                  aria-label={`Seguinos en ${socialIcons[network] || network}`}
-                >
-                  {(socialIcons[network] || network).charAt(0)}
-                </a>
-              ))}
-            </div>
-
-            <h4 className="text-body font-semibold mb-4">Legal</h4>
-            <ul className="space-y-3">
-              {siteConfig.footerNav.legal.map((link) => (
-                <li key={link.href}>
-                  <Link
-                    href={link.href}
-                    className="text-body-sm text-white/70 hover:text-white transition-colors"
-                  >
-                    {link.label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-        </div>
-      </div>
-
-      {/* Copyright */}
-      <div className="border-t border-white/10">
-        <div className="max-w-content mx-auto px-4 py-5 flex flex-col sm:flex-row items-center justify-between gap-2">
-          <p className="text-body-sm text-white/50">
-            © {currentYear} {siteConfig.name}. Todos los derechos reservados.
-          </p>
-          <p className="text-body-sm text-white/30">
-            Hecho con compromiso por los derechos humanos
-          </p>
         </div>
       </div>
     </footer>
   )
+}
+
+function cnFocus(base: string) {
+  return `${base} ${focusRing}`
 }

@@ -1,0 +1,30 @@
+<!doctype html>
+<!-- @dsCard group="Components" name="Badges" subtitle="States + tipologías" viewport="700x180" --><html><head><meta charset="utf-8"><title>Badges</title>
+<link rel="stylesheet" href="../colors_and_type.css">
+<style>
+body{margin:0;padding:22px;background:#fff;font-family:var(--font-body);}
+.row{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:14px;align-items:center;}
+.badge{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:999px;font-size:12px;font-weight:700;line-height:1.2;}
+.dot{width:6px;height:6px;border-radius:50%;}
+.b-neutral{background:var(--uj-grey-100);color:var(--uj-grey-800);}
+.b-info{background:var(--uj-navy-50);color:var(--uj-navy-800);}
+.b-success{background:var(--uj-success-bg);color:var(--uj-success);}
+.b-warning{background:var(--uj-warning-bg);color:#7A5411;}
+.b-danger{background:var(--uj-danger-bg);color:var(--uj-danger);}
+.b-outline{background:#fff;border:1px solid var(--border-strong);color:var(--fg-2);}
+.label{font-size:11px;color:var(--fg-3);font-family:var(--font-mono);text-transform:uppercase;letter-spacing:.08em;width:90px;}
+</style></head><body>
+<div class="row"><div class="label">estados</div>
+  <span class="badge b-info"><span class="dot" style="background:var(--uj-navy-600)"></span>En seguimiento</span>
+  <span class="badge b-success"><span class="dot" style="background:var(--uj-success)"></span>Sentencia firme</span>
+  <span class="badge b-warning"><span class="dot" style="background:var(--uj-warning)"></span>Pendiente</span>
+  <span class="badge b-danger"><span class="dot" style="background:var(--uj-danger)"></span>Archivado</span>
+</div>
+<div class="row"><div class="label">tipología</div>
+  <span class="badge b-neutral">Homicidio</span>
+  <span class="badge b-neutral">Femicidio</span>
+  <span class="badge b-neutral">Robo agravado</span>
+  <span class="badge b-outline">CABA</span>
+  <span class="badge b-outline">Santa Fe</span>
+</div>
+</body></html>
