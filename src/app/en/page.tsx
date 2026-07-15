@@ -32,8 +32,19 @@ const objetivos = [
 ]
 
 export default function EnglishLandingPage() {
+  // lang="en" en el contenedor, no en <html>: App Router no permite que un
+  // layout anidado redefina <html lang> — solo el layout raíz
+  // (src/app/layout.tsx) puede, y ese layout es compartido por todo el
+  // sitio en español. Un Client Component con
+  // `useEffect(() => { document.documentElement.lang = 'en' }, [])` sería
+  // una alternativa, pero depende de que el JS cargue y corra: no ayuda a
+  // un crawler que no ejecuta JS, y es exactamente el contenido que más
+  // necesita declarar su idioma sin JS (landing para audiencia
+  // angloparlante). El atributo `lang` en un elemento contenedor es HTML
+  // válido y lo respetan lectores de pantalla y crawlers sin depender de
+  // hidratación — la alternativa robusta dentro de esta limitación real.
   return (
-    <>
+    <div lang="en">
       {/* Hero */}
       <section className="pb-16 md:pb-20 pt-8 md:pt-10">
         <div className="max-w-content mx-auto px-4 md:px-10">
@@ -109,6 +120,6 @@ export default function EnglishLandingPage() {
           </div>
         </div>
       </section>
-    </>
+    </div>
   )
 }

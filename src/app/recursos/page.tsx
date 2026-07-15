@@ -5,6 +5,7 @@ import {
   ListaDocumentos,
   type DocumentoRecurso,
 } from '@/components/recursos/ListaDocumentos'
+import { DocumentosPagina } from '@/components/recursos/DocumentosPagina'
 import { SITE_SECTIONS, type SiteSection } from '@/types/wordpress'
 import postsData from '../../../docs/inventario/posts.json'
 
@@ -75,6 +76,13 @@ const documentos: DocumentoRecurso[] = posts
 // searchParams del lado del servidor (única causa de que /recursos se
 // sirviera dinámica por request) — se resuelve en el cliente dentro de
 // <ListaDocumentos>, envuelta acá en <Suspense> porque usa useSearchParams().
+//
+// Fix SEO (Fase 4 / Ola C): el fallback de ese <Suspense> era `null`, así
+// que un crawler sin JS (o cualquier request antes de que hidrate el
+// cliente) no veía ninguno de los 88 documentos. El fallback ahora es
+// <DocumentosPagina> con la página 1 (los primeros 15) renderizada en el
+// servidor — HTML estático e indexable — que el cliente reemplaza sin saltos
+// visuales apenas hidrata (mismo componente, misma marca).
 export default function RecursosPage() {
   return (
     <>
@@ -101,7 +109,9 @@ export default function RecursosPage() {
       {/* Documentos */}
       <section className="py-16 md:py-20 bg-ivory border-t border-grey-200">
         <div className="max-w-narrow mx-auto px-4 md:px-10">
-          <Suspense fallback={null}>
+          <Suspense
+            fallback={<DocumentosPagina documentos={documentos} currentPage={1} />}
+          >
             <ListaDocumentos documentos={documentos} />
           </Suspense>
         </div>
