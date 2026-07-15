@@ -39,6 +39,31 @@ const nextConfig = {
       { source: '/blog/tag/:tag*', destination: '/noticias/tag/:tag*', permanent: true },
       { source: '/blog/:slug*', destination: '/noticias/:slug*', permanent: true },
 
+      // === NOTICIAS: categorías legacy → 6 secciones definitivas ===
+      // Fase 2 reasignó los 841 posts a las 6 categorías nuevas
+      // (historias/acompanamiento/incidencia/prensa/institucional/
+      // observatorio), pero las ~14 categorías legacy de WP siguen existiendo
+      // y generateStaticParams ya no las pre-renderiza (ver
+      // src/app/noticias/categoria/[categoria]/page.tsx). Sin este redirect,
+      // esas URLs devolverían 404 en vez de mandar al visitante/buscador a la
+      // categoría nueva correspondiente. Mapeo por slug — no usa
+      // LEGACY_CATEGORY_MAP (que mapea a una taxonomía intermedia vieja) sino
+      // la correspondencia final de docs/MAPA-MIGRACION.md §1.
+      { source: '/noticias/categoria/medios-y-entrevistas', destination: '/noticias/categoria/prensa', permanent: true },
+      { source: '/noticias/categoria/debatesyconferencias', destination: '/noticias/categoria/institucional', permanent: true },
+      { source: '/noticias/categoria/acompanamiento-a-victimas-de-homicidio', destination: '/noticias/categoria/acompanamiento', permanent: true },
+      { source: '/noticias/categoria/incidencia-en-politicas-publicas', destination: '/noticias/categoria/incidencia', permanent: true },
+      { source: '/noticias/categoria/historias-de-los-miembros-de-uj', destination: '/noticias/categoria/historias', permanent: true },
+      { source: '/noticias/categoria/distinciones-premios', destination: '/noticias/categoria/institucional', permanent: true },
+      { source: '/noticias/categoria/capacitacion', destination: '/noticias/categoria/institucional', permanent: true },
+      { source: '/noticias/categoria/actividades', destination: '/noticias/categoria/institucional', permanent: true },
+      { source: '/noticias/categoria/eventos', destination: '/noticias/categoria/institucional', permanent: true },
+      { source: '/noticias/categoria/boletin-informativo', destination: '/noticias/categoria/institucional', permanent: true },
+      { source: '/noticias/categoria/publicaciones', destination: '/noticias/categoria/observatorio', permanent: true },
+      { source: '/noticias/categoria/estadisticas', destination: '/noticias/categoria/observatorio', permanent: true },
+      { source: '/noticias/categoria/otras', destination: '/noticias/categoria/institucional', permanent: true },
+      { source: '/noticias/categoria/ig-publicaciones', destination: '/noticias/categoria/institucional', permanent: true },
+
       // === NOTICIAS (consolidación editorial, pre-existente) ===
       { source: '/comunicados', destination: '/noticias/categoria/comunicados', permanent: true },
       { source: '/comunicados/:slug', destination: '/noticias/:slug', permanent: true },

@@ -12,7 +12,7 @@ import type {
   PaginatedResponse,
   SiteSection,
 } from '@/types/wordpress'
-import { CATEGORY_MAP } from '@/types/wordpress'
+import { CATEGORY_MAP, SITE_SECTIONS } from '@/types/wordpress'
 
 // ============================================
 // CONFIGURACIÓN
@@ -145,16 +145,22 @@ function wpPostToArticulo(
     }
   }
 
-  // Categoría principal (la primera que encontremos en el mapeo)
+  // Categoría principal: preferir la categoría nueva (una de las 6 de
+  // SITE_SECTIONS) sobre la legacy. Hasta la limpieza de Fase 5, cada post
+  // trae ambas categorías asignadas en WP, y `wp.categories` no garantiza
+  // ningún orden — sin este filtro, `postCategorias[0]` termina mostrando la
+  // legacy (ver bug verificado en vivo con el post 22629: mostraba
+  // "medios-y-entrevistas" en vez de "prensa").
   const postCategorias = wp.categories
     .map((catId) => categoriasMap.get(catId))
     .filter((cat): cat is Categoria => cat !== undefined)
 
-  const categoria = postCategorias[0] || {
-    id: '0',
-    nombre: 'Sin categoría',
-    slug: 'sin-categoria',
-  }
+  const categoria = postCategorias.find((c) => c.slug in SITE_SECTIONS) ??
+    postCategorias[0] ?? {
+      id: '0',
+      nombre: 'Sin categoría',
+      slug: 'sin-categoria',
+    }
 
   // Tags desde _embedded
   const embeddedTerms = wp._embedded?.['wp:term'] || []

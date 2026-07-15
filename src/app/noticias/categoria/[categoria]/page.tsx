@@ -3,7 +3,7 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { Breadcrumbs } from '@/components/layout/Breadcrumbs'
 import { ChevronLeft } from 'lucide-react'
-import { getArticulosByCategorySlug, getArticulosBySection, getWPCategories } from '@/lib/wordpress'
+import { getArticulosBySection } from '@/lib/wordpress'
 import { SITE_SECTIONS } from '@/types/wordpress'
 import type { SiteSection } from '@/types/wordpress'
 import { Badge } from '@/components/ui/Badge'
@@ -11,19 +11,14 @@ import { ArticleCard } from '@/components/noticias/ArticleCard'
 import { Pagination } from '@/components/noticias/Pagination'
 
 // ============================================
-// GENERACIÓN ESTÁTICA: pre-renderizar todas las categorías
+// GENERACIÓN ESTÁTICA: pre-renderizar únicamente las 6 secciones
+// definitivas del sitio (SITE_SECTIONS). Las ~13 categorías legacy de WP ya
+// no se pre-generan: eran contenido duplicado indexable (mismo post bajo dos
+// URLs) y ahora 301-ean a su sección nueva (ver next.config.mjs).
 // ============================================
 
 export async function generateStaticParams() {
-  try {
-    // Pre-renderizar secciones agrupadas + categorías WP individuales
-    const sectionSlugs = Object.keys(SITE_SECTIONS).map((key) => ({ categoria: key }))
-    const categorias = await getWPCategories()
-    const wpSlugs = categorias.map((cat) => ({ categoria: cat.slug }))
-    return [...sectionSlugs, ...wpSlugs]
-  } catch {
-    return []
-  }
+  return Object.keys(SITE_SECTIONS).map((key) => ({ categoria: key }))
 }
 
 // ============================================
@@ -40,26 +35,14 @@ export async function generateMetadata({
 }: CategoriaPageProps): Promise<Metadata> {
   const { categoria } = await params
 
-  // Verificar si es una sección agrupada
-  if (categoria in SITE_SECTIONS) {
-    const section = SITE_SECTIONS[categoria as SiteSection]
-    return {
-      title: `${section.title} — Noticias`,
-      description: `${section.description} — Usina de Justicia`,
-      alternates: {
-        canonical: `https://www.usinadejusticia.org.ar/noticias/categoria/${categoria}`,
-      },
-    }
+  if (!(categoria in SITE_SECTIONS)) {
+    return { title: 'Categoría no encontrada' }
   }
 
-  // Si no, buscar como categoría WP
-  const categorias = await getWPCategories()
-  const cat = categorias.find((c) => c.slug === categoria)
-  if (!cat) return { title: 'Categoría no encontrada' }
-
+  const section = SITE_SECTIONS[categoria as SiteSection]
   return {
-    title: `${cat.nombre} — Noticias`,
-    description: `Artículos sobre ${cat.nombre.toLowerCase()} — Usina de Justicia`,
+    title: `${section.title} — Noticias`,
+    description: `${section.description} — Usina de Justicia`,
     alternates: {
       canonical: `https://www.usinadejusticia.org.ar/noticias/categoria/${categoria}`,
     },
@@ -79,31 +62,17 @@ export default async function CategoriaPage({
   const currentPage = Math.max(1, parseInt(sp.page || '1', 10))
   const perPage = 12
 
-  // Determinar si es una de las 6 secciones definitivas o una categoría WP suelta
-  const isSection = categoria in SITE_SECTIONS
-  let title: string
-  let description: string | undefined
-  let articulosData: Awaited<ReturnType<typeof getArticulosBySection>>
+  // Solo las 6 secciones definitivas del sitio; las categorías legacy de WP
+  // 301-ean antes de llegar acá (ver next.config.mjs).
+  if (!(categoria in SITE_SECTIONS)) notFound()
 
-  if (isSection) {
-    const section = SITE_SECTIONS[categoria as SiteSection]
-    title = section.title
-    description = section.description
-    articulosData = await getArticulosBySection(categoria as SiteSection, {
-      page: currentPage,
-      perPage,
-    })
-  } else {
-    const categorias = await getWPCategories()
-    const cat = categorias.find((c) => c.slug === categoria)
-    if (!cat) notFound()
-    title = cat.nombre
-    description = cat.descripcion
-    articulosData = await getArticulosByCategorySlug(categoria, {
-      page: currentPage,
-      perPage,
-    })
-  }
+  const section = SITE_SECTIONS[categoria as SiteSection]
+  const title = section.title
+  const description = section.description
+  const articulosData = await getArticulosBySection(categoria as SiteSection, {
+    page: currentPage,
+    perPage,
+  })
 
   const { data: articulos, total, totalPages } = articulosData
 
