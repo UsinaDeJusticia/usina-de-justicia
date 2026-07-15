@@ -16,12 +16,13 @@ import {
 } from '@/lib/wordpress'
 
 // ============================================
-// GENERACIÓN ESTÁTICA: los 20 más recientes se pre-renderizan
+// GENERACIÓN ESTÁTICA: los 100 más recientes se pre-renderizan (1 sola
+// llamada a WP con perPage 100 — el resto se genera on-demand vía ISR).
 // ============================================
 
 export async function generateStaticParams() {
   try {
-    const { data: articulos } = await getArticulos({ perPage: 20 })
+    const { data: articulos } = await getArticulos({ perPage: 100 })
     return articulos.map((articulo) => ({ slug: articulo.slug }))
   } catch {
     return []
