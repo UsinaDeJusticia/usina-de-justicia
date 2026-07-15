@@ -15,6 +15,11 @@ export const metadata = generatePageMetadata({
   path: '/',
   // hreflang recíproco con la landing /en (v1 mínima, ver src/app/en/page.tsx).
   languages: { en: '/en' },
+  // Home vive en el mismo segmento que el layout raíz que define el title
+  // template — el único caso en que ese template NO se aplica (ver el
+  // comentario de `appendSiteName` en src/lib/metadata.ts) — así que necesita
+  // el sufijo agregado acá para no quedar sin él.
+  appendSiteName: true,
 })
 
 export default async function Home() {

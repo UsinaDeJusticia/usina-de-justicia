@@ -1,6 +1,5 @@
-import type { Metadata } from 'next'
+import { generatePageMetadata } from '@/lib/metadata'
 import { Breadcrumbs } from '@/components/layout/Breadcrumbs'
-import { siteConfig } from '@/lib/site-config'
 import { Hero } from '@/components/necesito-ayuda/Hero'
 import { PrimerosPasos } from '@/components/necesito-ayuda/PrimerosPasos'
 import { QueOfrecemos } from '@/components/necesito-ayuda/QueOfrecemos'
@@ -13,24 +12,20 @@ import { CTAFinal } from '@/components/necesito-ayuda/CTAFinal'
 // factual sale de las páginas WP reales del programa de acompañamiento, de
 // QueHacer.tsx/Pillars.tsx (Home, ya aprobados) y de site-config.ts. Ver
 // docs/COPY-necesito-ayuda.md para el detalle fuente por sección.
-//
-// Nota: no usamos generatePageMetadata acá (ver src/app/contacto/layout.tsx)
-// porque ese helper ya agrega el sufijo " — Usina de Justicia"; en una ruta
-// anidada el template del layout raíz lo volvería a agregar y duplicaría el
-// sufijo. Un título plano deja que el template lo agregue una sola vez.
 const description =
   'Si perdiste a un ser querido por un hecho de inseguridad, Usina de Justicia te acompaña: asesoramiento jurídico, contención psicológica y grupos de pares. Comunicate con nosotros.'
 
-export const metadata: Metadata = {
+// generatePageMetadata (ver src/lib/metadata.ts) siempre setea `images` en
+// openGraph/twitter — evita la trampa de herencia de Next: una ruta con
+// `metadata.openGraph` propio pero SIN `images` no hereda el
+// opengraph-image del layout raíz, reemplaza el objeto entero. `path`
+// nested (no Home) => appendSiteName default false: el título queda plano
+// y el template del layout raíz agrega el sufijo una sola vez.
+export const metadata = generatePageMetadata({
   title: 'Necesito ayuda',
   description,
-  alternates: { canonical: `${siteConfig.url}/necesito-ayuda` },
-  openGraph: {
-    title: `Necesito ayuda — ${siteConfig.name}`,
-    description,
-    url: `${siteConfig.url}/necesito-ayuda`,
-  },
-}
+  path: '/necesito-ayuda',
+})
 
 // FAQPage a partir de `faqItems`, ya exportado desde el propio componente
 // <FAQ> — cero duplicación de copy entre el contenido visible y el JSON-LD.

@@ -6,7 +6,10 @@ export const siteConfig = {
   name: 'Usina de Justicia',
   description: 'Defensa de los derechos de las víctimas del delito en Argentina',
   url: 'https://www.usinadejusticia.org.ar',
-  ogImage: '/images/og-default.jpg',
+  // Ruta fija que expone src/app/opengraph-image.tsx (ImageResponse
+  // generado, no un archivo estático) — reemplaza la referencia a un .jpg
+  // que nunca existió en public/images.
+  ogImage: '/opengraph-image',
   locale: 'es_AR',
 
   contact: {

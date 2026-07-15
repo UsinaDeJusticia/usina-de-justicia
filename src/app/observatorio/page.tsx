@@ -1,10 +1,10 @@
-import type { Metadata } from 'next'
 import Link from 'next/link'
 import { Breadcrumbs } from '@/components/layout/Breadcrumbs'
 import { Button } from '@/components/ui/Button'
 import { ArticleCard } from '@/components/noticias/ArticleCard'
 import { getArticulosBySection } from '@/lib/wordpress'
 import { siteConfig } from '@/lib/site-config'
+import { generatePageMetadata } from '@/lib/metadata'
 import { Map, ArrowUpRight, ChevronRight } from 'lucide-react'
 
 // /observatorio — sección nueva sin página WP de origen (decisión D del plan,
@@ -24,16 +24,16 @@ import { Map, ArrowUpRight, ChevronRight } from 'lucide-react'
 const description =
   'El observatorio de Usina de Justicia releva, analiza y publica información sobre homicidios, femicidios y el funcionamiento del sistema penal en las 24 jurisdicciones del país.'
 
-export const metadata: Metadata = {
+// generatePageMetadata siempre setea `images` — evita la trampa de herencia
+// de Next (una ruta con openGraph propio sin `images` no hereda el
+// opengraph-image del layout raíz). `path` nested (no Home) => sin
+// appendSiteName: el título queda plano y el template del layout raíz
+// agrega el sufijo " — Usina de Justicia" una sola vez.
+export const metadata = generatePageMetadata({
   title: 'Observatorio',
   description,
-  alternates: { canonical: `${siteConfig.url}/observatorio` },
-  openGraph: {
-    title: `Observatorio — ${siteConfig.name}`,
-    description,
-    url: `${siteConfig.url}/observatorio`,
-  },
-}
+  path: '/observatorio',
+})
 
 // Proyecto hermano de Usina de Justicia, deployado en Vercel, sin dominio
 // propio todavía — se linkea tal cual, con nota de que está en desarrollo.

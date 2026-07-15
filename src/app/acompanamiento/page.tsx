@@ -1,7 +1,7 @@
-import type { Metadata } from 'next'
 import Link from 'next/link'
 import { Breadcrumbs } from '@/components/layout/Breadcrumbs'
 import { Button } from '@/components/ui/Button'
+import { generatePageMetadata } from '@/lib/metadata'
 import { siteConfig } from '@/lib/site-config'
 import {
   HeartHandshake,
@@ -42,16 +42,16 @@ import {
 const description =
   'El programa de acompañamiento de Usina de Justicia: cómo trabaja el equipo con las familias de víctimas de homicidio y femicidio, desde el primer contacto hasta la ejecución de la pena.'
 
-export const metadata: Metadata = {
+// generatePageMetadata siempre setea `images` — evita la trampa de herencia
+// de Next (una ruta con openGraph propio sin `images` no hereda el
+// opengraph-image del layout raíz). `path` nested (no Home) => sin
+// appendSiteName: el título queda plano y el template del layout raíz
+// agrega el sufijo " — Usina de Justicia" una sola vez.
+export const metadata = generatePageMetadata({
   title: 'Acompañamiento',
   description,
-  alternates: { canonical: `${siteConfig.url}/acompanamiento` },
-  openGraph: {
-    title: `Acompañamiento — ${siteConfig.name}`,
-    description,
-    url: `${siteConfig.url}/acompanamiento`,
-  },
-}
+  path: '/acompanamiento',
+})
 
 const jsonLd = {
   '@context': 'https://schema.org',
@@ -59,11 +59,7 @@ const jsonLd = {
   serviceType: 'Acompañamiento a víctimas de homicidio y femicidio',
   name: 'Acompañamiento a las víctimas — Usina de Justicia',
   description,
-  provider: {
-    '@type': 'NGO',
-    name: 'Usina de Justicia',
-    url: siteConfig.url,
-  },
+  provider: { '@id': `${siteConfig.url}/#organization` },
   areaServed: 'AR',
 }
 

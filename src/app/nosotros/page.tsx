@@ -1,7 +1,7 @@
-import type { Metadata } from 'next'
 import Link from 'next/link'
 import { Breadcrumbs } from '@/components/layout/Breadcrumbs'
 import { Trayectoria } from '@/components/home/Trayectoria'
+import { generatePageMetadata } from '@/lib/metadata'
 import {
   Users,
   Target,
@@ -14,20 +14,17 @@ import {
   Award,
 } from 'lucide-react'
 
-export const metadata: Metadata = {
+// generatePageMetadata siempre setea `images` — evita la trampa de herencia
+// de Next (una ruta con openGraph propio sin `images` no hereda el
+// opengraph-image del layout raíz). `path` nested (no Home) => sin
+// appendSiteName: el título queda plano y el template del layout raíz
+// agrega el sufijo " — Usina de Justicia" una sola vez.
+export const metadata = generatePageMetadata({
   title: 'Nosotros',
   description:
     'Usina de Justicia es una Asociación Civil apartidaria que desde 2014 acompaña a las víctimas de homicidio y femicidio y trabaja por una justicia que contemple sus derechos.',
-  alternates: {
-    canonical: 'https://www.usinadejusticia.org.ar/nosotros',
-  },
-  openGraph: {
-    title: 'Nosotros — Usina de Justicia',
-    description:
-      'Asociación Civil apartidaria que desde 2014 acompaña a las víctimas de homicidio y femicidio en Argentina.',
-    url: 'https://www.usinadejusticia.org.ar/nosotros',
-  },
-}
+  path: '/nosotros',
+})
 
 // mainEntity referencia por @id al NGO consolidado del layout raíz
 // (src/app/layout.tsx) en vez de declarar un segundo NGO anidado y
