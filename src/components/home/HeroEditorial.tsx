@@ -27,8 +27,9 @@ export function HeroEditorial({ latestArticle }: HeroEditorialProps) {
         </h1>
         <p className="text-body-lg text-grey-700 mt-5 max-w-[520px]">
           Acompañamos a las familias que perdieron a un ser querido por un hecho de
-          inseguridad, con contención emocional y asesoramiento legal. Trabajamos
-          contra la impunidad y por los derechos de las víctimas en el proceso penal.
+          inseguridad en Argentina, con contención emocional y asesoramiento legal.
+          Trabajamos contra la impunidad y por los derechos de las víctimas en el
+          proceso penal.
         </p>
         <div className="flex flex-wrap gap-3 mt-7">
           <Button href="/#quehacer" variant="primary" size="lg">
