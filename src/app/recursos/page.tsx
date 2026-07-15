@@ -1,9 +1,10 @@
 import type { Metadata } from 'next'
+import { Suspense } from 'react'
 import { Breadcrumbs } from '@/components/layout/Breadcrumbs'
-import { DocumentCard } from '@/components/documentos/DocumentCard'
-import { Pagination } from '@/components/noticias/Pagination'
-import { Badge } from '@/components/ui/Badge'
-import { formatDate } from '@/lib/utils'
+import {
+  ListaDocumentos,
+  type DocumentoRecurso,
+} from '@/components/recursos/ListaDocumentos'
 import { SITE_SECTIONS, type SiteSection } from '@/types/wordpress'
 import postsData from '../../../docs/inventario/posts.json'
 
@@ -53,14 +54,6 @@ const CATEGORIA_LEGACY_A_SECCION: Record<string, SiteSection> = {
   'publicaciones': 'observatorio',
 }
 
-interface DocumentoRecurso {
-  key: string
-  titulo: string
-  fecha: string
-  categoriaLabel: string
-  url: string
-}
-
 const documentos: DocumentoRecurso[] = posts
   .filter((post) => post.pdfs.length > 0)
   .flatMap((post) => {
@@ -78,20 +71,11 @@ const documentos: DocumentoRecurso[] = posts
   })
   .sort((a, b) => new Date(b.fecha).getTime() - new Date(a.fecha).getTime())
 
-const PER_PAGE = 15
-
-// Next.js 15: searchParams es una Promise.
-interface RecursosPageProps {
-  searchParams: Promise<{ page?: string }>
-}
-
-export default async function RecursosPage({ searchParams }: RecursosPageProps) {
-  const params = await searchParams
-  const totalPages = Math.max(1, Math.ceil(documentos.length / PER_PAGE))
-  const currentPage = Math.min(totalPages, Math.max(1, parseInt(params.page || '1', 10)))
-  const start = (currentPage - 1) * PER_PAGE
-  const pageItems = documentos.slice(start, start + PER_PAGE)
-
+// Página estática: la paginación por `?page=N` ya no depende de
+// searchParams del lado del servidor (única causa de que /recursos se
+// sirviera dinámica por request) — se resuelve en el cliente dentro de
+// <ListaDocumentos>, envuelta acá en <Suspense> porque usa useSearchParams().
+export default function RecursosPage() {
   return (
     <>
       <div className="max-w-content mx-auto px-4 md:px-10">
@@ -117,36 +101,9 @@ export default async function RecursosPage({ searchParams }: RecursosPageProps) 
       {/* Documentos */}
       <section className="py-16 md:py-20 bg-ivory border-t border-grey-200">
         <div className="max-w-narrow mx-auto px-4 md:px-10">
-          {pageItems.length > 0 ? (
-            <div className="space-y-4">
-              {pageItems.map((doc) => (
-                <div key={doc.key}>
-                  <div className="flex items-center gap-2 mb-2">
-                    <Badge tone="navy">{doc.categoriaLabel}</Badge>
-                  </div>
-                  <DocumentCard
-                    titulo={doc.titulo}
-                    meta={formatDate(doc.fecha)}
-                    url={doc.url}
-                  />
-                </div>
-              ))}
-            </div>
-          ) : (
-            <div className="text-center py-20">
-              <p className="text-body-lg text-grey-500">
-                No se encontraron recursos.
-              </p>
-            </div>
-          )}
-
-          <Pagination
-            currentPage={currentPage}
-            totalPages={totalPages}
-            total={documentos.length}
-            basePath="/recursos"
-            itemLabel="documentos"
-          />
+          <Suspense fallback={null}>
+            <ListaDocumentos documentos={documentos} />
+          </Suspense>
         </div>
       </section>
     </>
