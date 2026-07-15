@@ -48,9 +48,18 @@ export function HeroEditorial({ latestArticle }: HeroEditorialProps) {
               src={latestArticle.imagenDestacada.url}
               alt={latestArticle.imagenDestacada.alt}
               fill
-              sizes="(max-width: 1024px) 100vw, 480px"
+              // Tamaño renderizado real: columna completa en mobile (< lg),
+              // ~460px en desktop (columna 1fr de 1.3fr/1fr dentro de
+              // max-w-content 1200px, con gap-16 y padding lg:px-10).
+              sizes="(max-width: 1024px) 100vw, 460px"
               className="object-cover"
+              // Esta imagen es el LCP de la Home: `priority` agrega el
+              // <link rel=preload> pero NO fija fetchpriority=high por sí
+              // solo (ver get-img-props de next/image) — hace falta pasarlo
+              // explícito para que el navegador la priorice de verdad sobre
+              // el resto de los recursos iniciales.
               priority
+              fetchPriority="high"
             />
           ) : null}
           {/* Bloque semitransparente navy para legibilidad del texto, nunca gradiente decorativo */}

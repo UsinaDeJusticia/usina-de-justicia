@@ -5,6 +5,11 @@ const nextConfig = {
 
   images: {
     formats: ['image/webp', 'image/avif'],
+    // Las imágenes de WordPress cambian poco una vez publicadas: 1h de
+    // cache en el optimizador de imágenes evita re-fetchear el origen (WP,
+    // lento) en cada revalidación y baja la duración de carga de la imagen
+    // LCP del hero (Perf Home, gate G4).
+    minimumCacheTTL: 3600,
     remotePatterns: [
       {
         protocol: 'https',
