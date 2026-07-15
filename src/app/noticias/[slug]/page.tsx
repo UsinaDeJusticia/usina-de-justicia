@@ -13,7 +13,6 @@ import {
   cleanWPContent,
   estimateReadTime,
   extractFirstImage,
-  extractVideos,
 } from '@/lib/wordpress'
 
 // ============================================
@@ -81,7 +80,6 @@ export default async function NoticiaArticlePage({ params }: SlugPageProps) {
 
   const readTime = estimateReadTime(articulo.contenido)
   const cleanContent = cleanWPContent(articulo.contenido)
-  const videos = extractVideos(articulo.contenido)
 
   // Imagen: featured o la primera del contenido
   const heroImage =
@@ -173,35 +171,6 @@ export default async function NoticiaArticlePage({ params }: SlugPageProps) {
               prose-hr:border-grey-200"
             dangerouslySetInnerHTML={{ __html: cleanContent }}
           />
-
-          {/* Videos embebidos (YouTube / mp4) detectados en el contenido */}
-          {videos.length > 0 && (
-            <div className="grid gap-6 mt-10">
-              {videos.map((video, i) =>
-                video.type === 'youtube' ? (
-                  <div
-                    key={`${video.url}-${i}`}
-                    className="relative aspect-video rounded-xs overflow-hidden bg-ink"
-                  >
-                    <iframe
-                      src={video.url}
-                      title={`Video ${i + 1} — ${articulo.titulo}`}
-                      className="absolute inset-0 w-full h-full"
-                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                      allowFullScreen
-                    />
-                  </div>
-                ) : (
-                  <video
-                    key={`${video.url}-${i}`}
-                    src={video.url}
-                    controls
-                    className="w-full rounded-xs bg-ink"
-                  />
-                )
-              )}
-            </div>
-          )}
 
           {/* Tags */}
           {articulo.tags.length > 0 && (
