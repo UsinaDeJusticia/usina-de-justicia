@@ -1,176 +1,106 @@
 'use client'
 
-import { useCallback, useEffect, useState } from 'react'
-import { HeroEditorial } from './HeroEditorial'
-import { HeroAccompany } from './HeroAccompany'
-import { HeroData } from './HeroData'
+import { useEffect, useState, type ComponentType } from 'react'
+import { getHeroSlides } from './heroSlides'
 import type { Articulo } from '@/types'
 
-// Rotador de las 3 variantes de hero (design-system/home: HeroEditorial,
-// HeroAccompany, HeroData), montado como carrusel con crossfade.
+// Envoltorio de hidratación diferida del hero (Perf Home, gate G4).
 //
-// - Auto-avance cada 9s, se detiene con hover/foco/interacción manual.
-// - Crossfade con los tokens de motion de marca (--duration-slow=320ms,
-//   --ease-out) — sin slide/bounce/parallax.
-// - `prefers-reduced-motion: reduce` desactiva la rotación por completo:
-//   se muestra fija la primera variante (Editorial) sin controles, porque
-//   no hay nada que "navegar" si no rota.
-// - Cada slide tiene su propio fondo sólido (nunca gradiente): ivory,
-//   navy-50 y navy-900 respectivamente.
-const AUTOPLAY_MS = 9000
-
-interface Slide {
-  key: string
-  label: string
-  bgClassName: string
-  render: () => React.ReactNode
-}
+// El HTML que se sirve (SSR y también el caso sin JS) es siempre el
+// placeholder estático de acá abajo: la variante Editorial visible, con
+// exactamente el mismo contenido que el primer slide del rotador completo
+// (incluido el párrafo de definición institucional, ver Ola D / GEO). El
+// rotador completo (variantes Acompañamiento + Observatorio + matchMedia +
+// setInterval + tablist, ~1.6s de hidratación medidos por Lighthouse) vive
+// en HeroRotatorEnhanced.tsx y se descarga + monta recién cuando el hilo
+// principal queda libre (`requestIdleCallback`, con fallback `setTimeout` a
+// los 2s) o en la primera interacción del visitante — lo que ocurra
+// primero. Así ese trabajo sale del camino crítico de TBT.
+//
+// OJO CLS (dos vueltas hasta llegar acá, documentadas para que no se
+// repita el error):
+// 1. La primera versión de este placeholder sólo reservaba el alto de la
+//    variante Editorial; al montar el rotador completo (que en ese momento
+//    apilaba las 3 variantes con CSS grid y se quedaba con el alto de la
+//    más alta de las 3) la página entera se corría — CLS 0.072 → 1.842.
+// 2. El segundo intento apiló acá también las 3 variantes (ocultas con
+//    opacity-0) para igualar ese alto máximo — el alto ya no cambiaba,
+//    pero el CLS seguía en 1.842: las 2 variantes ocultas metían su texto
+//    real al árbol de layout desde el primer paint, y cuando las fuentes
+//    web terminaban de cargar (font swap) ese texto oculto reflowaba junto
+//    con el visible, TRIPLICANDO el salto de layout del font-swap normal.
+// La solución real (ver también HeroRotatorEnhanced.tsx): en vez de
+// igualar alturas, que nunca haya una variante "de más" en el DOM. Acá se
+// monta sólo la Editorial (como HeroRotatorEnhanced monta sólo la variante
+// activa) — mismo contenido, mismo alto, en los dos estados.
+const IDLE_FALLBACK_MS = 2000
+const INTERACTION_EVENTS = ['pointerdown', 'keydown', 'touchstart', 'wheel'] as const
 
 interface HeroRotatorProps {
   latestArticle?: Articulo | null
 }
 
 export function HeroRotator({ latestArticle }: HeroRotatorProps) {
-  const slides: Slide[] = [
-    {
-      key: 'editorial',
-      label: 'Editorial',
-      bgClassName: 'bg-ivory border-b border-grey-200',
-      render: () => <HeroEditorial latestArticle={latestArticle} />,
-    },
-    {
-      key: 'acompany',
-      label: 'Acompañamiento',
-      bgClassName: 'bg-navy-50',
-      render: () => <HeroAccompany />,
-    },
-    {
-      key: 'data',
-      label: 'Observatorio',
-      bgClassName: 'bg-navy-900',
-      render: () => <HeroData />,
-    },
-  ]
-
-  const [reducedMotion, setReducedMotion] = useState(false)
-  const [detectedMotionPref, setDetectedMotionPref] = useState(false)
-  const [active, setActive] = useState(0)
-  const [paused, setPaused] = useState(false)
+  const [Enhanced, setEnhanced] = useState<ComponentType<HeroRotatorProps> | null>(null)
 
   useEffect(() => {
-    const mq = window.matchMedia('(prefers-reduced-motion: reduce)')
-    const apply = () => {
-      setReducedMotion(mq.matches)
-      setDetectedMotionPref(true)
+    let activated = false
+
+    const activate = () => {
+      if (activated) return
+      activated = true
+      teardown()
+      import('./HeroRotatorEnhanced').then((mod) => {
+        setEnhanced(() => mod.HeroRotatorEnhanced as ComponentType<HeroRotatorProps>)
+      })
     }
-    apply()
-    mq.addEventListener('change', apply)
-    return () => mq.removeEventListener('change', apply)
+
+    const idleHandle =
+      typeof window.requestIdleCallback === 'function'
+        ? window.requestIdleCallback(activate, { timeout: IDLE_FALLBACK_MS })
+        : window.setTimeout(activate, IDLE_FALLBACK_MS)
+
+    INTERACTION_EVENTS.forEach((evt) => window.addEventListener(evt, activate, { passive: true, once: true }))
+
+    function teardown() {
+      if (typeof window.cancelIdleCallback === 'function') {
+        window.cancelIdleCallback(idleHandle as number)
+      } else {
+        window.clearTimeout(idleHandle as number)
+      }
+      INTERACTION_EVENTS.forEach((evt) => window.removeEventListener(evt, activate))
+    }
+
+    return teardown
   }, [])
 
-  useEffect(() => {
-    if (reducedMotion || paused) return
-    const id = setInterval(() => {
-      setActive((i) => (i + 1) % slides.length)
-    }, AUTOPLAY_MS)
-    return () => clearInterval(id)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [reducedMotion, paused, active, slides.length])
-
-  const goTo = useCallback((index: number) => {
-    setActive(index)
-  }, [])
-
-  // Evitar un "flash" de la variante rotativa antes de conocer la preferencia
-  // real de motion del usuario en el primer render del cliente.
-  if (!detectedMotionPref) {
-    return (
-      <section className={slides[0].bgClassName + ' py-16 md:py-20'}>
-        <div className="max-w-content mx-auto px-4 md:px-10">{slides[0].render()}</div>
-      </section>
-    )
+  if (Enhanced) {
+    return <Enhanced latestArticle={latestArticle} />
   }
 
-  if (reducedMotion) {
-    return (
-      <section className={slides[0].bgClassName + ' py-16 md:py-20'}>
-        <div className="max-w-content mx-auto px-4 md:px-10">{slides[0].render()}</div>
-      </section>
-    )
-  }
+  const editorial = getHeroSlides(latestArticle)[0]
 
   return (
-    <section
-      className="relative isolate"
-      onMouseEnter={() => setPaused(true)}
-      onMouseLeave={() => setPaused(false)}
-      onFocus={() => setPaused(true)}
-      onBlur={(e) => {
-        if (!e.currentTarget.contains(e.relatedTarget as Node)) setPaused(false)
-      }}
-    >
+    <section className="relative isolate">
       <div className="grid">
-        {slides.map((slide, i) => (
-          <div
-            key={slide.key}
-            id={`hero-panel-${slide.key}`}
-            role="tabpanel"
-            aria-roledescription="slide"
-            aria-label={`${i + 1} de ${slides.length}: ${slide.label}`}
-            aria-hidden={i !== active}
-            inert={i !== active ? true : undefined}
-            className={
-              slide.bgClassName +
-              ' col-start-1 row-start-1 py-16 md:py-20 transition-opacity duration-slow ease-out ' +
-              (i === active ? 'opacity-100 relative z-10' : 'opacity-0 pointer-events-none')
-            }
-          >
-            <div className="max-w-content mx-auto px-4 md:px-10">{slide.render()}</div>
-          </div>
-        ))}
+        <div className={editorial.bgClassName + ' col-start-1 row-start-1 py-16 md:py-20'}>
+          <div className="max-w-content mx-auto px-4 md:px-10">{editorial.render()}</div>
+        </div>
       </div>
 
-      {/* Indicadores accesibles: navegables por teclado (Tab + flechas) */}
+      {/* Renglón reservado del tamaño del tablist real (ver
+          HeroRotatorEnhanced), invisible y afuera del árbol de
+          accesibilidad: todavía no hay JS para hacerlo funcionar, así que
+          no se exponen botones sin acción a lectores de pantalla. Sólo
+          existe para que el alto no cambie cuando el tablist real
+          aparezca al montar el rotador. */}
       <div
-        role="tablist"
-        aria-label="Variantes destacadas de la portada"
-        className={
-          'relative z-20 flex items-center justify-center gap-2.5 pb-6 -mt-1 ' +
-          (slides[active].key === 'data' ? 'bg-navy-900' : slides[active].bgClassName)
-        }
-        onKeyDown={(e) => {
-          if (e.key === 'ArrowRight') {
-            e.preventDefault()
-            goTo((active + 1) % slides.length)
-          } else if (e.key === 'ArrowLeft') {
-            e.preventDefault()
-            goTo((active - 1 + slides.length) % slides.length)
-          }
-        }}
+        aria-hidden="true"
+        className={'invisible relative z-20 flex items-center justify-center gap-2.5 pb-6 -mt-1 ' + editorial.bgClassName}
       >
-        {slides.map((slide, i) => (
-          <button
-            key={slide.key}
-            type="button"
-            role="tab"
-            id={`hero-tab-${slide.key}`}
-            aria-selected={i === active}
-            aria-controls={`hero-panel-${slide.key}`}
-            aria-label={`Mostrar variante ${i + 1} de ${slides.length}: ${slide.label}`}
-            tabIndex={i === active ? 0 : -1}
-            onClick={() => goTo(i)}
-            className={
-              'w-2.5 h-2.5 rounded-full transition-colors duration-base ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-navy-600 focus-visible:ring-offset-2 ' +
-              (i === active
-                ? slides[active].key === 'data'
-                  ? 'bg-white'
-                  : 'bg-navy-600'
-                : slides[active].key === 'data'
-                  ? 'bg-white/30 hover:bg-white/50'
-                  : 'bg-navy-200 hover:bg-navy-400')
-            }
-          />
-        ))}
+        <span className="w-2.5 h-2.5 rounded-full bg-navy-600" />
+        <span className="w-2.5 h-2.5 rounded-full bg-navy-600" />
+        <span className="w-2.5 h-2.5 rounded-full bg-navy-600" />
       </div>
     </section>
   )
