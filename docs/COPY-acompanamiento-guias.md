@@ -85,12 +85,8 @@ Fuente: síntesis del propio espíritu de la reunión (no cita ningún hecho pun
 
 ## 3. Candidatas a "cara humana" para una etapa futura (NO incluir todavía)
 
-Dos personas reales aparecen en esta reunión o en el sitio ya, vinculadas a Acompañamiento, pero **ninguna se publica sin que Emanuel confirme que están cómodas**:
-
-- **Fernanda Lo Presti**: ya tiene un nombre real en el sitio (`/nosotros/distinciones`, motivo "Acompañamiento a víctimas"), pero aislado y sin confirmar si sigue activa en el equipo hoy.
-- **Raquel Slotolow / Raquel Berthi**: coordinadoras de la reunión según [LUCRE-DOC]. No se sabe si están dispuestas a tener presencia pública en el sitio.
-
-Ninguna de las dos entra en esta ola. Quedan anotadas para cuando Emanuel tenga esa confirmación.
+- **Raquel Slotolow / Raquel Berthi**: coordinadoras de la reunión según [LUCRE-DOC]. No se sabe si están dispuestas a tener presencia pública en el sitio. No entra en esta ola; queda anotada para cuando Emanuel tenga esa confirmación.
+- ~~**Fernanda Lo Presti**~~ — **descartada** (revisión de Emanuel, jul-2026): el equipo actual no la reconoce; podría corresponder a una gestión anterior. Su mención en `/nosotros/distinciones` sigue publicada tal cual (tiene fuente real de WordPress y es contenido histórico ya aprobado), pero **no se la vincula a esta sección de Acompañamiento**.
 
 ---
 
