@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { Breadcrumbs } from '@/components/layout/Breadcrumbs'
 import { Button } from '@/components/ui/Button'
 import { GuiasSeccion } from '@/components/acompanamiento/GuiasSeccion'
+import { SeguiExplorando } from '@/components/acompanamiento/SeguiExplorando'
 import { guias } from '@/components/acompanamiento/guias-data'
 import { generatePageMetadata } from '@/lib/metadata'
 import { siteConfig } from '@/lib/site-config'
@@ -318,6 +319,8 @@ export default function AcompanamientoPage() {
       </section>
 
       <GuiasSeccion />
+
+      <SeguiExplorando />
 
       {/* CTA hacia /necesito-ayuda */}
       <section className="py-20 md:py-24 bg-navy-900 text-white">
