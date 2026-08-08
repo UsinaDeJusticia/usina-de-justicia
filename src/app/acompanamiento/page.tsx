@@ -214,6 +214,13 @@ export default function AcompanamientoPage() {
             </h2>
           </div>
 
+          {/* Reencuadre de tono — docs/COPY-acompanamiento-guias.md §2 */}
+          <p className="font-body text-body-lg text-ink leading-relaxed max-w-[820px] mb-11 border-l-4 border-warning bg-white pl-5 py-4">
+            Acompañar también es dar herramientas concretas para que puedas participar
+            activamente en cada etapa del proceso — incluida la ejecución de la pena, donde
+            tus derechos siguen vigentes.
+          </p>
+
           <div className="grid md:grid-cols-3 gap-6">
             {comoTrabaja.map(({ Icon, title, description }) => (
               <div
