@@ -1,6 +1,8 @@
 import Link from 'next/link'
 import { Breadcrumbs } from '@/components/layout/Breadcrumbs'
 import { Button } from '@/components/ui/Button'
+import { GuiasSeccion } from '@/components/acompanamiento/GuiasSeccion'
+import { guias } from '@/components/acompanamiento/guias-data'
 import { generatePageMetadata } from '@/lib/metadata'
 import { siteConfig } from '@/lib/site-config'
 import {
@@ -61,6 +63,22 @@ const jsonLd = {
   description,
   provider: { '@id': `${siteConfig.url}/#organization` },
   areaServed: 'AR',
+}
+
+// FAQPage a partir de las preguntas de todas las guías de la serie (ver
+// src/components/acompanamiento/guias-data.ts) — mismo patrón que
+// /necesito-ayuda: cero copy duplicado entre el contenido visible y el
+// JSON-LD, se arma sumando las preguntas de cada guía publicada.
+const faqJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: guias.flatMap((guia) =>
+    guia.preguntas.map(({ pregunta, respuesta }) => ({
+      '@type': 'Question',
+      name: pregunta,
+      acceptedAnswer: { '@type': 'Answer', text: respuesta },
+    })),
+  ),
 }
 
 // [QueHacer] reformulado en tercera persona / voz institucional (no en
@@ -174,6 +192,10 @@ export default function AcompanamientoPage() {
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
       />
 
       <div className="max-w-content mx-auto px-4 md:px-10">
@@ -294,6 +316,8 @@ export default function AcompanamientoPage() {
           </ul>
         </div>
       </section>
+
+      <GuiasSeccion />
 
       {/* CTA hacia /necesito-ayuda */}
       <section className="py-20 md:py-24 bg-navy-900 text-white">
