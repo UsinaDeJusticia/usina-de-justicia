@@ -1,11 +1,14 @@
 import Link from 'next/link'
 import { Breadcrumbs } from '@/components/layout/Breadcrumbs'
 import { Button } from '@/components/ui/Button'
+import { ArticleCard } from '@/components/noticias/ArticleCard'
 import { GuiasSeccion } from '@/components/acompanamiento/GuiasSeccion'
 import { SeguiExplorando } from '@/components/acompanamiento/SeguiExplorando'
 import { guias } from '@/components/acompanamiento/guias-data'
 import { generatePageMetadata } from '@/lib/metadata'
 import { siteConfig } from '@/lib/site-config'
+import { getArticulosBySection } from '@/lib/wordpress'
+import type { Articulo } from '@/types'
 import {
   HeartHandshake,
   UserCheck,
@@ -187,7 +190,27 @@ const derechosLey27372 = [
   },
 ]
 
-export default function AcompanamientoPage() {
+export default async function AcompanamientoPage() {
+  // [Historias] — se pide acá, en el propio Server Component, y no en un
+  // hijo cliente, porque es la misma categoría real de WP que ya alimenta
+  // /noticias/categoria/historias (ver comentario completo sobre la sección
+  // "Historias" más abajo). Si la API de WP no responde, la sección se
+  // degrada mostrando solo el encabezado y el botón — nunca un mensaje de
+  // error visible, porque es una sección secundaria de una página
+  // institucional, no una página de listado.
+  let historias: Articulo[] = []
+  let totalHistorias = 0
+  try {
+    const { data, total } = await getArticulosBySection('historias', {
+      page: 1,
+      perPage: 6,
+    })
+    historias = data
+    totalHistorias = total
+  } catch {
+    // degradar en silencio — ver comentario arriba
+  }
+
   return (
     <>
       <script
@@ -286,6 +309,48 @@ export default function AcompanamientoPage() {
               </div>
             ))}
           </div>
+        </div>
+      </section>
+
+      {/*
+        Historias — la categoría WP "historias" (ver SITE_SECTIONS en
+        src/types/wordpress.ts) ya tiene decenas de casos reales publicados
+        desde hace años en /noticias/categoria/historias. Este bloque le da
+        visibilidad real a esa serie desde la página institucional del
+        programa, sin duplicar contenido: la fuente canónica de cada
+        historia sigue siendo su propia página en /noticias/[slug], acá solo
+        se traen y listan las 6 más recientes con el mismo ArticleCard que
+        usa /noticias. Ningún nombre de familia o víctima vive en este
+        archivo — todo el contenido con nombres (título, extracto) llega en
+        runtime desde la API de WordPress.
+      */}
+      <section className="py-16 md:py-20 bg-navy-50 border-t border-grey-200">
+        <div className="max-w-content mx-auto px-4 md:px-10">
+          <div className="max-w-[720px] mb-11">
+            <p className="text-[12px] font-bold tracking-[0.14em] uppercase text-navy-600">
+              Historias reales
+            </p>
+            <h2 className="font-display font-extrabold text-ink text-[clamp(1.875rem,3.2vw,2.75rem)] leading-tight mt-2.5 mb-3.5">
+              Las historias detrás del acompañamiento
+            </h2>
+            <p className="text-body-lg text-grey-700">
+              Ya publicamos {totalHistorias} historias reales de familias acompañadas
+              por el equipo — la memoria viva del programa, que se actualiza con cada
+              caso nuevo.
+            </p>
+          </div>
+
+          {historias.length > 0 && (
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-10">
+              {historias.map((articulo) => (
+                <ArticleCard key={articulo.id} articulo={articulo} />
+              ))}
+            </div>
+          )}
+
+          <Button href="/noticias/categoria/historias" variant="secondary">
+            Ver todas las historias
+          </Button>
         </div>
       </section>
 
