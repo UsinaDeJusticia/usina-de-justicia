@@ -93,4 +93,17 @@ Ningún nombre de familiar/víctima, ninguna cifra sin fuente verificable, ningu
 
 ---
 
-**Para aprobar:** la FAQ nueva (§1) y el bloque de cierre (§3, especialmente la redacción del agradecimiento genérico y los 4 links elegidos).
+## 6. NUEVO — Sección "Historias" (visibilidad SEO/GEO de casos ya publicados)
+
+*(Surge de una consulta de Emanuel sobre SEO/GEO: no se agregó contenido nuevo ni se escribió ningún nombre en el código — se le dio visibilidad, desde `/acompanamiento`, a contenido que el equipo YA viene publicando hace años en WordPress.)*
+
+- **Hallazgo**: la categoría real de WP "historias" (`SITE_SECTIONS`, id 211) tiene **127 casos publicados** al 11-ago-2026 (subía de 121 el 10-jul — se actualiza seguido). Cada caso ya tiene su propia URL en `/noticias/[slug]`, ya está en el sitemap, ya tiene JSON-LD `NewsArticle`. No es contenido nuevo ni migrado: es contenido real y vivo que la página de Acompañamiento simplemente no mencionaba.
+- **Qué se agregó a `/acompanamiento`**: una sección que trae en vivo (server-side, `getArticulosBySection('historias', { perPage: 6 })`) las 6 historias más recientes y las muestra con el mismo `ArticleCard` de `/noticias`, más un botón hacia `/noticias/categoria/historias`. El número de historias (hoy 127) se muestra dinámico, nunca hardcodeado.
+- **Regla dura que se mantiene igual que en todo este documento**: ningún nombre de víctima/familia vive en el código de `src/app/acompanamiento/page.tsx` — todo el contenido con nombres llega en runtime desde la API de WordPress, vía `articulo.titulo`/`articulo.extracto` que ya renderiza `ArticleCard`. La decisión editorial de qué casos publicar sigue siendo 100% del equipo, en WordPress — el código no decide ni filtra por nombre.
+- **Refuerzo SEO/GEO adicional** (fuera de `/acompanamiento`, en `/noticias/categoria/[categoria]`): JSON-LD `CollectionPage`+`ItemList` (genérico para las 6 categorías, no solo "historias"), prioridad de sitemap subida de 0.6 a 0.7 para `historias` específicamente (es la de mayor valor de búsqueda long-tail), y un 5° link a `/noticias/categoria/historias` en el cierre "Seguí explorando" de `/acompanamiento`.
+- **Lo que esto NO hace**: no crea una página/galería nueva separada de `/noticias` (fragmentaría la autoridad SEO entre dos URLs por el mismo caso). No toca `/legal/privacidad` — quedó como consulta aparte a los abogados de la organización (fuera del alcance de este documento y de esta rama de código).
+- **Pendiente aparte, sin resolver todavía**: un caso en `src/components/home/Testimonios.tsx` ("Néstor Alejandro Valdez") no tiene fuente rastreable en el inventario de WP — a confirmar antes de apoyarse más en esos 8 testimonios como pilar de esta estrategia.
+
+---
+
+**Para aprobar:** la FAQ nueva (§1), el bloque de cierre (§3, especialmente la redacción del agradecimiento genérico y los links elegidos) y la sección "Historias" (§6).
