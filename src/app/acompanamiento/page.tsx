@@ -1,4 +1,3 @@
-import Link from 'next/link'
 import { Breadcrumbs } from '@/components/layout/Breadcrumbs'
 import { Button } from '@/components/ui/Button'
 import { ArticleCard } from '@/components/noticias/ArticleCard'
@@ -13,8 +12,6 @@ import {
   HeartHandshake,
   UserCheck,
   Scale,
-  Users,
-  Gavel,
   MessageCircle,
   ArrowRight,
 } from 'lucide-react'
@@ -30,13 +27,11 @@ import {
 // palabra que la landing de ayuda, aunque comparte las mismas fuentes reales:
 //
 // - [WP1] acompanamiento-a-la-victima.html (WP id 103) — Ley 27.372, art. 5.
-// - [WP2] acompanamos-a-las-victimas.html (WP id 44) — las dos categorías
-//   reales en que el programa organiza a las familias acompañadas (con
-//   sentencia firme / sin sentencia, con contención legal, emocional y
-//   difusión en redes). No se listan los nombres de las familias/víctimas
-//   que aparecen en WP2 (es una galería de casos individuales, sensible y en
-//   permanente actualización según la propia página WP) — se describe la
-//   organización del programa a nivel agregado, sin cifras ni nombres.
+// - [EQUIPO] revisión editorial directa del equipo de Acompañamiento sobre
+//   el preview de esta página (11-ago-2026, ver docs/COPY-acompanamiento-guias.md
+//   §7): hero, reencuadre y las 3 tarjetas de "Cómo trabaja el equipo" vienen
+//   de esta fuente — el equipo es la fuente primaria de estos hechos (que el
+//   servicio es gratuito, que la difusión de casos es una prestación central).
 // - [Pillars] src/components/home/Pillars.tsx — descripción del pilar
 //   "Acompañamiento a las víctimas", ya aprobada en la Home.
 // - [QueHacer] src/components/home/QueHacer.tsx — los tres pasos del
@@ -46,7 +41,7 @@ import {
 //   /nosotros para no duplicar el timeline completo.
 
 const description =
-  'El programa de acompañamiento de Usina de Justicia: cómo trabaja el equipo con las familias de víctimas de homicidio y femicidio, desde el primer contacto hasta la ejecución de la pena.'
+  'Usina de Justicia brinda asesoramiento legal, contención emocional y difusión de los casos en forma gratuita a los familiares de víctimas de homicidio y femicidio, desde el primer contacto hasta la ejecución de la pena.'
 
 // generatePageMetadata siempre setea `images` — evita la trampa de herencia
 // de Next (una ruta con openGraph propio sin `images` no hereda el
@@ -85,44 +80,31 @@ const faqJsonLd = {
   ),
 }
 
-// [QueHacer] reformulado en tercera persona / voz institucional (no en
-// segunda persona imperativa, que es el registro propio de /necesito-ayuda).
+// [EQUIPO] revisión editorial directa del equipo sobre el preview
+// (11-ago-2026, ver docs/COPY-acompanamiento-guias.md §7) — reemplaza el
+// texto anterior reformulado de [QueHacer]. Único ajuste sobre lo que
+// mandó el equipo: la tarjeta 3 conserva "ejecución de la pena" (no
+// "cumplimiento de la pena") por consistencia de término exacto con el
+// resto del sitio (Home, /necesito-ayuda, título de la Guía) — mismo
+// sentido, misma fuente, solo la palabra técnica ya establecida.
 const comoTrabaja = [
   {
     Icon: UserCheck,
     title: 'Primer contacto y referente asignada',
     description:
-      'Cuando una familia se comunica — por teléfono, WhatsApp o correo electrónico — el equipo le asigna una referente de acompañamiento que sigue el caso de principio a fin.',
+      'Cuando una familia se comunica — por celular o correo electrónico — el equipo le asigna una referente de acompañamiento que sigue el caso de principio a fin.',
   },
   {
     Icon: HeartHandshake,
     title: 'Contención interdisciplinaria',
     description:
-      'Una psicóloga y una abogada del equipo acompañan las primeras decisiones: el velatorio, las pericias, la apertura del expediente y el trato con los medios.',
+      'Una psicóloga y una abogada del equipo acompañan a las víctimas en el duelo y el proceso judicial: el velatorio, la apertura del expediente y el trato con los medios de comunicación.',
   },
   {
     Icon: Scale,
     title: 'Acompañamiento durante todo el proceso',
     description:
-      'La asistencia jurídica continúa durante el proceso penal y la ejecución de la pena, con encuentros de grupos de pares entre familias.',
-  },
-]
-
-// [WP2] — organización agregada de las familias acompañadas, sin nombres ni
-// cifras (la página fuente es una galería de casos en permanente
-// actualización editorial, no un dato estadístico cerrado).
-const gruposDeAcompanamiento = [
-  {
-    Icon: Gavel,
-    title: 'Familias con sentencia firme',
-    description:
-      'Reciben acompañamiento legal durante la ejecución de la pena y en las instancias posteriores del proceso.',
-  },
-  {
-    Icon: Users,
-    title: 'Familias sin sentencia firme',
-    description:
-      'Reciben contención legal y emocional, y acompañamiento en la difusión pública del caso, mientras el proceso judicial sigue su curso.',
+      'El asesoramiento legal, la contención emocional y la difusión de los casos continúa durante todo el proceso penal, desde la etapa de investigación hasta la sentencia firme y la ejecución de la pena.',
   },
 ]
 
@@ -236,14 +218,9 @@ export default async function AcompanamientoPage() {
             Acompañamiento a las víctimas
           </h1>
           <p className="text-body-lg text-grey-700 max-w-narrow leading-relaxed">
-            Contención emocional y asesoramiento jurídico para familiares de víctimas de
-            homicidio y femicidio. Es una de las tres líneas de trabajo de Usina de
-            Justicia, y la que le dio origen a la organización en 2014, cuando un grupo
-            de familias que había atravesado la pérdida de un ser querido por un hecho de
-            violencia decidió acompañarse entre sí.{' '}
-            <Link href="/nosotros" className="font-bold text-navy-600 hover:underline">
-              Conocé la historia completa de Usina de Justicia.
-            </Link>
+            Usina de Justicia brinda asesoramiento legal, contención emocional y difusión
+            de los casos en forma gratuita a los familiares de víctimas de homicidio y
+            femicidio.
           </p>
         </div>
       </section>
@@ -260,11 +237,11 @@ export default async function AcompanamientoPage() {
             </h2>
           </div>
 
-          {/* Reencuadre de tono — docs/COPY-acompanamiento-guias.md §2 */}
+          {/* Reencuadre de tono — docs/COPY-acompanamiento-guias.md §7 (v3,
+              redacción directa del equipo, reemplaza la v2 anterior) */}
           <p className="font-body text-body-lg text-ink leading-relaxed max-w-[820px] mb-11 border-l-4 border-warning bg-white pl-5 py-4">
-            Acompañar también es dar herramientas concretas para que puedas participar
-            activamente en cada etapa del proceso — incluida la ejecución de la pena, donde
-            tus derechos siguen vigentes.
+            Acompañamos brindando herramientas concretas para que las víctimas puedan
+            participar y asegurar sus derechos en todas las etapas del proceso penal.
           </p>
 
           <div className="grid md:grid-cols-3 gap-6">
@@ -275,36 +252,6 @@ export default async function AcompanamientoPage() {
               >
                 <Icon className="w-7 h-7 text-navy-600" strokeWidth={1.75} aria-hidden="true" />
                 <h3 className="font-display font-bold text-xl mt-3.5 mb-2">{title}</h3>
-                <p className="text-body-sm text-grey-700 leading-relaxed m-0">{description}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Cómo se organiza el acompañamiento (dos grupos, según WP2) */}
-      <section className="py-16 md:py-20">
-        <div className="max-w-content mx-auto px-4 md:px-10">
-          <div className="max-w-[720px] mb-11">
-            <p className="text-[12px] font-bold tracking-[0.14em] uppercase text-navy-600">
-              Organización del programa
-            </p>
-            <h2 className="font-display font-extrabold text-ink text-[clamp(1.875rem,3.2vw,2.75rem)] leading-tight mt-2.5 mb-3.5">
-              Dos maneras de acompañar
-            </h2>
-            <p className="text-body-lg text-grey-700">
-              El programa organiza el acompañamiento de las familias según el estado del
-              proceso judicial de cada caso.
-            </p>
-          </div>
-
-          <div className="grid md:grid-cols-2 gap-6">
-            {gruposDeAcompanamiento.map(({ Icon, title, description }) => (
-              <div key={title} className="p-7 bg-ivory border border-grey-200 rounded-xs">
-                <div className="w-11 h-11 rounded-xs bg-navy-50 text-navy-600 flex items-center justify-center mb-4">
-                  <Icon className="w-5 h-5" strokeWidth={1.75} aria-hidden="true" />
-                </div>
-                <h3 className="font-display font-bold text-xl text-ink mb-2">{title}</h3>
                 <p className="text-body-sm text-grey-700 leading-relaxed m-0">{description}</p>
               </div>
             ))}
@@ -323,8 +270,15 @@ export default async function AcompanamientoPage() {
         usa /noticias. Ningún nombre de familia o víctima vive en este
         archivo — todo el contenido con nombres (título, extracto) llega en
         runtime desde la API de WordPress.
+
+        Fondo blanco (sin clase bg-*): la sección anterior "Cómo trabaja el
+        equipo" ya usa bg-navy-50 y la sección "Marco legal" que sigue usa
+        bg-ivory — blanco simple acá mantiene el ritmo alternado de fondos
+        de la página (regla ya seguida en el resto de esta rama, ver commit
+        ee5d50e) ahora que "Dos maneras de acompañar" ya no separa a estas
+        dos secciones.
       */}
-      <section className="py-16 md:py-20 bg-navy-50 border-t border-grey-200">
+      <section className="py-16 md:py-20 border-t border-grey-200">
         <div className="max-w-content mx-auto px-4 md:px-10">
           <div className="max-w-[720px] mb-11">
             <p className="text-[12px] font-bold tracking-[0.14em] uppercase text-navy-600">

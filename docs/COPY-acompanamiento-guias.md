@@ -106,4 +106,20 @@ Ningún nombre de familiar/víctima, ninguna cifra sin fuente verificable, ningu
 
 ---
 
-**Para aprobar:** la FAQ nueva (§1), el bloque de cierre (§3, especialmente la redacción del agradecimiento genérico y los links elegidos) y la sección "Historias" (§6).
+## 7. NUEVO — Copy v3 del equipo tras revisar el preview (11-ago-2026)
+
+*(El equipo de Acompañamiento revisó el preview real de la página y devolvió texto propio para el hero, el reencuadre y las 3 tarjetas de "Cómo trabaja el equipo", más la decisión de eliminar "Dos maneras de acompañar". Fuente: el equipo mismo — no WordPress. Análisis de impacto SEO/GEO hecho antes de implementar, ver historial de la sesión.)*
+
+- **Hero**: "Usina de Justicia brinda asesoramiento legal, contención emocional y difusión de los casos en forma gratuita a los familiares de víctimas de homicidio y femicidio." — primera vez que el sitio afirma que el servicio es gratuito; en `docs/COPY-necesito-ayuda.md` se había decidido explícitamente NO afirmarlo por falta de fuente (§"Qué NO se incluyó"). Ahora la fuente es el equipo directamente. Cruza con `src/app/donar/page.tsx` ("Asistencia legal gratuita... para víctimas que no pueden costear un abogado") — **pendiente de aclarar con el equipo** si es gratuito sin condición o condicionado a la situación económica, para unificar el matiz entre ambas páginas. Se implementó tal cual lo mandó el equipo (sin condición) hasta esa aclaración.
+- **Reencuadre "Cómo trabaja el equipo"**: reemplaza la v2 anterior (§2) por texto del equipo.
+- **Las 3 tarjetas**: texto del equipo, con un solo ajuste: la tarjeta 3 conserva "ejecución de la pena" en vez de "cumplimiento de la pena" que mandó el equipo — mismo sentido, término técnico exacto que ya usa el resto del sitio (Home, `/necesito-ayuda`, título de esta misma serie de Guías). Ajuste de una palabra, no de contenido.
+- **Se eliminó "Dos maneras de acompañar"** (las dos categorías "con/sin sentencia firme" de [WP2]) por pedido del equipo ("queda confuso"). Ningún JSON-LD ni FAQ dependía de esa sección.
+
+### Consulta legal — RESUELTA
+La consulta sobre `/legal/privacidad` (publicación de casos con nombre real) fue respondida por los abogados de la organización: **la información es de interés público porque ya salió en medios; los datos sensibles no se publican.** Regla adicional confirmada: **cuando el imputado es menor de edad, usar iniciales en vez de nombre completo.**
+
+Esta regla de iniciales **no se implementa en código**: el contenido de "Historias" viene 100% de lo que el equipo publica en WordPress — el repo nunca decide qué nombre aparece. Queda documentada acá como criterio editorial para quien redacta esos posts, a transmitir al equipo de comunicación/prensa.
+
+---
+
+**Para aprobar:** la FAQ nueva (§1), el bloque de cierre (§3, especialmente la redacción del agradecimiento genérico y los links elegidos), la sección "Historias" (§6), y confirmar si "gratuito" (§7) es incondicional o depende de la situación económica de la familia.
