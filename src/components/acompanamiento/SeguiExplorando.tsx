@@ -1,10 +1,10 @@
 import Link from 'next/link'
-import { HeartHandshake, BookOpen, FileBarChart2, Megaphone, ArrowUpRight } from 'lucide-react'
+import { HeartHandshake, BookOpen, FileBarChart2, Megaphone, Users, ArrowUpRight } from 'lucide-react'
 
 // Cierre de página, previo al CTA final hacia /necesito-ayuda (que no se
 // toca). Contenido de docs/COPY-acompanamiento-guias.md §3: un agradecimiento
 // genérico (sin nombres propios, sin depender de consentimientos que
-// todavía no están confirmados) y los 4 enlaces relacionados reales del
+// todavía no están confirmados) y los 5 enlaces relacionados reales del
 // sitio. Es un cierre cálido, no un CTA — por eso el tratamiento tipográfico
 // es discreto y el fondo se mantiene blanco/neutro, separado del bloque
 // navy de contacto que sigue después.
@@ -32,6 +32,12 @@ const enlaces = [
     label: 'Incidencia',
     description: 'Políticas públicas',
     Icon: Megaphone,
+  },
+  {
+    href: '/noticias/categoria/historias',
+    label: 'Historias',
+    description: 'Los casos que acompañamos',
+    Icon: Users,
   },
 ]
 

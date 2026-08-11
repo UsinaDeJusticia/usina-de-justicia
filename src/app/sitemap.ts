@@ -72,7 +72,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       url: `${siteConfig.url}/noticias/categoria/${slug}`,
       lastModified: now,
       changeFrequency: 'daily',
-      priority: 0.6,
+      // "historias" es la única categoría con un pilar de contenido propio
+      // fuera de /noticias (ver /acompanamiento y SeguiExplorando), así que
+      // queda una prioridad más alta que las otras 5.
+      priority: slug === 'historias' ? 0.7 : 0.6,
     })
   )
 
