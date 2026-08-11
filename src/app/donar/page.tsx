@@ -10,11 +10,16 @@ export const metadata: Metadata = {
   alternates: { canonical: 'https://www.usinadejusticia.org.ar/donar' },
 }
 
+// "Asistencia legal gratuita" sin condición: confirmado por el equipo
+// (11-ago-2026, ver docs/COPY-acompanamiento-guias.md §7) que el servicio
+// es gratuito para toda familia acompañada, no solo para quienes no
+// pueden costear un abogado — se unifica con el hero de /acompanamiento,
+// que ya afirma lo mismo sin condicionarlo.
 const impactos = [
   {
     icon: Shield,
     titulo: 'Asistencia legal gratuita',
-    descripcion: 'Para víctimas que no pueden costear un abogado.',
+    descripcion: 'Para familiares de víctimas de homicidio y femicidio.',
   },
   {
     icon: Users,

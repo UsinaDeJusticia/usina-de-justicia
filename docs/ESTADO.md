@@ -17,6 +17,19 @@
 
 **Gate G4 ✅ COMPLETO (15-jul):** optimización integral verificada — Lighthouse ≥96 en Performance y 100 en SEO en las 5 plantillas clave (ver sección Optimización).
 
+## Rama en curso: `feature/acompanamiento-guias-derechos` (11-ago-2026)
+
+Trabajo posterior al merge de PR #2, sobre `/acompanamiento`, a pedido de Emanuel. No forma parte de las Fases 1-4 ni de los gates ya cerrados arriba — es evolución posterior. Detalle completo de fuentes y decisiones en `docs/COPY-acompanamiento-guias.md` v2.
+
+1. Primera guía de la serie "Guías para la etapa que estás viviendo" (derechos durante la ejecución de la pena, Pcia. de Bs. As.) + FAQ de 4 preguntas — fuente: documento propio de Lucrecia Zárate + síntesis abstracta de una reunión interna (sin ningún dato de caso).
+2. Cierre de página "Seguí explorando" con enlaces reales a otras secciones.
+3. **Sección "Historias"**: la categoría real de WordPress "historias" (127 casos publicados al 11-ago, sube seguido) ahora se muestra en vivo desde `/acompanamiento` (6 más recientes + link a `/noticias/categoria/historias`) — surgió de una consulta de Emanuel sobre SEO/GEO: no se agregó contenido nuevo, se le dio visibilidad a contenido que el equipo ya publica desde hace años. Ningún nombre vive en el código; todo llega en runtime de la API de WP.
+4. Refuerzo SEO/GEO de `/noticias/categoria/[categoria]`: JSON-LD `CollectionPage`+`ItemList` (las 6 categorías), prioridad de sitemap de "historias" subida a 0.7.
+5. **Consulta legal RESUELTA**: los abogados de la organización confirmaron que la publicación de casos con nombre real es de interés público (ya salió en medios) y que los datos sensibles no se publican; agregan una regla: iniciales en vez de nombre completo cuando el imputado es menor de edad (criterio editorial para WordPress, no aplicable en código — ver `docs/COPY-acompanamiento-guias.md` §7).
+6. **Copy v3 del equipo (11-ago)**: tras revisar el preview, el equipo mandó texto propio para el hero, el reencuadre y las 3 tarjetas de "Cómo trabaja el equipo", y pidió eliminar "Dos maneras de acompañar" (confusa). Implementado con un solo ajuste técnico (conservar "ejecución de la pena" en la tarjeta 3, no "cumplimiento de la pena", por consistencia de término con el resto del sitio). El hero ahora afirma que el servicio es gratuito — primera vez que el sitio lo dice explícitamente (fuente: el equipo). **RESUELTO**: el equipo confirmó que es gratuito sin condición; se corrigió `src/app/donar/page.tsx` (decía "para víctimas que no pueden costear un abogado") para unificar con `/acompanamiento`.
+7. **Pendiente sin resolver**: un caso en `src/components/home/Testimonios.tsx` ("Néstor Alejandro Valdez") no tiene fuente rastreable en el inventario de WP — confirmar antes de seguir escalando esta estrategia.
+8. Build verde en cada commit; falta Lighthouse post-cambio y push + preview para revisión de Emanuel (próximo paso).
+
 ## Árbol de navegación — estado final de la Fase 3
 
 | Ruta | Estado | Fuente de contenido |
