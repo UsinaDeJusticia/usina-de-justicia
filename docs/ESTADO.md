@@ -52,7 +52,7 @@ Ninguno bloquea el trabajo técnico; varios sí bloquean el CUTOVER final:
 1. **Wikidata**: crear la entrada siguiendo `docs/WIKIDATA.md` (~15 min) y pasar el Q-ID para conectarlo al sameAs (TODO esperándolo en src/app/layout.tsx).
 2. **Logo SVG**: el adjunto no llegó — reenviar el vectorial.
 3. **Dirección postal**: confirmar la sede social registrada (primera página de la Memoria y Balance legalizada) para el JSON-LD del NGO.
-4. **Equipo**: nombres, roles y fotos reales para `/nosotros/equipo` (hoy placeholder) — bloquea launch de esa página.
+4. **Equipo — PARCIALMENTE RESUELTO (11-ago)**: Emanuel confirmó la nómina real de la Comisión Directiva (6 personas: Diana Cohen Agrest -Presidente-, Raquel Slotolow -Secretaria-, Guillermo Bargna -Tesorero-, Raquel Berthi/Roberto Picozzi/Mariana Romano -Vocales-), ya implementada en `src/app/nosotros/equipo/page.tsx` (rama `feature/equipo-comision-directiva`). **Sigue pendiente**: las fotos de cada integrante (Emanuel las va a ir pasando) — hasta entonces se muestra el avatar de iniciales, mismo patrón que Testimonios.tsx.
 5. **Retratos**: consentimientos de las familias para reemplazar los placeholders de Testimonios.
 6. **`/en`**: material real de la presentación OEA para completar la landing.
 7. **Formulario de contacto**: elegir servicio de email (Resend/SendGrid/etc.) + API key para el envío real.
