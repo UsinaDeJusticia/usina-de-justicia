@@ -56,7 +56,7 @@ Ninguno bloquea el trabajo técnico; varios sí bloquean el CUTOVER final:
 5. **Retratos**: consentimientos de las familias para reemplazar los placeholders de Testimonios.
 6. **`/en`**: material real de la presentación OEA para completar la landing.
 7. **Formulario de contacto**: elegir servicio de email (Resend/SendGrid/etc.) + API key para el envío real.
-8. **Lectura editorial de `/necesito-ayuda`** (`docs/COPY-necesito-ayuda.md`) antes del launch.
+8. ~~**Lectura editorial de `/necesito-ayuda`**~~ — **RESUELTO (11-ago)**: Emanuel la leyó completa y la aprobó tal como está, sin cambios de copy.
 9. **PR a master**: la rama acumula todo el trabajo (Fases 1-4) — abrir cuando Emanuel lo pida.
 10. **Cutover DNS** (Fase 5 del plan maestro): congelar publicación → www→Vercel + apex redirect → smoke test → HSTS includeSubDomains como paso 2 → revocar credenciales de agente.
 
