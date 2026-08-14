@@ -11,53 +11,69 @@ export const metadata: Metadata = {
   alternates: { canonical: 'https://www.usinadejusticia.org.ar/nosotros/equipo' },
 }
 
-// Nota: no hay una nómina de equipo publicada en el WordPress migrado (ni en
-// la página "Nosotros" ni en ninguna otra fuente descargada). Se mantiene la
-// estructura de datos de la migración previa a la espera de que el equipo
-// editorial confirme nombres y cargos reales — no se inventan.
+// Comisión Directiva confirmada por Emanuel (11-ago-2026) — primera vez que
+// hay una nómina real de equipo (antes no existía en ningún WordPress
+// migrado, ver docs/ESTADO.md). Sin bio ni foto todavía: Emanuel va a ir
+// pasando las fotos de cada integrante más adelante; hasta entonces se
+// muestra el avatar de iniciales (mismo patrón que Testimonios.tsx y el
+// byline de las Guías de /acompanamiento). No se inventa ninguna bio.
 const equipo: MiembroEquipo[] = [
   {
     id: '1',
-    nombre: 'Nombre Apellido',
+    nombre: 'Diana Cohen Agrest',
     cargo: 'Presidente',
-    bio: 'Breve descripción del rol y trayectoria.',
     orden: 1,
-    area: 'direccion',
+    area: 'comision-directiva',
   },
   {
     id: '2',
-    nombre: 'Nombre Apellido',
-    cargo: 'Directora Ejecutiva',
-    bio: 'Breve descripción del rol y trayectoria.',
+    nombre: 'Raquel Slotolow',
+    cargo: 'Secretaria',
     orden: 2,
-    area: 'direccion',
+    area: 'comision-directiva',
   },
   {
     id: '3',
-    nombre: 'Nombre Apellido',
-    cargo: 'Asesor Legal',
-    bio: 'Breve descripción del rol y trayectoria.',
+    nombre: 'Guillermo Bargna',
+    cargo: 'Tesorero',
     orden: 3,
-    area: 'legal',
+    area: 'comision-directiva',
   },
   {
     id: '4',
-    nombre: 'Nombre Apellido',
-    cargo: 'Coordinadora de Programas',
-    bio: 'Breve descripción del rol y trayectoria.',
+    nombre: 'Raquel Berthi',
+    cargo: 'Vocal',
     orden: 4,
-    area: 'colaboradores',
+    area: 'comision-directiva',
+  },
+  {
+    id: '5',
+    nombre: 'Roberto Picozzi',
+    cargo: 'Vocal',
+    orden: 5,
+    area: 'comision-directiva',
+  },
+  {
+    id: '6',
+    nombre: 'Mariana Romano',
+    cargo: 'Vocal',
+    orden: 6,
+    area: 'comision-directiva',
   },
 ]
 
+// 'legal' y 'colaboradores' quedan vacías por ahora (el render las omite,
+// ver `if (miembros.length === 0) return null` abajo) — a la espera de que
+// Emanuel confirme si hay perfiles reales para sumar ahí además de la
+// Comisión Directiva.
 const areaLabels: Record<string, string> = {
-  direccion: 'Dirección',
+  'comision-directiva': 'Comisión Directiva',
   legal: 'Equipo Legal',
   colaboradores: 'Colaboradores',
 }
 
 export default function EquipoPage() {
-  const areas = ['direccion', 'legal', 'colaboradores'] as const
+  const areas = ['comision-directiva', 'legal', 'colaboradores'] as const
 
   return (
     <>
@@ -127,9 +143,11 @@ export default function EquipoPage() {
                         <p className="text-body-sm text-navy-600 font-bold mt-1">
                           {miembro.cargo}
                         </p>
-                        <p className="text-body-sm text-grey-700 mt-3 leading-relaxed">
-                          {miembro.bio}
-                        </p>
+                        {miembro.bio && (
+                          <p className="text-body-sm text-grey-700 mt-3 leading-relaxed">
+                            {miembro.bio}
+                          </p>
+                        )}
 
                         <div className="flex items-center gap-3 mt-4">
                           {miembro.email && (

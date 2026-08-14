@@ -49,13 +49,16 @@ export interface Tag {
 
 // --- Equipo ---
 
-export type AreaEquipo = 'direccion' | 'legal' | 'colaboradores'
+export type AreaEquipo = 'comision-directiva' | 'legal' | 'colaboradores'
 
 export interface MiembroEquipo {
   id: string
   nombre: string
   cargo: string
-  bio: string
+  // Sin bio confirmada todavía para la Comisión Directiva (11-ago-2026,
+  // ver src/app/nosotros/equipo/page.tsx) — opcional para no inventar
+  // una descripción que nadie escribió.
+  bio?: string
   foto?: ImageAsset
   email?: string
   linkedin?: string
