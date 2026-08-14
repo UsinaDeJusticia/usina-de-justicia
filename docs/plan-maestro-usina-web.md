@@ -15,7 +15,7 @@ Estas decisiones fueron cerradas en sesiones previas (marzo–junio 2026) y son 
 | D2 | Frontend: **Next.js + TypeScript + Tailwind en Vercel**, consumiendo WP REST API (`/wp-json/wp/v2`) | Cerrada |
 | D3 | Consolidación de **16 categorías → 6** | Cerrada (mapa a validar en Fase 1) |
 | D4 | `/necesito-ayuda` elevada a navegación principal | Cerrada |
-| D5 | Landing `/en` en inglés (origen: presentación OEA) | Cerrada |
+| D5 | Landing `/en` en inglés (origen: presentación OEA) — **actualización 13-ago-2026: Emanuel confirmó que esa presentación no existe; `/en` queda en v1 de forma permanente, sin contenido adicional pendiente por este motivo** | Cerrada |
 | D6 | **IVUJUS se separa** a su propio sitio (`ivujus-web`, Payload CMS) — proyecto aparte, fuera del alcance de este plan salvo los redirects 301 del lado de Usina | Cerrada |
 | D7 | GEO según guía oficial de Google (mayo 2026): **no** llms.txt, **no** chunking artificial. Sí: Wikidata + `sameAs`, JSON-LD, sitemap, semántica, Core Web Vitals | Cerrada |
 | D8 | Colores institucionales: navy `#1E427C`, gris `#A7A8AC`, blanco. Nunca violeta/púrpura | Cerrada |
