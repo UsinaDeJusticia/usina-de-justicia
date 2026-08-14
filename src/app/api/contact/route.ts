@@ -85,10 +85,14 @@ export async function POST(request: Request) {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        // Requiere un dominio verificado en Resend para salir desde
-        // contacto@usinadejusticia.org.ar — hasta que Emanuel lo verifique,
-        // Resend rechaza el envío o lo hace desde su dominio de pruebas.
-        from: `Formulario de contacto — Usina de Justicia <contacto@${new URL(siteConfig.url).hostname}>`,
+        // El dominio verificado en Resend es el apex "usinadejusticia.org.ar"
+        // (sin "www."). siteConfig.url usa el subdominio "www." para el
+        // sitio público — son dominios distintos para la verificación DKIM/SPF
+        // de Resend, así que se saca el "www." acá en vez de derivarlo
+        // directo del hostname del sitio (bug real: la primera versión de
+        // este endpoint mandaba desde "www.usinadejusticia.org.ar", que
+        // Resend rechazaba con 403 por no estar verificado ese subdominio).
+        from: `Formulario de contacto — Usina de Justicia <contacto@${new URL(siteConfig.url).hostname.replace(/^www\./, '')}>`,
         to: [siteConfig.contact.email],
         reply_to: email,
         subject: `[${asuntoLabel}] Nuevo mensaje de ${nombre}`,
