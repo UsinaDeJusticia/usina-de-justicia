@@ -2,8 +2,9 @@ import type { Metadata } from 'next'
 import { Button } from '@/components/ui/Button'
 import { siteConfig } from '@/lib/site-config'
 
-// v1 provisoria — pendiente el contenido real de la presentación ante la OEA
-// (decisión D5 del plan maestro). No agregar logros/cifras institucionales
+// v1 permanente — decisión D5 del plan maestro cerrada sin contenido
+// adicional: Emanuel confirmó (13-ago-2026) que no existe una presentación
+// formal ante la OEA para traducir. No agregar logros/cifras institucionales
 // en inglés más allá de lo ya verificado en español en este repo.
 //
 // Fuentes de cada dato usado en esta página (todo ya publicado en español
