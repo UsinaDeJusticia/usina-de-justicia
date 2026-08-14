@@ -85,9 +85,11 @@ const organizationSchema = {
   // CUIT real, mismo documento — ya público también en src/app/donar/page.tsx
   // (cross-check: coinciden).
   taxID: '30-71540108-4',
-  // TODO: agregar sameAs a la entrada de Wikidata de Usina cuando exista
-  // (docs/WIKIDATA.md).
-  sameAs: Object.values(siteConfig.social).filter(Boolean),
+  // Entrada de Wikidata de Usina de Justicia (creada por Emanuel, 14-ago-2026).
+  sameAs: [
+    'https://www.wikidata.org/wiki/Q141058778',
+    ...Object.values(siteConfig.social).filter(Boolean),
+  ],
 }
 
 export default function RootLayout({
