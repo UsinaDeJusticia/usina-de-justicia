@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { Breadcrumbs } from '@/components/layout/Breadcrumbs'
 import { Button } from '@/components/ui/Button'
-import { Mail, Phone, Send, CheckCircle } from 'lucide-react'
+import { Mail, Phone, Send, CheckCircle, AlertCircle } from 'lucide-react'
 import { siteConfig } from '@/lib/site-config'
 
 export default function ContactoPage() {
@@ -16,6 +16,7 @@ export default function ContactoPage() {
   })
   const [enviado, setEnviado] = useState(false)
   const [enviando, setEnviando] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
@@ -26,16 +27,35 @@ export default function ContactoPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setEnviando(true)
+    setError(null)
 
-    // TODO: Conectar con API endpoint /api/contact
-    // Decisión Fase 3 (Ola 5): se mantiene simulado. Conectar envío real
-    // requiere elegir un servicio de email (Resend/SendGrid/etc.) y su API
-    // key — pendiente para Emanuel.
-    // Por ahora simula envío
-    await new Promise((resolve) => setTimeout(resolve, 1000))
+    // Envío real vía /api/contact (Resend) — ver src/app/api/contact/route.ts.
+    // Si el servicio no está configurado todavía (falta RESEND_API_KEY),
+    // el endpoint responde 503 y acá se muestra el error real, nunca un
+    // falso "enviado".
+    try {
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData),
+      })
+      const data = (await response.json()) as { sent: boolean; error?: string }
 
-    setEnviado(true)
-    setEnviando(false)
+      if (!response.ok || !data.sent) {
+        setError(
+          data.error ??
+            `No pudimos enviar tu mensaje. Escribinos directamente a ${siteConfig.contact.email}.`
+        )
+      } else {
+        setEnviado(true)
+      }
+    } catch {
+      setError(
+        `No pudimos enviar tu mensaje. Escribinos directamente a ${siteConfig.contact.email}.`
+      )
+    } finally {
+      setEnviando(false)
+    }
   }
 
   return (
@@ -227,6 +247,13 @@ export default function ContactoPage() {
                         placeholder="Contanos cómo podemos ayudarte..."
                       />
                     </div>
+
+                    {error && (
+                      <div className="flex items-start gap-3 p-4 rounded-xs bg-warning-bg border border-warning text-body-sm text-ink">
+                        <AlertCircle className="w-5 h-5 text-warning shrink-0 mt-0.5" aria-hidden="true" />
+                        <p className="m-0">{error}</p>
+                      </div>
+                    )}
 
                     <Button type="button" variant="primary" size="lg" disabled={enviando} onClick={handleSubmit}>
                       {enviando ? (

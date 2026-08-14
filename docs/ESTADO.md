@@ -17,7 +17,7 @@
 
 **Gate G4 ✅ COMPLETO (15-jul):** optimización integral verificada — Lighthouse ≥96 en Performance y 100 en SEO en las 5 plantillas clave (ver sección Optimización).
 
-## Rama en curso: `feature/acompanamiento-guias-derechos` (11-ago-2026)
+## Rama mergeada: `feature/acompanamiento-guias-derechos` (11-ago-2026, PR #3 → master)
 
 Trabajo posterior al merge de PR #2, sobre `/acompanamiento`, a pedido de Emanuel. No forma parte de las Fases 1-4 ni de los gates ya cerrados arriba — es evolución posterior. Detalle completo de fuentes y decisiones en `docs/COPY-acompanamiento-guias.md` v2.
 
@@ -27,8 +27,21 @@ Trabajo posterior al merge de PR #2, sobre `/acompanamiento`, a pedido de Emanue
 4. Refuerzo SEO/GEO de `/noticias/categoria/[categoria]`: JSON-LD `CollectionPage`+`ItemList` (las 6 categorías), prioridad de sitemap de "historias" subida a 0.7.
 5. **Consulta legal RESUELTA**: los abogados de la organización confirmaron que la publicación de casos con nombre real es de interés público (ya salió en medios) y que los datos sensibles no se publican; agregan una regla: iniciales en vez de nombre completo cuando el imputado es menor de edad (criterio editorial para WordPress, no aplicable en código — ver `docs/COPY-acompanamiento-guias.md` §7).
 6. **Copy v3 del equipo (11-ago)**: tras revisar el preview, el equipo mandó texto propio para el hero, el reencuadre y las 3 tarjetas de "Cómo trabaja el equipo", y pidió eliminar "Dos maneras de acompañar" (confusa). Implementado con un solo ajuste técnico (conservar "ejecución de la pena" en la tarjeta 3, no "cumplimiento de la pena", por consistencia de término con el resto del sitio). El hero ahora afirma que el servicio es gratuito — primera vez que el sitio lo dice explícitamente (fuente: el equipo). **RESUELTO**: el equipo confirmó que es gratuito sin condición; se corrigió `src/app/donar/page.tsx` (decía "para víctimas que no pueden costear un abogado") para unificar con `/acompanamiento`.
-7. **Pendiente sin resolver**: un caso en `src/components/home/Testimonios.tsx` ("Néstor Alejandro Valdez") no tiene fuente rastreable en el inventario de WP — confirmar antes de seguir escalando esta estrategia.
-8. Build verde en cada commit; falta Lighthouse post-cambio y push + preview para revisión de Emanuel (próximo paso).
+7. **Pendiente sin resolver, dejado a propósito**: un caso en `src/components/home/Testimonios.tsx` ("Néstor Alejandro Valdez") no tiene fuente rastreable en el inventario de WP. Emanuel pidió (13-ago) dejarlo sin tocar por ahora.
+8. Build verde en cada commit, Lighthouse ≥90 en las 4 categorías verificado, PR #3 mergeado a `master`.
+
+## Rama mergeada: `feature/equipo-comision-directiva` (11-ago-2026, PR #4 → master)
+
+1. Comisión Directiva real en `/nosotros/equipo` (6 personas, ver sección "Pendientes" — punto 4). Sin fotos todavía.
+2. `/necesito-ayuda` leído y aprobado por Emanuel sin cambios de copy.
+
+## Rama mergeada: `feature/direccion-oea-contacto` (13/14-ago-2026, PR #5 y #6 → master)
+
+1. Dirección postal + CUIT reales en el JSON-LD del NGO (`src/app/layout.tsx`).
+2. `/en`: cerrado el pendiente de contenido OEA (confirmado que no existe esa presentación).
+3. `/api/contact` real con Resend — probado y funcionando en producción (dominio verificado, bug del remitente con "www." corregido).
+4. Fix: botón de teléfono invisible en el CTA final de `/necesito-ayuda` (bg-transparent faltante en el override del variant secondary).
+5. Wikidata de Usina de Justicia conectada al `sameAs` del NGO (Q141058778, creada por Emanuel).
 
 ## Árbol de navegación — estado final de la Fase 3
 
@@ -49,15 +62,15 @@ Trabajo posterior al merge de PR #2, sobre `/acompanamiento`, a pedido de Emanue
 
 ## Pendientes APARCADOS por decisión de Emanuel (15-jul) — se retoman después
 Ninguno bloquea el trabajo técnico; varios sí bloquean el CUTOVER final:
-1. **Wikidata**: crear la entrada siguiendo `docs/WIKIDATA.md` (~15 min) y pasar el Q-ID para conectarlo al sameAs (TODO esperándolo en src/app/layout.tsx).
+1. ~~**Wikidata**~~ — **RESUELTO (14-ago)**: Emanuel creó y completó la entrada (Q141058778, https://www.wikidata.org/wiki/Q141058778), conectada al `sameAs` del NGO en `src/app/layout.tsx`.
 2. **Logo SVG**: el adjunto no llegó — reenviar el vectorial.
-3. **Dirección postal**: confirmar la sede social registrada (primera página de la Memoria y Balance legalizada) para el JSON-LD del NGO.
-4. **Equipo — PARCIALMENTE RESUELTO (11-ago)**: Emanuel confirmó la nómina real de la Comisión Directiva (6 personas: Diana Cohen Agrest -Presidente-, Raquel Slotolow -Secretaria-, Guillermo Bargna -Tesorero-, Raquel Berthi/Roberto Picozzi/Mariana Romano -Vocales-), ya implementada en `src/app/nosotros/equipo/page.tsx` (rama `feature/equipo-comision-directiva`). **Sigue pendiente**: las fotos de cada integrante (Emanuel las va a ir pasando) — hasta entonces se muestra el avatar de iniciales, mismo patrón que Testimonios.tsx.
-5. **Retratos**: consentimientos de las familias para reemplazar los placeholders de Testimonios.
-6. **`/en`**: material real de la presentación OEA para completar la landing.
-7. **Formulario de contacto**: elegir servicio de email (Resend/SendGrid/etc.) + API key para el envío real.
+3. ~~**Dirección postal**~~ — **RESUELTO (13-ago)**: Emanuel confirmó el domicilio legal (Basavilbaso 1350, 3° Dto. 311, C.A.B.A.) y el CUIT vía documento de IGJ; ya está en el JSON-LD del NGO (`src/app/layout.tsx`).
+4. **Equipo — PARCIALMENTE RESUELTO (11-ago)**: Emanuel confirmó la nómina real de la Comisión Directiva (6 personas: Diana Cohen Agrest -Presidente-, Raquel Slotolow -Secretaria-, Guillermo Bargna -Tesorero-, Raquel Berthi/Roberto Picozzi/Mariana Romano -Vocales-), ya en `src/app/nosotros/equipo/page.tsx`. **Sigue pendiente**: las fotos de cada integrante (Emanuel las va a ir pasando) — hasta entonces se muestra el avatar de iniciales, mismo patrón que Testimonios.tsx.
+5. **Retratos de Testimonios — PARCIALMENTE RESUELTO (13-ago)**: Emanuel confirmó que ya existe el consentimiento de las familias. Sigue faltando que mande los archivos de foto en sí — hasta entonces sigue el placeholder de iniciales.
+6. ~~**`/en`**~~ — **RESUELTO/no aplica (13-ago)**: Emanuel confirmó que la presentación ante la OEA que originó la decisión D5 no existe. `/en` queda en v1 de forma permanente, no hay más contenido pendiente por este motivo.
+7. ~~**Formulario de contacto**~~ — **RESUELTO (14-ago)**: `/api/contact` con Resend, dominio verificado, probado en producción por Emanuel ("funciona e increíblemente rápido").
 8. ~~**Lectura editorial de `/necesito-ayuda`**~~ — **RESUELTO (11-ago)**: Emanuel la leyó completa y la aprobó tal como está, sin cambios de copy.
-9. **PR a master**: la rama acumula todo el trabajo (Fases 1-4) — abrir cuando Emanuel lo pida.
+9. **PR a master**: PR #3, #4, #5 y #6 ya mergeados. El trabajo de esta sesión está todo en `master`.
 10. **Cutover DNS** (Fase 5 del plan maestro): congelar publicación → www→Vercel + apex redirect → smoke test → HSTS includeSubDomains como paso 2 → revocar credenciales de agente.
 
 ## Hallazgos de esta sesión (para tener en cuenta)

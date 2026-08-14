@@ -73,10 +73,23 @@ const organizationSchema = {
     areaServed: 'AR',
     availableLanguage: 'Spanish',
   },
-  // TODO: address pendiente de confirmación de la sede social registrada.
-  // TODO: agregar sameAs a la entrada de Wikidata de Usina cuando exista
-  // (docs/WIKIDATA.md).
-  sameAs: Object.values(siteConfig.social).filter(Boolean),
+  // Domicilio legal real, confirmado por Emanuel (13-ago-2026) con el
+  // documento de inscripción ante la IGJ. Sin postalCode: el documento no
+  // lo incluye, no se inventa.
+  address: {
+    '@type': 'PostalAddress',
+    streetAddress: 'Basavilbaso 1350, 3° Dto. 311',
+    addressLocality: 'Ciudad Autónoma de Buenos Aires',
+    addressCountry: 'AR',
+  },
+  // CUIT real, mismo documento — ya público también en src/app/donar/page.tsx
+  // (cross-check: coinciden).
+  taxID: '30-71540108-4',
+  // Entrada de Wikidata de Usina de Justicia (creada por Emanuel, 14-ago-2026).
+  sameAs: [
+    'https://www.wikidata.org/wiki/Q141058778',
+    ...Object.values(siteConfig.social).filter(Boolean),
+  ],
 }
 
 export default function RootLayout({

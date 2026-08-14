@@ -54,7 +54,7 @@ bien hecho.
 
 | Schema | Dónde | Archivo | Notas |
 |---|---|---|---|
-| `NGO` (entidad consolidada) | Layout raíz, todas las páginas | `src/app/layout.tsx` | `@id` estable (`{siteConfig.url}/#organization`) para que otras páginas la referencien por `{ "@id": ... }` en vez de duplicarla. Incluye `foundingDate: 2014-11-12`, `founder` (Diana Cohen Agrest, con `sameAs` a su entrada de Wikidata Q23907251), `contactPoint`, `sameAs` (redes sociales). Dos TODOs pendientes marcados en el código: dirección postal y `sameAs` a la futura entrada de Wikidata de Usina (ver §3 y `docs/WIKIDATA.md`). |
+| `NGO` (entidad consolidada) | Layout raíz, todas las páginas | `src/app/layout.tsx` | `@id` estable (`{siteConfig.url}/#organization`) para que otras páginas la referencien por `{ "@id": ... }` en vez de duplicarla. Incluye `foundingDate: 2014-11-12`, `founder` (Diana Cohen Agrest, con `sameAs` a su entrada de Wikidata Q23907251), `contactPoint`, `address` (domicilio legal real, confirmado 13-ago-2026 vía documento de IGJ), `taxID` (CUIT, coincide con el publicado en `/donar`), `sameAs` (redes sociales). Un solo TODO pendiente marcado en el código: `sameAs` a la futura entrada de Wikidata de Usina (ver §3 y `docs/WIKIDATA.md`). |
 | `AboutPage` | `/nosotros` | `src/app/nosotros/page.tsx` | `mainEntity` referencia el `NGO` por `@id`. |
 | `Dataset` + `DataDownload` | `/observatorio` | `src/app/observatorio/page.tsx` | Datos del observatorio de víctimas. |
 | `Service` | `/acompanamiento` | `src/app/acompanamiento/page.tsx` | |
@@ -95,8 +95,9 @@ plantillas clave antes del gate G4 final (ver `docs/ESTADO.md`).
   sitio) — implementado con `alternates.languages` en
   `src/lib/metadata.ts`/`generatePageMetadata` y en `src/app/page.tsx`.
 - Contenido de `/en` es v1 mínima con hechos ya verificados en español
-  (fundación 2014, misión, contacto) — pendiente el contenido real de la
-  presentación ante la OEA (decisión D5, ver `docs/ESTADO.md`).
+  (fundación 2014, misión, contacto) — permanente: la "presentación ante la
+  OEA" que originó la decisión D5 se confirmó inexistente (13-ago-2026, ver
+  `docs/ESTADO.md`), no hay más contenido pendiente de agregar por esa vía.
 
 ### 2.4 Headers de seguridad (afectan ranking / confianza, Fase 4 Ola A)
 
@@ -151,12 +152,12 @@ sesión — antes solo estaba en el `meta description`, no en texto visible).
    doctrina D7. Guía paso a paso para que Emanuel la cree: `docs/WIKIDATA.md`.
    Cuando exista el Q-ID, hay un `TODO` esperando en
    `src/app/layout.tsx` (`organizationSchema.sameAs`) para conectarlo.
-2. **Dirección postal de la sede social.** El `NGO` schema en
-   `src/app/layout.tsx` tiene un `TODO` explícito: la dirección no se
-   incluyó porque no hay confirmación de cuál es la sede social *registrada*
-   actual (el dato de "Reconquista 458" que aparece en `plan-maestro-usina-web.md`
-   §4 Fase 4 es una referencia de partida, no un dato verificado en esta
-   sesión). Falta que Emanuel la confirme.
+2. ~~**Dirección postal de la sede social.**~~ — **RESUELTO (13-ago-2026)**:
+   Emanuel confirmó el domicilio legal real (Basavilbaso 1350, 3° Dto. 311,
+   C.A.B.A.) con el documento de inscripción ante la IGJ; ya está en el `NGO`
+   schema de `src/app/layout.tsx` junto con el CUIT. (El dato de "Reconquista
+   458" que aparecía en `plan-maestro-usina-web.md` §4 Fase 4 era solo una
+   referencia de partida sin verificar — nunca llegó a usarse en el código.)
 3. **Google Search Console** del dominio con el sitio nuevo — acción fuera
    del código, post-cutover (Fase 5).
 4. **Google Business Profile** — ídem, acción de Emanuel, post-cutover.
