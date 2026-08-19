@@ -43,6 +43,12 @@ Trabajo posterior al merge de PR #2, sobre `/acompanamiento`, a pedido de Emanue
 4. Fix: botón de teléfono invisible en el CTA final de `/necesito-ayuda` (bg-transparent faltante en el override del variant secondary).
 5. Wikidata de Usina de Justicia conectada al `sameAs` del NGO (Q141058778, creada por Emanuel).
 
+## Rama en curso: `feature/fotos-equipo-logo` (18-ago-2026, sin PR todavía)
+
+1. **Logo**: Emanuel envió el logo re-exportado en PNG alta resolución (fondo transparente, 6772×2966) vía opencode (que pusheó los archivos crudos directo a `master`, commit `4956926`). Reemplaza a `public/images/logo_uj.png` (mismo diseño, solo mejor resolución de origen — Next.js lo redimensiona igual en cada uso).
+2. **Fotos de la Comisión Directiva**: las 6 llegaron completas en el mismo push de opencode, sin nombre identificable (`diana1.png`, `guillermo1.png`, etc.). Renombradas a `public/images/equipo/<nombre-apellido>.png` y cableadas en `src/app/nosotros/equipo/page.tsx` (campo `foto` de cada integrante) — ya no se muestra el avatar de iniciales para ninguno de los 6.
+3. Build verde. Falta abrir PR a `master`.
+
 ## Árbol de navegación — estado final de la Fase 3
 
 | Ruta | Estado | Fuente de contenido |
@@ -63,9 +69,9 @@ Trabajo posterior al merge de PR #2, sobre `/acompanamiento`, a pedido de Emanue
 ## Pendientes APARCADOS por decisión de Emanuel (15-jul) — se retoman después
 Ninguno bloquea el trabajo técnico; varios sí bloquean el CUTOVER final:
 1. ~~**Wikidata**~~ — **RESUELTO (14-ago)**: Emanuel creó y completó la entrada (Q141058778, https://www.wikidata.org/wiki/Q141058778), conectada al `sameAs` del NGO en `src/app/layout.tsx`.
-2. **Logo SVG**: el adjunto no llegó — reenviar el vectorial.
+2. ~~**Logo**~~ — **RESUELTO (18-ago)**: Emanuel envió el logo en PNG de alta resolución (no se pudo adjuntar en `.svg`, bloqueado por el cliente); reemplaza `public/images/logo_uj.png`.
 3. ~~**Dirección postal**~~ — **RESUELTO (13-ago)**: Emanuel confirmó el domicilio legal (Basavilbaso 1350, 3° Dto. 311, C.A.B.A.) y el CUIT vía documento de IGJ; ya está en el JSON-LD del NGO (`src/app/layout.tsx`).
-4. **Equipo — PARCIALMENTE RESUELTO (11-ago)**: Emanuel confirmó la nómina real de la Comisión Directiva (6 personas: Diana Cohen Agrest -Presidente-, Raquel Slotolow -Secretaria-, Guillermo Bargna -Tesorero-, Raquel Berthi/Roberto Picozzi/Mariana Romano -Vocales-), ya en `src/app/nosotros/equipo/page.tsx`. **Sigue pendiente**: las fotos de cada integrante (Emanuel las va a ir pasando) — hasta entonces se muestra el avatar de iniciales, mismo patrón que Testimonios.tsx.
+4. ~~**Equipo**~~ — **RESUELTO (18-ago)**: nómina real de la Comisión Directiva (6 personas: Diana Cohen Agrest -Presidente-, Raquel Slotolow -Secretaria-, Guillermo Bargna -Tesorero-, Raquel Berthi/Roberto Picozzi/Mariana Romano -Vocales-) con foto real de cada integrante, ya en `src/app/nosotros/equipo/page.tsx`.
 5. **Retratos de Testimonios — PARCIALMENTE RESUELTO (13-ago)**: Emanuel confirmó que ya existe el consentimiento de las familias. Sigue faltando que mande los archivos de foto en sí — hasta entonces sigue el placeholder de iniciales.
 6. ~~**`/en`**~~ — **RESUELTO/no aplica (13-ago)**: Emanuel confirmó que la presentación ante la OEA que originó la decisión D5 no existe. `/en` queda en v1 de forma permanente, no hay más contenido pendiente por este motivo.
 7. ~~**Formulario de contacto**~~ — **RESUELTO (14-ago)**: `/api/contact` con Resend, dominio verificado, probado en producción por Emanuel ("funciona e increíblemente rápido").

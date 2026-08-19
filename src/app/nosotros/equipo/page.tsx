@@ -13,10 +13,9 @@ export const metadata: Metadata = {
 
 // Comisión Directiva confirmada por Emanuel (11-ago-2026) — primera vez que
 // hay una nómina real de equipo (antes no existía en ningún WordPress
-// migrado, ver docs/ESTADO.md). Sin bio ni foto todavía: Emanuel va a ir
-// pasando las fotos de cada integrante más adelante; hasta entonces se
-// muestra el avatar de iniciales (mismo patrón que Testimonios.tsx y el
-// byline de las Guías de /acompanamiento). No se inventa ninguna bio.
+// migrado, ver docs/ESTADO.md). Fotos recibidas el 18-ago-2026 (retratos
+// profesionales, mismo fondo de estudio) y ubicadas en
+// public/images/equipo/ — sin bio todavía, no se inventa ninguna.
 const equipo: MiembroEquipo[] = [
   {
     id: '1',
@@ -24,6 +23,12 @@ const equipo: MiembroEquipo[] = [
     cargo: 'Presidente',
     orden: 1,
     area: 'comision-directiva',
+    foto: {
+      url: '/images/equipo/diana-cohen-agrest.png',
+      alt: 'Diana Cohen Agrest',
+      width: 1122,
+      height: 1402,
+    },
   },
   {
     id: '2',
@@ -31,6 +36,12 @@ const equipo: MiembroEquipo[] = [
     cargo: 'Secretaria',
     orden: 2,
     area: 'comision-directiva',
+    foto: {
+      url: '/images/equipo/raquel-slotolow.png',
+      alt: 'Raquel Slotolow',
+      width: 1122,
+      height: 1402,
+    },
   },
   {
     id: '3',
@@ -38,6 +49,12 @@ const equipo: MiembroEquipo[] = [
     cargo: 'Tesorero',
     orden: 3,
     area: 'comision-directiva',
+    foto: {
+      url: '/images/equipo/guillermo-bargna.png',
+      alt: 'Guillermo Bargna',
+      width: 1122,
+      height: 1402,
+    },
   },
   {
     id: '4',
@@ -45,6 +62,12 @@ const equipo: MiembroEquipo[] = [
     cargo: 'Vocal',
     orden: 4,
     area: 'comision-directiva',
+    foto: {
+      url: '/images/equipo/raquel-berthi.png',
+      alt: 'Raquel Berthi',
+      width: 1122,
+      height: 1402,
+    },
   },
   {
     id: '5',
@@ -52,6 +75,12 @@ const equipo: MiembroEquipo[] = [
     cargo: 'Vocal',
     orden: 5,
     area: 'comision-directiva',
+    foto: {
+      url: '/images/equipo/roberto-picozzi.png',
+      alt: 'Roberto Picozzi',
+      width: 1122,
+      height: 1402,
+    },
   },
   {
     id: '6',
@@ -59,6 +88,12 @@ const equipo: MiembroEquipo[] = [
     cargo: 'Vocal',
     orden: 6,
     area: 'comision-directiva',
+    foto: {
+      url: '/images/equipo/mariana-romano.png',
+      alt: 'Mariana Romano',
+      width: 1122,
+      height: 1402,
+    },
   },
 ]
 
