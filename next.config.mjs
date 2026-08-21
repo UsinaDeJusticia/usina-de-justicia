@@ -94,6 +94,19 @@ const nextConfig = {
       { source: '/equipo', destination: '/nosotros/equipo', permanent: true },
       { source: '/staff', destination: '/nosotros/equipo', permanent: true },
 
+      // === ALIAS EN INGLÉS DE LAS "TRUST ANCHOR PAGES" ===
+      // Los agentes que verifican si una organización es legítima buscan las
+      // rutas convencionales en inglés (/about, /privacy, /terms) antes de
+      // recomendarla. Este sitio es en español y sus páginas viven en
+      // /nosotros y /legal/*, así que esas URLs daban 404 aunque el contenido
+      // exista y sea extenso. Se resuelve con un 301 al equivalente real, no
+      // con páginas nuevas: duplicar el contenido en dos URLs partiría la
+      // autoridad SEO de cada una y contradiría los `canonical` ya
+      // declarados. Un solo salto, sin cadenas de redirects.
+      { source: '/about', destination: '/nosotros', permanent: true },
+      { source: '/about-us', destination: '/nosotros', permanent: true },
+      { source: '/team', destination: '/nosotros/equipo', permanent: true },
+
       // === BLOG → NOTICIAS (Fase 3: /blog se renombra a /noticias) ===
       { source: '/blog', destination: '/noticias', permanent: true },
       { source: '/blog/categoria/:categoria*', destination: '/noticias/categoria/:categoria*', permanent: true },
@@ -194,6 +207,10 @@ const nextConfig = {
       { source: '/privacidad', destination: '/legal/privacidad', permanent: true },
       { source: '/politica-privacidad', destination: '/legal/privacidad', permanent: true },
       { source: '/terminos', destination: '/legal/terminos', permanent: true },
+      // Alias en inglés — mismo criterio que /about y /team más arriba.
+      { source: '/privacy', destination: '/legal/privacidad', permanent: true },
+      { source: '/privacy-policy', destination: '/legal/privacidad', permanent: true },
+      { source: '/terms', destination: '/legal/terminos', permanent: true },
     ]
   },
 
@@ -205,6 +222,18 @@ const nextConfig = {
           { key: 'X-Frame-Options', value: 'DENY' },
           { key: 'X-Content-Type-Options', value: 'nosniff' },
           { key: 'Referrer-Policy', value: 'origin-when-cross-origin' },
+          // Negociación de contenido con agentes (ver src/middleware.ts): la
+          // misma URL sirve HTML o Markdown según el header `Accept`, así que
+          // los caches intermedios tienen que variar por él. Sin esto, un CDN
+          // que ya cacheó la variante HTML se la sirve igual a un agente que
+          // pidió markdown, y al revés.
+          //
+          // Va acá y no en el middleware a propósito: el middleware corre
+          // ANTES de que Next.js agregue su propio `Vary` de router (`rsc`,
+          // `next-router-state-tree`, …), así que lo que setea el middleware
+          // termina sobrescrito. Verificado con curl contra el build de
+          // producción: por middleware el header salía sin `Accept`.
+          { key: 'Vary', value: 'Accept' },
           // Sin includeSubDomains ni preload: decisión deliberada. WordPress
           // se va a mudar a un subdominio propio (p. ej. wp.usinadejusticia
           // .org.ar) en el cutover, y ese subdominio no tiene por qué
