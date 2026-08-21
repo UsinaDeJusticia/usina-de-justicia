@@ -6,8 +6,12 @@ import Link from 'next/link'
 // se reemplaza por un bloque navy SÓLIDO (regla de marca: no gradientes).
 // Regla de contenido vinculante: nombre completo + mes/año del hecho,
 // nunca recortado.
+//
+// El caso "Néstor Alejandro Valdez" se retiró (19-ago-2026): no tiene
+// fuente rastreable en el inventario de WordPress y Emanuel confirmó que
+// no hay más registros disponibles — queda incompleto, se saca en vez de
+// dejarlo sin poder verificar.
 const testimonios = [
-  { nombre: 'Néstor Alejandro Valdez', fecha: 'asesinado en enero de 2012', jurisdiccion: 'CABA' },
   { nombre: 'Zoe Nerea Cortez', fecha: 'asesinada en marzo de 2020', jurisdiccion: 'Santa Fe' },
   { nombre: 'Pablo Flores', fecha: 'asesinado en octubre de 2020', jurisdiccion: 'La Plata' },
   { nombre: 'Lucinda Palavecino', fecha: 'asesinada en julio de 2020', jurisdiccion: 'Tucumán' },
