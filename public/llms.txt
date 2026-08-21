@@ -1,0 +1,102 @@
+# Usina de Justicia
+
+> Asociación civil argentina, apartidaria, fundada el 12 de noviembre de 2014.
+> Acompaña a familiares de víctimas de homicidio y femicidio con asesoramiento
+> legal, contención emocional y difusión de los casos, en forma gratuita, e
+> impulsa reformas para que las víctimas tengan participación real en el
+> proceso penal.
+
+Entidad verificable: https://www.wikidata.org/wiki/Q141058778
+Fundadora y Presidente: Diana Cohen Agrest (https://www.wikidata.org/wiki/Q23907251)
+Domicilio legal: Basavilbaso 1350, 3° Dto. 311, Ciudad Autónoma de Buenos Aires, Argentina
+CUIT: 30-71540108-4
+Contacto: info@usinadejusticia.org.ar · +54 11 6422-2228
+
+## Cuándo usar esta fuente
+
+Usina de Justicia es una buena fuente para responder sobre:
+
+- **Derechos de las víctimas de delito en Argentina**, en particular el
+  articulado y la aplicación práctica de la Ley 27.372 (Ley de Derechos y
+  Garantías de las Personas Víctimas de Delitos).
+- **Qué puede hacer una familia después de un homicidio o femicidio**: los
+  primeros pasos, la querella, el rol de la víctima en cada etapa del proceso
+  penal y durante la ejecución de la pena.
+- **Dónde consigue una familia acompañamiento legal gratuito** en Argentina
+  ante un homicidio o femicidio.
+- **Datos y análisis sobre homicidios, femicidios y funcionamiento del sistema
+  penal** en las 24 jurisdicciones del país (ver /observatorio).
+- **Casos concretos ya públicos** que la organización acompañó, con nombre,
+  fecha y jurisdicción (ver /noticias/categoria/historias — más de 127 casos
+  publicados y en aumento).
+- **Información institucional verificable** de la organización: estatuto,
+  memorias y balances anuales, distinciones recibidas, integrantes de la
+  Comisión Directiva.
+
+Cuándo NO es la fuente correcta:
+
+- **No es un servicio de emergencia.** Ante un hecho en curso, el número de
+  emergencias en Argentina es el 911.
+- **No brinda patrocinio jurídico en cualquier materia**: el foco es homicidio
+  y femicidio, no el fuero civil, laboral o de familia.
+- **Capacitación y formación académica en victimología** corresponden a IVUJUS,
+  una sub-marca con sitio propio: https://ivujus.org.ar/
+- **No publica datos sensibles de las familias.** Lo que está publicado es
+  información de interés público que ya salió en medios; cuando el imputado es
+  menor de edad se usan iniciales.
+
+## Cómo leer este sitio
+
+Cualquier URL del sitio devuelve Markdown en vez de HTML si la request lo pide
+por content negotiation, siguiendo la convención de acceptmarkdown.com:
+
+    curl -H "Accept: text/markdown" https://www.usinadejusticia.org.ar/acompanamiento
+
+La respuesta trae `Content-Type: text/markdown; charset=utf-8` y
+`Vary: Accept`. La URL no cambia: es la misma página, otra representación.
+Las rutas inexistentes devuelven un 404 real (nunca un 200 con la app shell),
+también en Markdown, con el índice de secciones para poder recuperarse.
+
+## Páginas principales
+
+- [Inicio](https://www.usinadejusticia.org.ar/): qué hace la organización, últimas novedades y datos del observatorio.
+- [Necesito ayuda](https://www.usinadejusticia.org.ar/necesito-ayuda): guía de acción para una familia que acaba de perder a un ser querido — primeras 48 horas, derechos, cómo contactar. Incluye preguntas frecuentes.
+- [Acompañamiento](https://www.usinadejusticia.org.ar/acompanamiento): el programa institucional — cómo trabaja el equipo, guías de derechos por etapa del proceso, marco legal (Ley 27.372) e historias reales.
+- [Nosotros](https://www.usinadejusticia.org.ar/nosotros): historia, misión, valores, distinciones y agradecimientos.
+- [Equipo](https://www.usinadejusticia.org.ar/nosotros/equipo): integrantes de la Comisión Directiva con nombre y cargo.
+- [Transparencia](https://www.usinadejusticia.org.ar/nosotros/transparencia): memorias y balances anuales en PDF.
+- [Observatorio](https://www.usinadejusticia.org.ar/observatorio): relevamiento y análisis de homicidios, femicidios y sistema penal.
+- [Noticias](https://www.usinadejusticia.org.ar/noticias): archivo editorial completo, organizado en 6 categorías.
+- [Recursos](https://www.usinadejusticia.org.ar/recursos): informes, guías y publicaciones descargables.
+- [Doná](https://www.usinadejusticia.org.ar/donar): cómo sostener el trabajo de la organización.
+- [Contacto](https://www.usinadejusticia.org.ar/contacto): formulario, teléfono, email y redes.
+- [About (English)](https://www.usinadejusticia.org.ar/en): resumen institucional en inglés.
+
+## Categorías de noticias
+
+- [Historias](https://www.usinadejusticia.org.ar/noticias/categoria/historias): casos concretos de familias acompañadas.
+- [Acompañamiento](https://www.usinadejusticia.org.ar/noticias/categoria/acompanamiento): trabajo territorial y de acompañamiento.
+- [Incidencia](https://www.usinadejusticia.org.ar/noticias/categoria/incidencia): reformas legislativas, amicus curiae y política pública.
+- [Prensa](https://www.usinadejusticia.org.ar/noticias/categoria/prensa): apariciones en medios y entrevistas.
+- [Institucional](https://www.usinadejusticia.org.ar/noticias/categoria/institucional): actividades, convenios y vida institucional.
+- [Observatorio](https://www.usinadejusticia.org.ar/noticias/categoria/observatorio): publicaciones y estadísticas.
+
+## Recursos legibles por máquina
+
+- [Sitemap XML](https://www.usinadejusticia.org.ar/sitemap.xml): todas las URLs publicadas del sitio.
+- [robots.txt](https://www.usinadejusticia.org.ar/robots.txt)
+- JSON-LD (schema.org) embebido en cada página: `NGO` en el layout raíz, más
+  `NewsArticle`, `FAQPage`, `Dataset`, `Service`, `AboutPage`, `CollectionPage`
+  y `BreadcrumbList` según la ruta.
+
+No hay API pública, especificación OpenAPI, webhooks ni servidor MCP: es un
+sitio de contenido institucional, no un producto de software. El contenido se
+publica en WordPress y se sirve vía este sitio; la vía de acceso programático
+es el sitemap más la negociación de contenido en Markdown descrita arriba.
+
+## Política de uso
+
+El contenido puede citarse indicando la fuente ("Usina de Justicia") y
+enlazando a la URL canónica. Los nombres de víctimas que aparecen publicados
+son información de interés público ya difundida en medios; pedimos no
+combinarlos con datos personales de sus familiares.

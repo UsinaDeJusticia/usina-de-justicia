@@ -49,6 +49,92 @@ Trabajo posterior al merge de PR #2, sobre `/acompanamiento`, a pedido de Emanue
 2. **Fotos de la Comisión Directiva**: las 6 llegaron completas en el mismo push de opencode, sin nombre identificable (`diana1.png`, `guillermo1.png`, etc.). Renombradas a `public/images/equipo/<nombre-apellido>.png` y cableadas en `src/app/nosotros/equipo/page.tsx` (campo `foto` de cada integrante) — ya no se muestra el avatar de iniciales para ninguno de los 6.
 3. Build verde. Falta abrir PR a `master`.
 
+## Rama en curso: `features-ai` (19-ago-2026, sin PR todavía)
+
+Auditoría externa de "agent readiness" (score 68/100) sobre el preview de
+Vercel, que Emanuel pidió implementar en orden de prioridad. **6 de los 10
+ítems se implementaron; 4 no, con justificación** (ver abajo — no es que
+falten, es que no aplican o no se pueden resolver en código).
+
+Implementado:
+1. **404 útil para agentes.** El sitio ya devolvía un 404 real; faltaba la
+   parte de recuperación. Nuevo `src/app/not-found.tsx` (HTML, en el design
+   system, con índice de secciones) y la versión markdown del mismo 404 con
+   punteros al sitemap y a llms.txt.
+2. **Negociación de contenido en Markdown** (convención de
+   acceptmarkdown.com): `src/middleware.ts` + `src/app/api/md/route.ts` +
+   `src/lib/html-to-markdown.ts` + `src/lib/agent-negotiation.ts`. Cualquier
+   URL sirve markdown si el `Accept` lo prefiere, sin cambiar la URL pública
+   y sin afectar a los navegadores. Cubre las ~876 URLs porque convierte el
+   HTML real de cada página — una sola fuente de verdad, nada de copy
+   duplicado. Detalle técnico y limitación de `Vary` en `docs/geo-schema.md`
+   §2.2.b.
+3. **`public/llms.txt` con guía de "cuándo usar" y cuándo no.** Esto es una
+   reversión parcial de la decisión D7 (que decía "NO llms.txt"); el
+   razonamiento y su límite honesto quedaron escritos en
+   `docs/geo-schema.md` §2.2.b.
+4. **Alias en inglés de las "trust anchor pages"**: `/about`, `/about-us`,
+   `/team`, `/privacy`, `/privacy-policy`, `/terms` → 301 al equivalente
+   real en español. La auditoría reportaba About y Privacy como "missing"
+   porque buscaba las rutas convencionales en inglés; el contenido siempre
+   existió en `/nosotros` y `/legal/*`. Se resolvió con redirects y no con
+   páginas nuevas para no partir la autoridad SEO ni contradecir los
+   `canonical`.
+5. **JSON-LD**: `url` y `jobTitle` en la entidad `founder` del schema `NGO`.
+6. **Eficiencia de contenido**: no se tocó el HTML (habría implicado
+   rediseñar), pero el markdown da a los agentes la misma información con
+   ~100% de densidad de texto: la Home pasa de 4,09% de texto sobre 116 KB
+   de HTML a 5,9 KB de markdown puro.
+
+Verificación (build de producción local, `pnpm build && pnpm start`):
+`pnpm test` 33/33 · `pnpm lint` sin warnings · build verde · 404 devuelve
+404 · markdown con `Content-Type: text/markdown; charset=utf-8` y
+`Vary: Accept` en Home, secciones y posts de WordPress · navegadores siguen
+recibiendo HTML · los 6 redirects nuevos devuelven 308 al destino correcto ·
+`/api/contact` y el resto del sitio sin regresiones.
+
+**Hallazgos propios durante la implementación** (bugs encontrados y
+corregidos en el camino, todos con test de regresión):
+- El middleware NO puede ir en la raíz del repo con directorio `src/`: va en
+  `src/middleware.ts` o no se ejecuta (silenciosamente).
+- Después de un rewrite, un route handler ve el `request.url` **original**:
+  los searchParams que agrega el middleware no llegan. Se pasa la ruta por
+  header (`x-markdown-path`).
+- El conversor perdía todo el contenido maquetado con `div`/`span` —entre
+  otras cosas **los datos bancarios de `/donar` (CBU, alias, CUIT)**, que son
+  el contenido principal de esa página. Se reescribió como recorrido
+  secuencial en vez de lista blanca de etiquetas de bloque.
+- Un regex no-greedy fusionaba ítems de listas anidadas en una sola línea
+  ("- Padre Hijo"), o sea corrompía contenido en vez de simplemente
+  aplanarlo.
+
+**No implementado, con justificación:**
+- **Recursos para desarrolladores** y **servidor MCP**: el sitio no tiene API
+  pública, OpenAPI, webhooks ni es un producto de software. La evidencia de
+  la auditoría delata la confusión: dice que buscó recursos de "vercel" y que
+  encontró `@vercel/mcp-adapter` como "MCP server publicado por la
+  organización del producto" — eso es de Vercel, el hosting, no de Usina.
+  Publicar documentación de una API que no existe sería inventar. **Decisión
+  de producto** si alguna vez se quiere exponer el contenido como API.
+- **Descubribilidad de la marca**: no es un problema de código. La auditoría
+  corrió contra `usina-de-justicia.vercel.app`; el dominio real todavía
+  apunta al WordPress viejo. Se resuelve con el cutover + Google Search
+  Console, ya en la lista de pendientes.
+- **`Vary: Accept` en las páginas HTML prerenderizadas**: Next.js sobrescribe
+  ese header en las prerenderizadas y la única vía sería un `vercel.json`,
+  que se evaluó y se descartó por riesgo de romper el cacheo de la navegación
+  client-side. Detalle en `docs/geo-schema.md` §3 punto 6.
+- **Estructura de headings "plana"** (parte del ítem 2 de la auditoría): se
+  midió el HTML renderizado y **la evidencia de la auditoría es incorrecta**
+  — la Home tiene `h1 → h2 → h3×3 → h2 → h3×3 → h2×8`, una jerarquía
+  correcta. No se cambió nada por esto.
+
+Infra de tests (nueva en el proyecto): runner nativo de Node
+(`node:test` + `--experimental-strip-types`), cero dependencias nuevas.
+Se evaluó vitest y se descartó: 40 paquetes y un build script de `esbuild`
+que `pnpm-workspace.yaml` dejó deliberadamente sin aprobar, para testear dos
+módulos de funciones puras.
+
 ## Árbol de navegación — estado final de la Fase 3
 
 | Ruta | Estado | Fuente de contenido |

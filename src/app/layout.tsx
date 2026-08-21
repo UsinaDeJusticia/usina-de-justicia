@@ -60,9 +60,16 @@ const organizationSchema = {
   url: siteConfig.url,
   logo: `${siteConfig.url}/images/logo_uj.png`,
   foundingDate: '2014-11-12',
+  // `url` y `jobTitle` además del `sameAs`: son los campos que un agente
+  // usa para resolver a la persona como entidad (no solo un nombre suelto)
+  // y para saber en qué carácter habla de la organización. El cargo es el
+  // confirmado en la nómina real de la Comisión Directiva, ver
+  // src/app/nosotros/equipo/page.tsx.
   founder: {
     '@type': 'Person',
     name: 'Diana Cohen Agrest',
+    jobTitle: 'Presidente',
+    url: `${siteConfig.url}/nosotros/equipo`,
     sameAs: 'https://www.wikidata.org/wiki/Q23907251',
   },
   contactPoint: {
