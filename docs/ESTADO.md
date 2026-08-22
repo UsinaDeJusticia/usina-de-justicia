@@ -135,6 +135,58 @@ Se evaluó vitest y se descartó: 40 paquetes y un build script de `esbuild`
 que `pnpm-workspace.yaml` dejó deliberadamente sin aprobar, para testear dos
 módulos de funciones puras.
 
+## Rama en curso: `fix/build-resiliente-wp` (21-ago-2026, sin PR todavía)
+
+**Problema:** dos builds de producción se cayeron enteros por hipos
+puntuales de WordPress mientras se generaban las páginas estáticas — el
+13-ago un timeout (`WP API Timeout: /posts (>15000ms)`) y el 21-ago un
+`WP API Error: 500` en `/posts`. En ambos casos el MISMO commit compiló bien
+al reintentar. Un deploy que falla al azar es inaceptable entrando al
+cutover: si el build no pasa, el sitio no se publica.
+
+**Solución:** `src/lib/fetch-retry.ts`, usado por `wpFetch` en
+`src/lib/wordpress.ts`. Reintentos con backoff exponencial + jitter (3
+intentos, 500ms/1s, timeout de 15s por intento, cada uno con su propio
+AbortController).
+
+Alcance deliberado — solo se reintenta lo que es seguro reintentar:
+- Todas las llamadas a WP son GET idempotentes: repetirlas no tiene efectos
+  secundarios.
+- **No se reintenta un 4xx.** Un 404 significa que el recurso no existe de
+  verdad (un slug despublicado, por ejemplo); reintentarlo solo alarga el
+  build sin cambiar el resultado. Única excepción: 429, que es "volvé más
+  tarde", no "no existe".
+- El jitter existe porque Next.js genera páginas en 6 workers en paralelo:
+  sin él, todos reintentarían en el mismo instante y volverían a tumbar al
+  WordPress que justo está con problemas.
+- En el último intento se propaga el resultado real (la Response 5xx o el
+  error de red original), así el `AbortError` sigue traduciéndose a
+  `WP API Timeout` y el contrato de errores de `wpFetch` no cambia.
+- Cada reintento se loguea con `console.warn`, para que un build más lento
+  tenga explicación visible en los logs de Vercel en vez de parecer colgado.
+
+**Verificación — la prueba real:** el build de esta rama terminó con exit 0
+**a pesar de que WordPress devolvió HTTP 500 dos veces en `/posts`** durante
+la generación estática (`[WP] intento 1 falló en /posts (HTTP 500);
+reintentando en 544ms`). Es exactamente el fallo que antes tumbaba el
+deploy. Más 50/50 tests (17 nuevos, con `sleep` y `jitter` inyectados para
+no depender de esperas ni azar reales) y lint sin warnings.
+
+**Hipótesis que se midió y resultó equivocada** (queda anotada para no
+volver a intentarlo): se sospechaba que el build hacía ~100 requests
+redundantes, porque `generateStaticParams` de `/noticias/[slug]` ya trae los
+100 posts completos (`_embed`, sin `_fields`) y después cada página volvía a
+pedir el suyo por slug. Se implementó un memo por slug en memoria y se midió:
+**solo 30 aciertos sobre 200 intentos**, porque Next.js buildea en 6
+procesos worker aislados y cada uno arranca con su memo vacío. Al medir en
+serio apareció el dato que cierra la discusión: Next.js **ya deduplica** los
+fetches del build en `.next/cache/fetch-cache` (280 entradas, 24 MB en la
+corrida medida), que sí es compartido entre workers y persistido. El memo
+propio duplicaba, peor, un mecanismo que el framework ya hace bien, y además
+introducía una divergencia de comportamiento entre build y runtime que
+habría chocado con el webhook de revalidación instantánea (pendiente 11).
+**Se descartó y se dejó solo el retry.**
+
 ## Árbol de navegación — estado final de la Fase 3
 
 | Ruta | Estado | Fuente de contenido |

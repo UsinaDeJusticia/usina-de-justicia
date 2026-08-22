@@ -3,6 +3,7 @@
 // Transforma respuestas WP → tipos Articulo/Categoria/Tag de @/types
 
 import sanitizeHtml from 'sanitize-html'
+import { fetchWithRetry } from './fetch-retry'
 import type { Articulo, Categoria, Tag, ImageAsset } from '@/types'
 import type {
   WPPost,
@@ -44,15 +45,29 @@ async function wpFetch<T>(
     }
   })
 
-  const controller = new AbortController()
-  const timeoutId = setTimeout(() => controller.abort(), FETCH_TIMEOUT)
-
   try {
-    const response = await fetch(url.toString(), {
-      signal: controller.signal,
-      headers: { Accept: 'application/json' },
-      next: { revalidate: 300 },
-    })
+    // Reintentos ante fallos transitorios de WordPress (5xx, 429, timeouts,
+    // cortes de socket). El porqué, con las fechas de los dos builds que se
+    // cayeron por esto, está en src/lib/fetch-retry.ts. El timeout por
+    // intento y el AbortController los maneja fetchWithRetry.
+    const response = await fetchWithRetry(
+      url.toString(),
+      {
+        headers: { Accept: 'application/json' },
+        next: { revalidate: 300 },
+      },
+      {
+        timeoutMs: FETCH_TIMEOUT,
+        onRetry: ({ attempt, reason, delayMs }) => {
+          // Que quede en los logs de Vercel: un build más lento por
+          // reintentos tiene que tener explicación visible, no parecer que
+          // se colgó solo.
+          console.warn(
+            `[WP] intento ${attempt} falló en ${endpoint} (${reason}); reintentando en ${delayMs}ms`
+          )
+        },
+      }
+    )
 
     if (!response.ok) {
       throw new Error(
@@ -67,8 +82,6 @@ async function wpFetch<T>(
       throw new Error(`WP API Timeout: ${endpoint} (>${FETCH_TIMEOUT}ms)`)
     }
     throw error
-  } finally {
-    clearTimeout(timeoutId)
   }
 }
 
