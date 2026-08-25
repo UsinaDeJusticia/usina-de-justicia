@@ -130,12 +130,12 @@ export default function DonarPage() {
                 Donación online con MercadoPago
               </h3>
               <p className="text-body text-grey-700 mb-6 leading-relaxed">
-                Si 100 personas nos acompañan con $20.000 mensuales recaudaríamos
-                $2.000.000 para seguir defendiendo a las víctimas. Elegí el monto
-                y la frecuencia que prefieras.
+                Elegí vos el monto que quieras aportar. Cada donación, sin importar
+                el importe, nos ayuda a seguir acompañando a las familias de
+                víctimas de homicidio y femicidio.
               </p>
               <Button
-                href="https://www.mercadopago.com.ar/subscriptions/checkout?preapproval_plan_id=2c9380848e498e81018e5c7c5e4d0640"
+                href="https://link.mercadopago.com.ar/asociacionusinadejus"
                 target="_blank"
                 rel="noopener noreferrer"
                 variant="primary"
