@@ -84,6 +84,15 @@ propagarse. Con 300, minutos.
 
 *Verificación:* ninguna, no es visible. *Vuelta atrás:* no hace falta.
 
+> **Atajo con WP-CLI.** Hostinger incluye acceso SSH con WP-CLI preinstalado
+> en los planes Premium y superiores (verificar con `wp --info` una vez
+> conectado). Los pasos A3-backup, D1 y la instalación del plugin se pueden
+> automatizar por ahí, y además permite arreglar en el origen las URLs de los
+> 215 posts con `wp search-replace` en vez de depender solo del redirect.
+> Prompt listo para pasarle a un agente: `docs/cutover-prompt-opencode.md`.
+> Lo que WP-CLI **no** puede hacer: crear el subdominio ni tocar el DNS —
+> eso es hPanel, no WordPress.
+
 **A2. Crear el subdominio `wp.usinadejusticia.org.ar`.**
 En hPanel → Dominios → Subdominios. Crear `wp`, y **apuntar su carpeta al
 mismo directorio donde ya vive WordPress** (normalmente `public_html`), no a
