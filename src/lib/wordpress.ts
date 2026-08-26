@@ -3,6 +3,7 @@
 // Transforma respuestas WP → tipos Articulo/Categoria/Tag de @/types
 
 import sanitizeHtml from 'sanitize-html'
+import { fetchWithRetry } from './fetch-retry'
 import type { Articulo, Categoria, Tag, ImageAsset } from '@/types'
 import type {
   WPPost,
@@ -18,9 +19,21 @@ import { CATEGORY_MAP, SITE_SECTIONS } from '@/types/wordpress'
 // CONFIGURACIÓN
 // ============================================
 
+// Host de WordPress. Misma perilla que usa next.config.mjs (WP_HOST) para
+// el optimizador de imágenes, la CSP y los redirects de /wp-content — ver el
+// comentario largo allá y docs/CUTOVER.md.
+//
+// Por qué una variable y no el dominio escrito a mano: en el cutover, el
+// dominio actual pasa a servir ESTE sitio y WordPress se muda a un
+// subdominio. Con la variable, ese día es un cambio de configuración en
+// Vercel (reversible en un minuto borrándola), no un cambio de código.
+//
+// NEXT_PUBLIC_WP_API_URL se mantiene con prioridad por compatibilidad: es
+// la variable que documentaba el plan maestro y permite apuntar a una
+// instalación completamente distinta (por ejemplo un WordPress de staging).
 const WP_API_URL =
   process.env.NEXT_PUBLIC_WP_API_URL ||
-  'https://usinadejusticia.org.ar/wp-json/wp/v2'
+  `https://${process.env.WP_HOST || 'usinadejusticia.org.ar'}/wp-json/wp/v2`
 
 const FETCH_TIMEOUT = 15000
 
@@ -44,15 +57,29 @@ async function wpFetch<T>(
     }
   })
 
-  const controller = new AbortController()
-  const timeoutId = setTimeout(() => controller.abort(), FETCH_TIMEOUT)
-
   try {
-    const response = await fetch(url.toString(), {
-      signal: controller.signal,
-      headers: { Accept: 'application/json' },
-      next: { revalidate: 300 },
-    })
+    // Reintentos ante fallos transitorios de WordPress (5xx, 429, timeouts,
+    // cortes de socket). El porqué, con las fechas de los dos builds que se
+    // cayeron por esto, está en src/lib/fetch-retry.ts. El timeout por
+    // intento y el AbortController los maneja fetchWithRetry.
+    const response = await fetchWithRetry(
+      url.toString(),
+      {
+        headers: { Accept: 'application/json' },
+        next: { revalidate: 300 },
+      },
+      {
+        timeoutMs: FETCH_TIMEOUT,
+        onRetry: ({ attempt, reason, delayMs }) => {
+          // Que quede en los logs de Vercel: un build más lento por
+          // reintentos tiene que tener explicación visible, no parecer que
+          // se colgó solo.
+          console.warn(
+            `[WP] intento ${attempt} falló en ${endpoint} (${reason}); reintentando en ${delayMs}ms`
+          )
+        },
+      }
+    )
 
     if (!response.ok) {
       throw new Error(
@@ -67,8 +94,6 @@ async function wpFetch<T>(
       throw new Error(`WP API Timeout: ${endpoint} (>${FETCH_TIMEOUT}ms)`)
     }
     throw error
-  } finally {
-    clearTimeout(timeoutId)
   }
 }
 
@@ -110,6 +135,27 @@ function stripHtmlForExcerpt(html: string, maxLength = 200): string {
   const text = decodeHtml(html)
   if (text.length <= maxLength) return text
   return text.substring(0, maxLength).replace(/\s+\S*$/, '') + '…'
+}
+
+/**
+ * El extracto/descripción con el que se completa `<meta name="description">`
+ * y el `description` del JSON-LD `NewsArticle` de cada post — nunca vacío.
+ *
+ * ~98 de los 842 posts migrados (auditoría de contenido delgado, 26-ago-2026:
+ * ver docs/ESTADO.md) son solo un embed de YouTube/Facebook o una imagen sin
+ * ningún párrafo de texto — por ejemplo la cobertura de una entrevista de TV
+ * publicada sin bajada. `wp.excerpt.rendered` para esos posts es un string
+ * vacío (WordPress no tiene de qué generar un resumen automático), así que
+ * sin este fallback la página queda con una meta description vacía: un bug
+ * de SEO real e independiente de cualquier decisión editorial sobre si
+ * indexar o no ese contenido.
+ *
+ * El fallback es el título del post — dato real, ya publicado, nunca
+ * inventado — no un texto genérico.
+ */
+function excerptOrTitleFallback(excerptHtml: string, title: string, maxLength = 200): string {
+  const excerpt = stripHtmlForExcerpt(excerptHtml, maxLength)
+  return excerpt || title
 }
 
 // ============================================
@@ -178,6 +224,11 @@ function wpPostToArticulo(
     titulo: decodeHtml(wp.title.rendered),
     slug: wp.slug,
     contenido: wp.content.rendered,
+    // Sin fallback al título acá a propósito: `extracto` alimenta el copy
+    // visible de ArticleCard.tsx debajo del título — si cayera al mismo
+    // texto del título, la tarjeta mostraría el título duplicado dos veces
+    // seguidas. El fallback para SEO/social va en `seoDescription`, que no
+    // se muestra en pantalla.
     extracto: stripHtmlForExcerpt(wp.excerpt.rendered),
     imagenDestacada,
     categoria,
@@ -189,7 +240,7 @@ function wpPostToArticulo(
     updatedAt: wp.modified,
     // SEOFields — valores por defecto, se pueden mejorar después
     seoTitle: decodeHtml(wp.title.rendered),
-    seoDescription: stripHtmlForExcerpt(wp.excerpt.rendered, 160),
+    seoDescription: excerptOrTitleFallback(wp.excerpt.rendered, decodeHtml(wp.title.rendered), 160),
   }
 }
 

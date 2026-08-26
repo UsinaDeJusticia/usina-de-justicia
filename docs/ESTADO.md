@@ -17,6 +17,176 @@
 
 **Gate G4 ✅ COMPLETO (15-jul):** optimización integral verificada — Lighthouse ≥96 en Performance y 100 en SEO en las 5 plantillas clave (ver sección Optimización).
 
+## Rama mergeada: `feature/acompanamiento-guias-derechos` (11-ago-2026, PR #3 → master)
+
+Trabajo posterior al merge de PR #2, sobre `/acompanamiento`, a pedido de Emanuel. No forma parte de las Fases 1-4 ni de los gates ya cerrados arriba — es evolución posterior. Detalle completo de fuentes y decisiones en `docs/COPY-acompanamiento-guias.md` v2.
+
+1. Primera guía de la serie "Guías para la etapa que estás viviendo" (derechos durante la ejecución de la pena, Pcia. de Bs. As.) + FAQ de 4 preguntas — fuente: documento propio de Lucrecia Zárate + síntesis abstracta de una reunión interna (sin ningún dato de caso).
+2. Cierre de página "Seguí explorando" con enlaces reales a otras secciones.
+3. **Sección "Historias"**: la categoría real de WordPress "historias" (127 casos publicados al 11-ago, sube seguido) ahora se muestra en vivo desde `/acompanamiento` (6 más recientes + link a `/noticias/categoria/historias`) — surgió de una consulta de Emanuel sobre SEO/GEO: no se agregó contenido nuevo, se le dio visibilidad a contenido que el equipo ya publica desde hace años. Ningún nombre vive en el código; todo llega en runtime de la API de WP.
+4. Refuerzo SEO/GEO de `/noticias/categoria/[categoria]`: JSON-LD `CollectionPage`+`ItemList` (las 6 categorías), prioridad de sitemap de "historias" subida a 0.7.
+5. **Consulta legal RESUELTA**: los abogados de la organización confirmaron que la publicación de casos con nombre real es de interés público (ya salió en medios) y que los datos sensibles no se publican; agregan una regla: iniciales en vez de nombre completo cuando el imputado es menor de edad (criterio editorial para WordPress, no aplicable en código — ver `docs/COPY-acompanamiento-guias.md` §7).
+6. **Copy v3 del equipo (11-ago)**: tras revisar el preview, el equipo mandó texto propio para el hero, el reencuadre y las 3 tarjetas de "Cómo trabaja el equipo", y pidió eliminar "Dos maneras de acompañar" (confusa). Implementado con un solo ajuste técnico (conservar "ejecución de la pena" en la tarjeta 3, no "cumplimiento de la pena", por consistencia de término con el resto del sitio). El hero ahora afirma que el servicio es gratuito — primera vez que el sitio lo dice explícitamente (fuente: el equipo). **RESUELTO**: el equipo confirmó que es gratuito sin condición; se corrigió `src/app/donar/page.tsx` (decía "para víctimas que no pueden costear un abogado") para unificar con `/acompanamiento`.
+7. ~~**Pendiente sin resolver, dejado a propósito**~~ — **RESUELTO (19-ago)**: el caso sin fuente rastreable en `src/components/home/Testimonios.tsx` ("Néstor Alejandro Valdez") se retiró — Emanuel confirmó que no hay más registros disponibles, quedaba incompleto.
+8. Build verde en cada commit, Lighthouse ≥90 en las 4 categorías verificado, PR #3 mergeado a `master`.
+
+## Rama mergeada: `feature/equipo-comision-directiva` (11-ago-2026, PR #4 → master)
+
+1. Comisión Directiva real en `/nosotros/equipo` (6 personas, ver sección "Pendientes" — punto 4). Sin fotos todavía.
+2. `/necesito-ayuda` leído y aprobado por Emanuel sin cambios de copy.
+
+## Rama mergeada: `feature/direccion-oea-contacto` (13/14-ago-2026, PR #5 y #6 → master)
+
+1. Dirección postal + CUIT reales en el JSON-LD del NGO (`src/app/layout.tsx`).
+2. `/en`: cerrado el pendiente de contenido OEA (confirmado que no existe esa presentación).
+3. `/api/contact` real con Resend — probado y funcionando en producción (dominio verificado, bug del remitente con "www." corregido).
+4. Fix: botón de teléfono invisible en el CTA final de `/necesito-ayuda` (bg-transparent faltante en el override del variant secondary).
+5. Wikidata de Usina de Justicia conectada al `sameAs` del NGO (Q141058778, creada por Emanuel).
+
+## Rama en curso: `feature/fotos-equipo-logo` (18-ago-2026, sin PR todavía)
+
+1. **Logo**: Emanuel envió el logo re-exportado en PNG alta resolución (fondo transparente, 6772×2966) vía opencode (que pusheó los archivos crudos directo a `master`, commit `4956926`). Reemplaza a `public/images/logo_uj.png` (mismo diseño, solo mejor resolución de origen — Next.js lo redimensiona igual en cada uso).
+2. **Fotos de la Comisión Directiva**: las 6 llegaron completas en el mismo push de opencode, sin nombre identificable (`diana1.png`, `guillermo1.png`, etc.). Renombradas a `public/images/equipo/<nombre-apellido>.png` y cableadas en `src/app/nosotros/equipo/page.tsx` (campo `foto` de cada integrante) — ya no se muestra el avatar de iniciales para ninguno de los 6.
+3. Build verde. Falta abrir PR a `master`.
+
+## Rama en curso: `features-ai` (19-ago-2026, sin PR todavía)
+
+Auditoría externa de "agent readiness" (score 68/100) sobre el preview de
+Vercel, que Emanuel pidió implementar en orden de prioridad. **6 de los 10
+ítems se implementaron; 4 no, con justificación** (ver abajo — no es que
+falten, es que no aplican o no se pueden resolver en código).
+
+Implementado:
+1. **404 útil para agentes.** El sitio ya devolvía un 404 real; faltaba la
+   parte de recuperación. Nuevo `src/app/not-found.tsx` (HTML, en el design
+   system, con índice de secciones) y la versión markdown del mismo 404 con
+   punteros al sitemap y a llms.txt.
+2. **Negociación de contenido en Markdown** (convención de
+   acceptmarkdown.com): `src/middleware.ts` + `src/app/api/md/route.ts` +
+   `src/lib/html-to-markdown.ts` + `src/lib/agent-negotiation.ts`. Cualquier
+   URL sirve markdown si el `Accept` lo prefiere, sin cambiar la URL pública
+   y sin afectar a los navegadores. Cubre las ~876 URLs porque convierte el
+   HTML real de cada página — una sola fuente de verdad, nada de copy
+   duplicado. Detalle técnico y limitación de `Vary` en `docs/geo-schema.md`
+   §2.2.b.
+3. **`public/llms.txt` con guía de "cuándo usar" y cuándo no.** Esto es una
+   reversión parcial de la decisión D7 (que decía "NO llms.txt"); el
+   razonamiento y su límite honesto quedaron escritos en
+   `docs/geo-schema.md` §2.2.b.
+4. **Alias en inglés de las "trust anchor pages"**: `/about`, `/about-us`,
+   `/team`, `/privacy`, `/privacy-policy`, `/terms` → 301 al equivalente
+   real en español. La auditoría reportaba About y Privacy como "missing"
+   porque buscaba las rutas convencionales en inglés; el contenido siempre
+   existió en `/nosotros` y `/legal/*`. Se resolvió con redirects y no con
+   páginas nuevas para no partir la autoridad SEO ni contradecir los
+   `canonical`.
+5. **JSON-LD**: `url` y `jobTitle` en la entidad `founder` del schema `NGO`.
+6. **Eficiencia de contenido**: no se tocó el HTML (habría implicado
+   rediseñar), pero el markdown da a los agentes la misma información con
+   ~100% de densidad de texto: la Home pasa de 4,09% de texto sobre 116 KB
+   de HTML a 5,9 KB de markdown puro.
+
+Verificación (build de producción local, `pnpm build && pnpm start`):
+`pnpm test` 33/33 · `pnpm lint` sin warnings · build verde · 404 devuelve
+404 · markdown con `Content-Type: text/markdown; charset=utf-8` y
+`Vary: Accept` en Home, secciones y posts de WordPress · navegadores siguen
+recibiendo HTML · los 6 redirects nuevos devuelven 308 al destino correcto ·
+`/api/contact` y el resto del sitio sin regresiones.
+
+**Hallazgos propios durante la implementación** (bugs encontrados y
+corregidos en el camino, todos con test de regresión):
+- El middleware NO puede ir en la raíz del repo con directorio `src/`: va en
+  `src/middleware.ts` o no se ejecuta (silenciosamente).
+- Después de un rewrite, un route handler ve el `request.url` **original**:
+  los searchParams que agrega el middleware no llegan. Se pasa la ruta por
+  header (`x-markdown-path`).
+- El conversor perdía todo el contenido maquetado con `div`/`span` —entre
+  otras cosas **los datos bancarios de `/donar` (CBU, alias, CUIT)**, que son
+  el contenido principal de esa página. Se reescribió como recorrido
+  secuencial en vez de lista blanca de etiquetas de bloque.
+- Un regex no-greedy fusionaba ítems de listas anidadas en una sola línea
+  ("- Padre Hijo"), o sea corrompía contenido en vez de simplemente
+  aplanarlo.
+
+**No implementado, con justificación:**
+- **Recursos para desarrolladores** y **servidor MCP**: el sitio no tiene API
+  pública, OpenAPI, webhooks ni es un producto de software. La evidencia de
+  la auditoría delata la confusión: dice que buscó recursos de "vercel" y que
+  encontró `@vercel/mcp-adapter` como "MCP server publicado por la
+  organización del producto" — eso es de Vercel, el hosting, no de Usina.
+  Publicar documentación de una API que no existe sería inventar. **Decisión
+  de producto** si alguna vez se quiere exponer el contenido como API.
+- **Descubribilidad de la marca**: no es un problema de código. La auditoría
+  corrió contra `usina-de-justicia.vercel.app`; el dominio real todavía
+  apunta al WordPress viejo. Se resuelve con el cutover + Google Search
+  Console, ya en la lista de pendientes.
+- **`Vary: Accept` en las páginas HTML prerenderizadas**: Next.js sobrescribe
+  ese header en las prerenderizadas y la única vía sería un `vercel.json`,
+  que se evaluó y se descartó por riesgo de romper el cacheo de la navegación
+  client-side. Detalle en `docs/geo-schema.md` §3 punto 6.
+- **Estructura de headings "plana"** (parte del ítem 2 de la auditoría): se
+  midió el HTML renderizado y **la evidencia de la auditoría es incorrecta**
+  — la Home tiene `h1 → h2 → h3×3 → h2 → h3×3 → h2×8`, una jerarquía
+  correcta. No se cambió nada por esto.
+
+Infra de tests (nueva en el proyecto): runner nativo de Node
+(`node:test` + `--experimental-strip-types`), cero dependencias nuevas.
+Se evaluó vitest y se descartó: 40 paquetes y un build script de `esbuild`
+que `pnpm-workspace.yaml` dejó deliberadamente sin aprobar, para testear dos
+módulos de funciones puras.
+
+## Rama en curso: `fix/build-resiliente-wp` (21-ago-2026, sin PR todavía)
+
+**Problema:** dos builds de producción se cayeron enteros por hipos
+puntuales de WordPress mientras se generaban las páginas estáticas — el
+13-ago un timeout (`WP API Timeout: /posts (>15000ms)`) y el 21-ago un
+`WP API Error: 500` en `/posts`. En ambos casos el MISMO commit compiló bien
+al reintentar. Un deploy que falla al azar es inaceptable entrando al
+cutover: si el build no pasa, el sitio no se publica.
+
+**Solución:** `src/lib/fetch-retry.ts`, usado por `wpFetch` en
+`src/lib/wordpress.ts`. Reintentos con backoff exponencial + jitter (3
+intentos, 500ms/1s, timeout de 15s por intento, cada uno con su propio
+AbortController).
+
+Alcance deliberado — solo se reintenta lo que es seguro reintentar:
+- Todas las llamadas a WP son GET idempotentes: repetirlas no tiene efectos
+  secundarios.
+- **No se reintenta un 4xx.** Un 404 significa que el recurso no existe de
+  verdad (un slug despublicado, por ejemplo); reintentarlo solo alarga el
+  build sin cambiar el resultado. Única excepción: 429, que es "volvé más
+  tarde", no "no existe".
+- El jitter existe porque Next.js genera páginas en 6 workers en paralelo:
+  sin él, todos reintentarían en el mismo instante y volverían a tumbar al
+  WordPress que justo está con problemas.
+- En el último intento se propaga el resultado real (la Response 5xx o el
+  error de red original), así el `AbortError` sigue traduciéndose a
+  `WP API Timeout` y el contrato de errores de `wpFetch` no cambia.
+- Cada reintento se loguea con `console.warn`, para que un build más lento
+  tenga explicación visible en los logs de Vercel en vez de parecer colgado.
+
+**Verificación — la prueba real:** el build de esta rama terminó con exit 0
+**a pesar de que WordPress devolvió HTTP 500 dos veces en `/posts`** durante
+la generación estática (`[WP] intento 1 falló en /posts (HTTP 500);
+reintentando en 544ms`). Es exactamente el fallo que antes tumbaba el
+deploy. Más 50/50 tests (17 nuevos, con `sleep` y `jitter` inyectados para
+no depender de esperas ni azar reales) y lint sin warnings.
+
+**Hipótesis que se midió y resultó equivocada** (queda anotada para no
+volver a intentarlo): se sospechaba que el build hacía ~100 requests
+redundantes, porque `generateStaticParams` de `/noticias/[slug]` ya trae los
+100 posts completos (`_embed`, sin `_fields`) y después cada página volvía a
+pedir el suyo por slug. Se implementó un memo por slug en memoria y se midió:
+**solo 30 aciertos sobre 200 intentos**, porque Next.js buildea en 6
+procesos worker aislados y cada uno arranca con su memo vacío. Al medir en
+serio apareció el dato que cierra la discusión: Next.js **ya deduplica** los
+fetches del build en `.next/cache/fetch-cache` (280 entradas, 24 MB en la
+corrida medida), que sí es compartido entre workers y persistido. El memo
+propio duplicaba, peor, un mecanismo que el framework ya hace bien, y además
+introducía una divergencia de comportamiento entre build y runtime que
+habría chocado con el webhook de revalidación instantánea (pendiente 11).
+**Se descartó y se dejó solo el retry.**
+
 ## Árbol de navegación — estado final de la Fase 3
 
 | Ruta | Estado | Fuente de contenido |
@@ -36,16 +206,22 @@
 
 ## Pendientes APARCADOS por decisión de Emanuel (15-jul) — se retoman después
 Ninguno bloquea el trabajo técnico; varios sí bloquean el CUTOVER final:
-1. **Wikidata**: crear la entrada siguiendo `docs/WIKIDATA.md` (~15 min) y pasar el Q-ID para conectarlo al sameAs (TODO esperándolo en src/app/layout.tsx).
-2. **Logo SVG**: el adjunto no llegó — reenviar el vectorial.
-3. **Dirección postal**: confirmar la sede social registrada (primera página de la Memoria y Balance legalizada) para el JSON-LD del NGO.
-4. **Equipo**: nombres, roles y fotos reales para `/nosotros/equipo` (hoy placeholder) — bloquea launch de esa página.
-5. **Retratos**: consentimientos de las familias para reemplazar los placeholders de Testimonios.
-6. **`/en`**: material real de la presentación OEA para completar la landing.
-7. **Formulario de contacto**: elegir servicio de email (Resend/SendGrid/etc.) + API key para el envío real.
-8. **Lectura editorial de `/necesito-ayuda`** (`docs/COPY-necesito-ayuda.md`) antes del launch.
-9. **PR a master**: la rama acumula todo el trabajo (Fases 1-4) — abrir cuando Emanuel lo pida.
-10. **Cutover DNS** (Fase 5 del plan maestro): congelar publicación → www→Vercel + apex redirect → smoke test → HSTS includeSubDomains como paso 2 → revocar credenciales de agente.
+1. ~~**Wikidata**~~ — **RESUELTO (14-ago)**: Emanuel creó y completó la entrada (Q141058778, https://www.wikidata.org/wiki/Q141058778), conectada al `sameAs` del NGO en `src/app/layout.tsx`.
+2. ~~**Logo**~~ — **RESUELTO (18-ago)**: Emanuel envió el logo en PNG de alta resolución (no se pudo adjuntar en `.svg`, bloqueado por el cliente); reemplaza `public/images/logo_uj.png`.
+3. ~~**Dirección postal**~~ — **RESUELTO (13-ago)**: Emanuel confirmó el domicilio legal (Basavilbaso 1350, 3° Dto. 311, C.A.B.A.) y el CUIT vía documento de IGJ; ya está en el JSON-LD del NGO (`src/app/layout.tsx`).
+4. ~~**Equipo**~~ — **RESUELTO (18-ago)**: nómina real de la Comisión Directiva (6 personas: Diana Cohen Agrest -Presidente-, Raquel Slotolow -Secretaria-, Guillermo Bargna -Tesorero-, Raquel Berthi/Roberto Picozzi/Mariana Romano -Vocales-) con foto real de cada integrante, ya en `src/app/nosotros/equipo/page.tsx`.
+5. ~~**Retratos de Testimonios**~~ — **RESUELTO (26-ago)**: consentimiento de las familias ya confirmado (13-ago), caso sin fuente retirado (19-ago), y ahora las 7 personas restantes tienen foto real en `src/components/home/Testimonios.tsx`. Zoe, Lucinda, Emiliano y Jonathan salen de la imagen destacada de su post "Historia de..." en WordPress (categoría historias), encontradas vía REST API y verificadas una por una antes de usarlas. Pablo, Isaías y Nadia las consiguió Emanuel aparte (fotos personales reales — las que traía WordPress para esos tres eran gráficas de campaña "Justicia para...", no retratos limpios) y las subió al propio WordPress. Las 7 se recortaron a proporción 3:4 con `sharp` (ya dependencia del proyecto), centrado en la cara y no en el centro geométrico — varias fuentes son selfies o primeros planos descentrados.
+6. ~~**`/en`**~~ — **RESUELTO/no aplica (13-ago)**: Emanuel confirmó que la presentación ante la OEA que originó la decisión D5 no existe. `/en` queda en v1 de forma permanente, no hay más contenido pendiente por este motivo.
+7. ~~**Formulario de contacto**~~ — **RESUELTO (14-ago)**: `/api/contact` con Resend, dominio verificado, probado en producción por Emanuel ("funciona e increíblemente rápido").
+8. ~~**Lectura editorial de `/necesito-ayuda`**~~ — **RESUELTO (11-ago)**: Emanuel la leyó completa y la aprobó tal como está, sin cambios de copy.
+9. **PR a master**: PR #3, #4, #5 y #6 ya mergeados. El trabajo de esta sesión está todo en `master`.
+10. **Cutover DNS** (Fase 5 del plan maestro) — **PREPARADO, sin ejecutar (26-ago)**. Runbook completo, con verificación y vuelta atrás en cada paso: **`docs/CUTOVER.md`**. Lo que se descubrió al planificarlo y que no estaba contemplado antes: el sitio nuevo le pide el contenido a WordPress **en el mismo dominio** que va a pasar a servir el sitio nuevo, así que mover el DNS sin más lo dejaría sin fuente de datos; y **215 de los 842 posts** tienen imágenes con URL absoluta al dominio actual escrita dentro del cuerpo del post (más los 5 PDFs de `/nosotros/transparencia` y el `/wp-admin` del equipo). Por eso WordPress tiene que mudarse antes a un subdominio. **Ya resuelto en código, de forma inerte**: una sola variable `WP_HOST` de la que se derivan la URL de la API (`src/lib/wordpress.ts`), el optimizador de imágenes, la CSP y los redirects (`next.config.mjs`), más una regla `/wp-content/:path*` que cubre de un saque los 215 posts, los PDFs y cualquier archivo no inventariado, y redirects de `/wp-admin` y `/wp-login.php`. Verificado ejecutando la config con y sin la variable: **sin `WP_HOST` la salida es idéntica a la de antes**, así que el cutover es un cambio de configuración reversible en un minuto, no un cambio de código bajo presión. Ejecución pendiente de Emanuel (hosting, DNS y registrador — el agente no tiene acceso).
+11. **Webhook de revalidación instantánea (plugin `usina-headless`) — PARCIALMENTE RESUELTO (26-ago): código escrito, falta instalar.** Hoy el contenido nuevo publicado en WordPress se refleja solo en el sitio nuevo dentro de una ventana de hasta 5 minutos (ISR, `revalidate = 300`), sin que nadie tenga que hacer nada — funciona, pero no es instantáneo. El plugin completo ya está escrito en `wp-plugin/usina-headless/` (un solo archivo PHP, sin dependencias, verificado con `php -l`) — al publicar/editar un post, le avisa al endpoint `/api/revalidate` (que ya existía) con el secreto compartido y las rutas que cambiaron, sin bloquear nunca el guardado del post si algo falla. Pantalla de ajustes propia (Ajustes → Usina Headless) con URL del endpoint, secreto (o una constante en `wp-config.php`, más segura) y un botón "Probar conexión". **Lo que falta es 100% de Emanuel, no de código**: subir la carpeta al WordPress real (FTP/SFTP o subida de .zip en wp-admin) y activarla — necesita acceso al hosting que el agente no tiene. Instrucciones completas en `wp-plugin/usina-headless/README.md`. No bloquea nada técnicamente: el sitio funciona igual sin él, solo con 5 minutos de demora en vez de segundos.
+12. ~~**Auditoría de profundidad de rastreo + contenido delgado ("thin content")**~~ — **HECHA (26-ago)**, con datos reales de los 842 posts publicados (vía REST API, no una estimación):
+    - **Profundidad de rastreo**: `/noticias` general son 71 páginas (842 posts ÷ 12), "prensa" (la categoría más larga) son 34. Con el paginador viejo (solo Anterior/Siguiente + ventana de 5 números) llegar a una página del medio tomaba 15-20 clics — medido, no supuesto. **Arreglado**: `src/components/noticias/Pagination.tsx` suma botones de salto ±10 páginas (`ChevronsLeft`/`ChevronsRight`), visibles solo en secciones de más de 10 páginas — con esto el máximo baja a ~7-8 clics desde cualquier punta. Importante: esto es una mejora de UX/crawl para navegación humana y de agentes que siguen links — el sitemap.xml ya lista las 842 URLs directas (1 salto), así que un crawler que lo respeta nunca dependió de la paginación para encontrar contenido.
+    - **Contenido delgado**: 98 de los 842 posts (11.6%) tienen **cero caracteres de texto propio** — son solo un embed de YouTube/Facebook o una imagen, sin ningún párrafo (ej. la cobertura de una entrevista de TV sin bajada). Eso hacía que `wp.excerpt.rendered` viniera vacío de WordPress, y de ahí bajaba a un `<meta name="description">` vacío real en esas 98 páginas — bug de SEO concreto, no una decisión editorial. **Arreglado**: `src/lib/wordpress.ts` (`seoDescription`, usado en `generateMetadata`, OpenGraph y el JSON-LD `NewsArticle` de `src/app/noticias/[slug]/page.tsx`) cae al título del post cuando no hay excerpt — dato real, nunca inventado. El campo `extracto` que sí se muestra en pantalla (`ArticleCard.tsx`) queda como estaba (vacío) para no duplicar el título dos veces en la tarjeta; se agregó un guard para no renderizar un `<p>` vacío en esos casos.
+    - **Decisión que NO se tomó sin consultar**: no se le puso `noindex` a esos 98 posts. Es contenido real (apariciones en TV/radio, videos institucionales) con valor de interés público, y despriorizarlo de la búsqueda podría ir en contra del objetivo de descubribilidad de marca (auditoría de agent-readiness, PR #9) — más volumen de páginas mencionando "Usina de Justicia" ayuda ahí, no estorba. Si Emanuel quiere revisar esto con otro criterio, es una decisión editorial suya, no técnica.
+13. ~~**Botón "Donar con MercadoPago" roto en `/donar`**~~ — **RESUELTO (22-ago)**: Emanuel pasó el link nuevo (`https://link.mercadopago.com.ar/asociacionusinadejus`, un link de pago de monto libre, no el plan de suscripción fijo viejo) y confirmó que la Comisión Directiva decidió que el importe sea libre — se reemplazó el `href` y se reescribió el párrafo que sugería "$20.000 mensuales / 100 personas" (esa cifra era una sugerencia atada al plan fijo viejo, ya no aplica con monto libre).
 
 ## Hallazgos de esta sesión (para tener en cuenta)
 1. **La página WP "Distinciones" (id 20992) es basura**: plantilla de Elementor sin publicar con contenido de relleno en inglés de un SaaS de reclutamiento, cero contenido real de Usina. Se descartó como fuente; las distinciones reales (Laurel de Plata, Socia Honoraria, Premio Defensor de la República, etc.) estaban dentro de la propia página "Nosotros" y de ahí se migraron.

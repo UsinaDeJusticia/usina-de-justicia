@@ -1,19 +1,19 @@
 # Contenido nuevo para /acompanamiento — primera "Guía" + reencuadre de tono
-**Para revisión de Emanuel y Jimena antes de tocar código.** Mismo estándar de trazabilidad que `docs/COPY-necesito-ayuda.md`: cada afirmación cita su fuente; donde no hay fuente segura, no se escribió nada.
+**v2** — ampliado tras feedback de Emanuel (corto de contenido, mejorar dinámica). Mismo estándar de trazabilidad que `docs/COPY-necesito-ayuda.md`: cada afirmación cita su fuente; donde no hay fuente segura, no se escribió nada.
 
 ## Origen y regla de seguridad (léase primero)
 
 Este contenido nace de dos fuentes:
 1. **[LUCRE-DOC]** — el documento "La Ejecución de la Pena en la provincia de Buenos Aires", ya redactado por el propio equipo de Usina para ser compartido (no es material interno).
-2. **[REUNION-SINTESIS]** — únicamente la sección final "Síntesis de lineamientos clave para las familias (acciones concretas)" de la transcripción de la reunión del 30-jul-2026, que son 10 puntos ya redactados en abstracto, sin ningún dato de caso.
+2. **[REUNION-SINTESIS]** — únicamente la sección final "Síntesis de lineamientos clave para las familias (acciones concretas)" de la transcripción de la reunión del 30-jul-2026, 10 puntos ya redactados en abstracto, sin ningún dato de caso.
 
-**No se usó, y no se va a usar, ninguna otra parte de la transcripción de esa reunión**: ningún nombre de familiar o víctima, ningún caso puntual, ninguna acusación institucional concreta (contra jueces, funcionarios o el Servicio Penitenciario), ninguna cifra o estadística sin fuente verificable, ninguna posición del debate ideológico sobre el sistema penal. Ese material es estrictamente interno y no debe volver a citarse en ningún documento de este repositorio.
+**No se usó, y no se va a usar, ninguna otra parte de la transcripción**: ningún nombre de familiar o víctima, ningún caso puntual, ninguna acusación institucional concreta, ninguna cifra sin fuente verificable, ninguna posición del debate ideológico sobre el sistema penal. Ese material es estrictamente interno.
 
 ---
 
 ## 1. Primera guía de la serie "Guías para la etapa que estás viviendo"
 
-*(Serie que crece: esta es la primera; el formato debe permitir agregar más sin rehacer la estructura.)*
+*(Serie que crece: esta es la primera.)*
 
 ### Título
 > Tus derechos durante la ejecución de la pena — Provincia de Buenos Aires
@@ -23,81 +23,103 @@ Fuente: [LUCRE-DOC], título original.
 ### Bajada
 > Cuando la condena queda firme, empieza una etapa nueva y menos conocida del proceso: la ejecución de la pena. Esta guía resume qué pasa en esa etapa y qué herramientas tenés para participar activamente.
 
-Fuente: síntesis de [LUCRE-DOC] §"Presentación" y [REUNION-SINTESIS], sin agregar datos nuevos.
+Fuente: síntesis de [LUCRE-DOC] §"Presentación" y [REUNION-SINTESIS].
 
-### Qué es la ejecución de la pena
-> La ejecución de la pena es la etapa donde se controla el cumplimiento de la condena. Empieza cuando la sentencia queda firme, es decir, cuando ya se agotaron todas las instancias de apelación. A partir de ese momento interviene el juez de ejecución penal.
->
-> El juez de ejecución no modifica el monto de la pena impuesta en la sentencia: solo controla cómo se cumple.
->
-> Mientras la sentencia todavía no está firme (hay una apelación en trámite), quien controla el cumplimiento es el mismo tribunal que dictó la condena — no el juez de ejecución.
+### Cuerpo — sin cambios respecto a v1
+- **Qué es la ejecución de la pena** — fuente [LUCRE-DOC] §"¿Qué es la ejecución de la pena?" y §"¿De quién depende...cuando la sentencia no está firme?".
+- **Los egresos: qué son y de qué tipo** — fuente [LUCRE-DOC] §"Egresos transitorios" y §"Egresos definitivos".
+- **Tus derechos, paso a paso** (los 10 puntos) — fuente [REUNION-SINTESIS], reescritos en segunda persona sin alterar contenido.
+- **Autoría**: Lucrecia Zárate, abogada y criminóloga, miembro de Usina de Justicia — fuente [LUCRE-DOC]. Sin foto ni bio hasta confirmar con ella.
 
-Fuente: [LUCRE-DOC] §"¿Qué es la ejecución de la pena?" y §"¿De quién depende...cuando la sentencia no está firme?".
+### NUEVO — Preguntas frecuentes sobre esta etapa
+*(Contenido adicional real, ya vetted, no usado en v1 — responde al pedido de más profundidad sin tocar nada sensible.)*
 
-### Los egresos: qué son y de qué tipo
-> Durante la condena, la persona detenida puede solicitar distintos tipos de egresos:
->
-> **Egresos transitorios** (implican volver a la cárcel):
-> - *Salidas transitorias*: de 12, 24, 48 o 72 horas. Su finalidad es afianzar lazos afectivos reales.
-> - *Semilibertad*: para trabajar o estudiar.
->
-> **Egresos definitivos:**
-> - *Libertad asistida*: se puede pedir desde seis meses antes del vencimiento de la condena o de la fecha de libertad condicional.
-> - *Libertad condicional*: se puede pedir cumplidas dos terceras partes de la condena.
+> **¿Quién controla que se cumpla la condena si la sentencia todavía no quedó firme?**
+> El mismo tribunal que dictó la condena — no interviene un juez de ejecución hasta que la sentencia queda firme (se agotaron las apelaciones).
 
-Fuente: [LUCRE-DOC] §"Egresos transitorios" y §"Egresos definitivos".
+Fuente: [LUCRE-DOC] §"¿De quién depende la ejecución de la pena cuando la sentencia no está firme?".
 
-### Qué mirar antes de que se resuelva un egreso
-> Para que se otorgue un egreso se evalúan, entre otros: el tiempo cumplido de condena, la conducta (sin sanciones disciplinarias) y el pronóstico de reinserción social, según los informes del Servicio Penitenciario.
+> **¿El juez de ejecución puede reducir o modificar la condena?**
+> No. Solo controla cómo se cumple. El monto de la pena que fijó la sentencia no se modifica en esta etapa.
 
-Fuente: [LUCRE-DOC] §"Pronóstico" (versión resumida y neutral; se omite deliberadamente cualquier valoración crítica sobre estos informes — ver "Qué NO se incluyó").
+Fuente: [LUCRE-DOC] §"El Juez de Ejecución Penal NO modifica la pena".
 
-### Tus derechos concretos, paso a paso
-> 1. **Dejá tus datos de contacto** (teléfono, domicilio, correo electrónico) en el tribunal cuando se dicte la sentencia, y pedí expresamente cómo querés ser notificada o notificado.
-> 2. **Presentate en el juzgado de ejecución** y pedí que tomen un acta de tu presentación. Si tus datos cambian, actualizalos ahí mismo.
-> 3. **Pedí el resguardo y la reserva de tus datos** como víctima desde el momento en que la causa pasa a ejecución. No hace falta abogado para esta presentación.
-> 4. **Prestá atención a los cambios de alojamiento** de la persona condenada y pedí que te expliquen el motivo.
-> 5. **Podés oponerte formalmente** a una salida transitoria, una libertad asistida o una libertad condicional, cuestionando si se cumple la finalidad real, el pronóstico de reinserción o la falta de supervisión.
-> 6. **Podés pedir que se convoque una audiencia** para que todas las partes den sus fundamentos antes de que se resuelva.
-> 7. **Podés solicitar supervisiones y constataciones** sobre el cumplimiento de las condiciones del egreso.
-> 8. **Podés denunciar** si la persona condenada incumple las reglas fijadas o no informa un cambio de domicilio — eso puede llevar a que se revoque el beneficio.
-> 9. Si un egreso se revoca, **el tiempo que estuvo afuera no se descuenta** de la condena.
-> 10. **Tenés derecho a patrocinio letrado** (Ley de Víctimas) y a que la notificación te llegue a vos directamente, no solo a tu abogado o abogada.
+> **¿Qué pasa si la persona condenada no cumple las condiciones de una salida?**
+> Se puede informar al juez para que ordene una supervisión y, si corresponde, se puede pedir que se suspenda o revoque el beneficio. La falta de recursos para controlar no es excusa válida para otorgarlo.
 
-Fuente: [REUNION-SINTESIS], los 10 puntos de la síntesis final, reescritos en segunda persona sin alterar su contenido. Ningún punto agrega información nueva respecto de la fuente.
+Fuente: [LUCRE-DOC] §"Para mantener estos beneficios..." (sección de egresos).
 
-### Autoría (pendiente de confirmación — ver más abajo)
-> Guía preparada a partir de un encuentro del equipo de Acompañamiento de Usina de Justicia, con la charla de **Lucrecia Zárate**, abogada y criminóloga, miembro de Usina de Justicia.
+> **¿Qué evalúa el juez antes de otorgar una salida transitoria o una libertad?**
+> Principalmente tres cosas: el tiempo cumplido de condena, la conducta (sin sanciones disciplinarias) y el pronóstico de reinserción social según los informes del Servicio Penitenciario.
 
-Fuente: [LUCRE-DOC], que ya identifica a la disertante por nombre completo y credencial en un documento pensado para compartirse. **No se agrega foto ni biografía** hasta que Emanuel confirme con ella.
+Fuente: [LUCRE-DOC] §"Conducta" y §"Pronóstico" (versión neutral, sin las valoraciones críticas de la fuente sobre estos informes).
+
+*(Componente sugerido: acordeón, mismo patrón que `src/components/necesito-ayuda/FAQ.tsx` — ya validado en el sitio.)*
 
 ---
 
-## 2. Reencuadre de tono — sección "Cómo trabaja el equipo" de /acompanamiento (ajuste mínimo)
+## 2. Reencuadre de tono — sección "Cómo trabaja el equipo" (sin cambios)
 
-La página actual ya dice, correctamente, que el equipo ofrece contención y asesoramiento. Propongo agregar una frase que refleje lo que esta reunión confirmó: que acompañar también es dar herramientas para actuar, no solo sostener emocionalmente.
+> Frase a agregar: *"Acompañar también es dar herramientas concretas para que puedas participar activamente en cada etapa del proceso — incluida la ejecución de la pena, donde tus derechos siguen vigentes."*
 
-> Propuesta de frase a agregar (sin quitar nada del texto actual): *"Acompañar también es dar herramientas concretas para que puedas participar activamente en cada etapa del proceso — incluida la ejecución de la pena, donde tus derechos siguen vigentes."*
-
-Fuente: síntesis del propio espíritu de la reunión (no cita ningún hecho puntual, solo resume la conclusión general ya reflejada en [REUNION-SINTESIS]). Ajustar la redacción final es una decisión editorial, no una afirmación fáctica — Jimena puede reescribirla libremente.
+Fuente: síntesis del espíritu de la reunión ([REUNION-SINTESIS]), no cita hechos puntuales.
 
 ---
 
-## 3. Candidatas a "cara humana" para una etapa futura (NO incluir todavía)
+## 3. NUEVO — Cierre de página: "Seguí explorando" / agradecimiento general
 
-- **Raquel Slotolow / Raquel Berthi**: coordinadoras de la reunión según [LUCRE-DOC]. No se sabe si están dispuestas a tener presencia pública en el sitio. No entra en esta ola; queda anotada para cuando Emanuel tenga esa confirmación.
-- ~~**Fernanda Lo Presti**~~ — **descartada** (revisión de Emanuel, jul-2026): el equipo actual no la reconoce; podría corresponder a una gestión anterior. Su mención en `/nosotros/distinciones` sigue publicada tal cual (tiene fuente real de WordPress y es contenido histórico ya aprobado), pero **no se la vincula a esta sección de Acompañamiento**.
+*(Interpretación propia de la idea de Emanuel de un bloque de cierre con "agradecimientos y demás sitios" — sin nombres propios, para no depender de consentimientos que todavía no están confirmados. Ajustable con feedback.)*
 
----
+> **Frase de agradecimiento (genérica, sin nombres):** "Esto es posible gracias al trabajo de las abogadas, psicólogas y voluntarias que integran el equipo de Acompañamiento, y de cada especialista que comparte su conocimiento con las familias."
 
-## 4. Qué NO se incluyó, y por qué
+Fuente: síntesis editorial del propio rol del equipo, ya descrito en la página (`comoTrabaja`) — no agrega ninguna persona ni dato nuevo, generaliza lo ya aprobado.
 
-- **Ningún nombre de familiar o víctima** mencionado en la reunión (son ~15 personas con casos reales en curso) — información estrictamente privada de terceros, sin ninguna razón para estar en un sitio público.
-- **Ninguna cifra o estadística** de la reunión (ej. porcentajes de cumplimiento, sanciones no informadas): son afirmaciones de una persona en un contexto de charla, no datos verificables con fuente citable — misma regla aplicada en `/necesito-ayuda`.
-- **Ninguna acusación institucional concreta** (contra un juez, un funcionario o el Servicio Penitenciario): corresponde a la posición de incidencia institucional de Usina, que se trabaja — si corresponde — en la categoría `/noticias/categoria/incidencia`, con el mismo cuidado editorial que ya tiene esa sección, no en una guía de derechos para familias.
-- **El debate ideológico sobre el sistema penal** (abolicionismo/garantismo) tratado en la reunión: es contenido de opinión institucional, no información de derechos — fuera de alcance de esta guía.
-- **Costos y plazos exactos** de trámites: ninguna fuente los especifica con precisión verificable; se mantiene la misma regla que en `/necesito-ayuda`.
+> **Enlaces relacionados** (reales, ya existentes en el sitio): `/necesito-ayuda` (ayuda inmediata), `/recursos` (documentos y guías), `/nosotros/transparencia` (memorias y balances), `/noticias/categoria/incidencia` (incidencia en políticas públicas).
+
+Fuente: rutas reales ya construidas — no se inventa ningún destino.
 
 ---
 
-**Para aprobar:** ¿el contenido de la guía (§1), el ajuste de tono (§2) y el criterio de "cara humana" en etapas (§3) quedan aprobados para pasar a código? La confirmación con Lucrecia Zárate (autoría) puede hacerse en paralelo, no bloquea la implementación del resto.
+## 4. Candidatas a "cara humana" para una etapa futura (sin cambios)
+
+- **Raquel Slotolow / Raquel Berthi**: coordinadoras de la reunión según [LUCRE-DOC]. No entran en esta ola; pendiente de confirmación con Emanuel.
+- ~~**Fernanda Lo Presti**~~ — descartada (el equipo actual no la reconoce). Su mención en `/nosotros/distinciones` queda intacta y sin vincular a esta sección.
+
+---
+
+## 5. Qué NO se incluyó, y por qué (sin cambios respecto a v1)
+
+Ningún nombre de familiar/víctima, ninguna cifra sin fuente verificable, ninguna acusación institucional concreta, el debate ideológico sobre el sistema penal, costos/plazos exactos no verificables. Ver v1 para el detalle completo — se mantiene igual.
+
+---
+
+## 6. NUEVO — Sección "Historias" (visibilidad SEO/GEO de casos ya publicados)
+
+*(Surge de una consulta de Emanuel sobre SEO/GEO: no se agregó contenido nuevo ni se escribió ningún nombre en el código — se le dio visibilidad, desde `/acompanamiento`, a contenido que el equipo YA viene publicando hace años en WordPress.)*
+
+- **Hallazgo**: la categoría real de WP "historias" (`SITE_SECTIONS`, id 211) tiene **127 casos publicados** al 11-ago-2026 (subía de 121 el 10-jul — se actualiza seguido). Cada caso ya tiene su propia URL en `/noticias/[slug]`, ya está en el sitemap, ya tiene JSON-LD `NewsArticle`. No es contenido nuevo ni migrado: es contenido real y vivo que la página de Acompañamiento simplemente no mencionaba.
+- **Qué se agregó a `/acompanamiento`**: una sección que trae en vivo (server-side, `getArticulosBySection('historias', { perPage: 6 })`) las 6 historias más recientes y las muestra con el mismo `ArticleCard` de `/noticias`, más un botón hacia `/noticias/categoria/historias`. El número de historias (hoy 127) se muestra dinámico, nunca hardcodeado.
+- **Regla dura que se mantiene igual que en todo este documento**: ningún nombre de víctima/familia vive en el código de `src/app/acompanamiento/page.tsx` — todo el contenido con nombres llega en runtime desde la API de WordPress, vía `articulo.titulo`/`articulo.extracto` que ya renderiza `ArticleCard`. La decisión editorial de qué casos publicar sigue siendo 100% del equipo, en WordPress — el código no decide ni filtra por nombre.
+- **Refuerzo SEO/GEO adicional** (fuera de `/acompanamiento`, en `/noticias/categoria/[categoria]`): JSON-LD `CollectionPage`+`ItemList` (genérico para las 6 categorías, no solo "historias"), prioridad de sitemap subida de 0.6 a 0.7 para `historias` específicamente (es la de mayor valor de búsqueda long-tail), y un 5° link a `/noticias/categoria/historias` en el cierre "Seguí explorando" de `/acompanamiento`.
+- **Lo que esto NO hace**: no crea una página/galería nueva separada de `/noticias` (fragmentaría la autoridad SEO entre dos URLs por el mismo caso). No toca `/legal/privacidad` — quedó como consulta aparte a los abogados de la organización (fuera del alcance de este documento y de esta rama de código).
+- **Pendiente aparte, sin resolver todavía**: un caso en `src/components/home/Testimonios.tsx` ("Néstor Alejandro Valdez") no tiene fuente rastreable en el inventario de WP — a confirmar antes de apoyarse más en esos 8 testimonios como pilar de esta estrategia.
+
+---
+
+## 7. NUEVO — Copy v3 del equipo tras revisar el preview (11-ago-2026)
+
+*(El equipo de Acompañamiento revisó el preview real de la página y devolvió texto propio para el hero, el reencuadre y las 3 tarjetas de "Cómo trabaja el equipo", más la decisión de eliminar "Dos maneras de acompañar". Fuente: el equipo mismo — no WordPress. Análisis de impacto SEO/GEO hecho antes de implementar, ver historial de la sesión.)*
+
+- **Hero**: "Usina de Justicia brinda asesoramiento legal, contención emocional y difusión de los casos en forma gratuita a los familiares de víctimas de homicidio y femicidio." — primera vez que el sitio afirma que el servicio es gratuito; en `docs/COPY-necesito-ayuda.md` se había decidido explícitamente NO afirmarlo por falta de fuente (§"Qué NO se incluyó"). Ahora la fuente es el equipo directamente. **RESUELTO (11-ago)**: el equipo confirmó que es gratuito sin condición (no depende de la situación económica de la familia) — se corrigió `src/app/donar/page.tsx`, que hasta ahora decía "para víctimas que no pueden costear un abogado", para que quede unificado con el hero de `/acompanamiento`.
+- **Reencuadre "Cómo trabaja el equipo"**: reemplaza la v2 anterior (§2) por texto del equipo.
+- **Las 3 tarjetas**: texto del equipo, con un solo ajuste: la tarjeta 3 conserva "ejecución de la pena" en vez de "cumplimiento de la pena" que mandó el equipo — mismo sentido, término técnico exacto que ya usa el resto del sitio (Home, `/necesito-ayuda`, título de esta misma serie de Guías). Ajuste de una palabra, no de contenido.
+- **Se eliminó "Dos maneras de acompañar"** (las dos categorías "con/sin sentencia firme" de [WP2]) por pedido del equipo ("queda confuso"). Ningún JSON-LD ni FAQ dependía de esa sección.
+
+### Consulta legal — RESUELTA
+La consulta sobre `/legal/privacidad` (publicación de casos con nombre real) fue respondida por los abogados de la organización: **la información es de interés público porque ya salió en medios; los datos sensibles no se publican.** Regla adicional confirmada: **cuando el imputado es menor de edad, usar iniciales en vez de nombre completo.**
+
+Esta regla de iniciales **no se implementa en código**: el contenido de "Historias" viene 100% de lo que el equipo publica en WordPress — el repo nunca decide qué nombre aparece. Queda documentada acá como criterio editorial para quien redacta esos posts, a transmitir al equipo de comunicación/prensa.
+
+---
+
+**Para aprobar:** la FAQ nueva (§1) y el bloque de cierre (§3, especialmente la redacción del agradecimiento genérico y los links elegidos). El resto (§6 y §7) ya está confirmado por el equipo.

@@ -1,3 +1,4 @@
+import Image from 'next/image'
 import Link from 'next/link'
 
 // Portado de design-system/home/Testimonios.jsx. Copy aprobado (nombres,
@@ -6,15 +7,65 @@ import Link from 'next/link'
 // se reemplaza por un bloque navy SÓLIDO (regla de marca: no gradientes).
 // Regla de contenido vinculante: nombre completo + mes/año del hecho,
 // nunca recortado.
+//
+// El caso "Néstor Alejandro Valdez" se retiró (19-ago-2026): no tiene
+// fuente rastreable en el inventario de WordPress y Emanuel confirmó que
+// no hay más registros disponibles — queda incompleto, se saca en vez de
+// dejarlo sin poder verificar.
+//
+// Fotos (26-ago-2026): las de Zoe, Lucinda, Emiliano y Jonathan salen de la
+// imagen destacada del post "Historia de..." correspondiente en WordPress
+// (categoría "historias"), verificadas una por una vía REST API antes de
+// usarlas. Las de Pablo, Isaías y Nadia las consiguió Emanuel directo (fotos
+// personales reales, no las gráficas de campaña que traía WordPress para
+// esos tres) y las subió al propio WordPress; Emanuel ya había confirmado el
+// consentimiento de las familias para las 7. Los 7 recortes a proporción
+// 3:4 se hicieron centrados en la cara, no al centro geométrico de la
+// imagen original (con sharp, ver commit) — varias fuentes son selfies o
+// primeros planos donde el centro geométrico no coincide con la cara.
 const testimonios = [
-  { nombre: 'Néstor Alejandro Valdez', fecha: 'asesinado en enero de 2012', jurisdiccion: 'CABA' },
-  { nombre: 'Zoe Nerea Cortez', fecha: 'asesinada en marzo de 2020', jurisdiccion: 'Santa Fe' },
-  { nombre: 'Pablo Flores', fecha: 'asesinado en octubre de 2020', jurisdiccion: 'La Plata' },
-  { nombre: 'Lucinda Palavecino', fecha: 'asesinada en julio de 2020', jurisdiccion: 'Tucumán' },
-  { nombre: 'Emiliano Pereyra Suárez', fecha: 'asesinado en agosto de 2019', jurisdiccion: 'Córdoba' },
-  { nombre: 'Nadia Arrieta', fecha: 'asesinada en marzo de 2018', jurisdiccion: 'Chaco' },
-  { nombre: 'Jonathan Lucas Gómez', fecha: 'asesinado en marzo de 2020', jurisdiccion: 'CABA' },
-  { nombre: 'Isaías Aranda', fecha: 'asesinado en octubre de 2018', jurisdiccion: 'Salta' },
+  {
+    nombre: 'Zoe Nerea Cortez',
+    fecha: 'asesinada en marzo de 2020',
+    jurisdiccion: 'Santa Fe',
+    foto: '/images/testimonios/zoe-nerea-cortez.jpg',
+  },
+  {
+    nombre: 'Pablo Flores',
+    fecha: 'asesinado en octubre de 2020',
+    jurisdiccion: 'La Plata',
+    foto: '/images/testimonios/pablo-flores.jpg',
+  },
+  {
+    nombre: 'Lucinda Palavecino',
+    fecha: 'asesinada en julio de 2020',
+    jurisdiccion: 'Tucumán',
+    foto: '/images/testimonios/lucinda-palavecino.jpg',
+  },
+  {
+    nombre: 'Emiliano Pereyra Suárez',
+    fecha: 'asesinado en agosto de 2019',
+    jurisdiccion: 'Córdoba',
+    foto: '/images/testimonios/emiliano-pereyra-suarez.jpg',
+  },
+  {
+    nombre: 'Nadia Arrieta',
+    fecha: 'asesinada en marzo de 2018',
+    jurisdiccion: 'Chaco',
+    foto: '/images/testimonios/nadia-arrieta.jpg',
+  },
+  {
+    nombre: 'Jonathan Lucas Gómez',
+    fecha: 'asesinado en marzo de 2020',
+    jurisdiccion: 'CABA',
+    foto: '/images/testimonios/jonathan-lucas-gomez.jpg',
+  },
+  {
+    nombre: 'Isaías Aranda',
+    fecha: 'asesinado en octubre de 2018',
+    jurisdiccion: 'Salta',
+    foto: '/images/testimonios/isaias-aranda.jpg',
+  },
 ]
 
 function initials(nombre: string) {
@@ -44,12 +95,24 @@ export function Testimonios() {
         <ul className="grid grid-cols-2 md:grid-cols-4 gap-[18px] list-none p-0 m-0">
           {testimonios.map((t) => (
             <li key={t.nombre} className="bg-white border border-grey-200">
-              <div
-                className="aspect-[3/4] flex items-center justify-center bg-navy-500 text-white/60 font-display font-bold text-[2.75rem]"
-                aria-hidden="true"
-              >
-                {initials(t.nombre)}
-              </div>
+              {t.foto ? (
+                <div className="relative aspect-[3/4]">
+                  <Image
+                    src={t.foto}
+                    alt={t.nombre}
+                    fill
+                    sizes="(min-width: 768px) 25vw, 50vw"
+                    className="object-cover"
+                  />
+                </div>
+              ) : (
+                <div
+                  className="aspect-[3/4] flex items-center justify-center bg-navy-500 text-white/60 font-display font-bold text-[2.75rem]"
+                  aria-hidden="true"
+                >
+                  {initials(t.nombre)}
+                </div>
+              )}
               <div className="px-[18px] pt-4 pb-[18px]">
                 <p className="font-display font-bold text-body text-ink leading-tight">{t.nombre}</p>
                 <p className="text-caption text-grey-700 mt-1.5">{t.fecha}</p>

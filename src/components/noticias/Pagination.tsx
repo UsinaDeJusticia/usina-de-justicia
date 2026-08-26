@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { ChevronLeft, ChevronRight } from 'lucide-react'
+import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from 'lucide-react'
 
 interface PaginationProps {
   currentPage: number
@@ -49,12 +49,39 @@ export function Pagination({
     return page === 1 ? basePath : `${basePath}?page=${page}`
   }
 
+  // Salto de a 10 páginas — auditoría de profundidad de rastreo,
+  // 26-ago-2026 (ver docs/ESTADO.md). Con solo Anterior/Siguiente y los
+  // números del medio, avanzar de a 2 páginas por click (el radio de la
+  // ventana de `maxVisible`) hacía que llegar al medio de una sección larga
+  // (ej. "prensa", 34 páginas) tomara 15-20 clicks. Solo se muestra en
+  // secciones donde tiene sentido (más de SKIP páginas).
+  const SKIP = 10
+  const showSkip = totalPages > SKIP
+  const canSkipBack = currentPage - SKIP >= 1
+  const canSkipForward = currentPage + SKIP <= totalPages
+
   return (
     <nav
       className="flex flex-col items-center gap-4 mt-12"
       aria-label="Paginación"
     >
       <div className="flex items-center gap-2">
+        {/* Retroceder 10 */}
+        {showSkip &&
+          (canSkipBack ? (
+            <Link
+              href={pageUrl(currentPage - SKIP)}
+              className="flex items-center px-2 py-2 rounded-xs text-ink hover:bg-navy-50 transition-colors duration-base ease-out"
+              aria-label={`Retroceder ${SKIP} páginas`}
+            >
+              <ChevronsLeft className="w-4 h-4" aria-hidden="true" />
+            </Link>
+          ) : (
+            <span className="flex items-center px-2 py-2 rounded-xs text-grey-300 cursor-not-allowed">
+              <ChevronsLeft className="w-4 h-4" aria-hidden="true" />
+            </span>
+          ))}
+
         {/* Anterior */}
         {currentPage > 1 ? (
           <Link
@@ -132,6 +159,22 @@ export function Pagination({
             <ChevronRight className="w-4 h-4" aria-hidden="true" />
           </span>
         )}
+
+        {/* Avanzar 10 */}
+        {showSkip &&
+          (canSkipForward ? (
+            <Link
+              href={pageUrl(currentPage + SKIP)}
+              className="flex items-center px-2 py-2 rounded-xs text-ink hover:bg-navy-50 transition-colors duration-base ease-out"
+              aria-label={`Avanzar ${SKIP} páginas`}
+            >
+              <ChevronsRight className="w-4 h-4" aria-hidden="true" />
+            </Link>
+          ) : (
+            <span className="flex items-center px-2 py-2 rounded-xs text-grey-300 cursor-not-allowed">
+              <ChevronsRight className="w-4 h-4" aria-hidden="true" />
+            </span>
+          ))}
       </div>
 
       <p className="text-body-sm text-grey-500">

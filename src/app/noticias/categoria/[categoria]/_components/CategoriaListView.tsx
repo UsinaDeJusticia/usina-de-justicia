@@ -8,6 +8,7 @@ import type { SiteSection } from '@/types/wordpress'
 import { Badge } from '@/components/ui/Badge'
 import { ArticleCard } from '@/components/noticias/ArticleCard'
 import { Pagination } from '@/components/noticias/Pagination'
+import { siteConfig } from '@/lib/site-config'
 
 /**
  * Contenido compartido de /noticias/categoria/[categoria] y su segmento
@@ -47,8 +48,36 @@ export async function CategoriaListView({
       : `/noticias/categoria/${categoria}/pagina/${p}`
   }
 
+  // JSON-LD CollectionPage: genérico para las 6 secciones de SITE_SECTIONS
+  // (no solo "historias"), armado acá y no en page.tsx porque acá es donde
+  // ya se resuelven `articulos`/`total` — evita un segundo fetch. El
+  // ItemList solo referencia posición/slug/url de los artículos de ESTA
+  // página; nunca títulos (ya están en el HTML visible vía ArticleCard) para
+  // no exponer nombres propios de víctimas/familias en el JSON-LD.
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'CollectionPage',
+    name: `${title} — Usina de Justicia`,
+    description,
+    url: `${siteConfig.url}/noticias/categoria/${categoria}`,
+    mainEntity: {
+      '@type': 'ItemList',
+      numberOfItems: total,
+      itemListElement: articulos.map((articulo, index) => ({
+        '@type': 'ListItem',
+        position: index + 1,
+        url: `${siteConfig.url}/noticias/${articulo.slug}`,
+      })),
+    },
+  }
+
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+
       <div className="max-w-content mx-auto px-4 md:px-10">
         <Breadcrumbs
           items={[

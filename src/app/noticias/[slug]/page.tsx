@@ -59,7 +59,10 @@ export async function generateMetadata({
     },
     openGraph: {
       title: articulo.titulo,
-      description: articulo.extracto,
+      // seoDescription primero: nunca queda vacío (cae al título cuando el
+      // post no tiene excerpt — ver comentario en wpPostToArticulo). Auditoría
+      // de contenido delgado, 26-ago-2026, ver docs/ESTADO.md.
+      description: articulo.seoDescription || articulo.extracto,
       type: 'article',
       publishedTime: articulo.fechaPublicacion,
       modifiedTime: articulo.updatedAt,
@@ -85,7 +88,9 @@ function buildNewsArticleJsonLd(articulo: Articulo, slug: string) {
     '@context': 'https://schema.org',
     '@type': 'NewsArticle',
     headline: articulo.titulo,
-    description: articulo.extracto,
+    // Mismo fallback que generateMetadata arriba: seoDescription nunca
+    // queda vacío.
+    description: articulo.seoDescription || articulo.extracto,
     datePublished: articulo.fechaPublicacion,
     dateModified: articulo.updatedAt,
     articleSection: articulo.categoria.nombre,

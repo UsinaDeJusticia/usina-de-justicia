@@ -30,7 +30,7 @@ export function CTAFinal() {
             href={`tel:${siteConfig.contact.phone.replace(/\s+/g, '')}`}
             variant="secondary"
             size="lg"
-            className="border-white text-white hover:bg-white/10"
+            className="border-white bg-transparent text-white hover:bg-white/10"
           >
             <Phone className="w-4 h-4" strokeWidth={1.75} aria-hidden="true" />
             {siteConfig.contact.phone}

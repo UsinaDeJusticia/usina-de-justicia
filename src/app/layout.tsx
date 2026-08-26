@@ -60,9 +60,16 @@ const organizationSchema = {
   url: siteConfig.url,
   logo: `${siteConfig.url}/images/logo_uj.png`,
   foundingDate: '2014-11-12',
+  // `url` y `jobTitle` además del `sameAs`: son los campos que un agente
+  // usa para resolver a la persona como entidad (no solo un nombre suelto)
+  // y para saber en qué carácter habla de la organización. El cargo es el
+  // confirmado en la nómina real de la Comisión Directiva, ver
+  // src/app/nosotros/equipo/page.tsx.
   founder: {
     '@type': 'Person',
     name: 'Diana Cohen Agrest',
+    jobTitle: 'Presidente',
+    url: `${siteConfig.url}/nosotros/equipo`,
     sameAs: 'https://www.wikidata.org/wiki/Q23907251',
   },
   contactPoint: {
@@ -73,10 +80,23 @@ const organizationSchema = {
     areaServed: 'AR',
     availableLanguage: 'Spanish',
   },
-  // TODO: address pendiente de confirmación de la sede social registrada.
-  // TODO: agregar sameAs a la entrada de Wikidata de Usina cuando exista
-  // (docs/WIKIDATA.md).
-  sameAs: Object.values(siteConfig.social).filter(Boolean),
+  // Domicilio legal real, confirmado por Emanuel (13-ago-2026) con el
+  // documento de inscripción ante la IGJ. Sin postalCode: el documento no
+  // lo incluye, no se inventa.
+  address: {
+    '@type': 'PostalAddress',
+    streetAddress: 'Basavilbaso 1350, 3° Dto. 311',
+    addressLocality: 'Ciudad Autónoma de Buenos Aires',
+    addressCountry: 'AR',
+  },
+  // CUIT real, mismo documento — ya público también en src/app/donar/page.tsx
+  // (cross-check: coinciden).
+  taxID: '30-71540108-4',
+  // Entrada de Wikidata de Usina de Justicia (creada por Emanuel, 14-ago-2026).
+  sameAs: [
+    'https://www.wikidata.org/wiki/Q141058778',
+    ...Object.values(siteConfig.social).filter(Boolean),
+  ],
 }
 
 export default function RootLayout({
