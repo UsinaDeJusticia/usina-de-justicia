@@ -22,8 +22,35 @@ de un cutover, con mucho cuidado y verificando cada paso.
   contenido de ese WordPress vía su API REST.
 - El objetivo final es que usinadejusticia.org.ar sirva el SITIO NUEVO, y
   que WordPress se mude al subdominio wp.usinadejusticia.org.ar.
-- Yo (Emanuel) ya creé el subdominio wp.usinadejusticia.org.ar en hPanel,
-  apuntando al MISMO directorio donde vive WordPress.
+- Trabajás en Windows (PowerShell). Adaptá la sintaxis de los comandos que
+  te doy: están escritos en estilo Linux y algunos (por ejemplo la
+  sustitución `$(date ...)`) no funcionan igual en PowerShell.
+
+## DATOS QUE TE VOY A DAR YO (no los busques, no los adivines)
+
+Para conectarte por SSH a Hostinger necesitás host, usuario y puerto (en
+Hostinger el puerto suele ser 65002). NO están en el repositorio y NO tienen
+que estar: ese repo es PÚBLICO. Te los paso yo por chat cuando me los pidas.
+
+Nunca escribas esos datos —ni contraseñas, ni claves— en ningún archivo del
+proyecto, ni en un commit, ni en un log.
+
+## ANTES DE EMPEZAR: dos precondiciones que tenés que verificar
+
+1. **El repositorio local tiene que estar actualizado.** El plugin que vas a
+   instalar en el PASO 6 se actualizó hoy. Corré primero:
+
+       git -C <ruta-del-repo> checkout master
+       git -C <ruta-del-repo> pull
+
+   y confirmame que `wp-plugin/usina-headless/usina-headless.php` dice
+   `Version: 0.4.0` en su cabecera. Si dice 0.3.0, el pull no funcionó y hay
+   que resolver eso antes de seguir.
+
+2. **El subdominio wp.usinadejusticia.org.ar tiene que existir ya**, creado
+   en hPanel y apuntando al MISMO directorio donde vive WordPress (no a una
+   carpeta nueva). El PASO 2 lo verifica. Si esa verificación falla, PARÁ:
+   lo tengo que crear yo en hPanel, no es algo que puedas resolver por SSH.
 
 ## REGLAS QUE NO PODÉS ROMPER
 
@@ -76,7 +103,11 @@ que arreglarlo en hPanel antes de seguir.
 Hacé un export de la base de datos a un archivo con fecha en el nombre,
 guardado FUERA de public_html (para que no quede accesible por web):
 
-    wp db export ~/backup-precutover-$(date +%Y%m%d-%H%M).sql
+    wp db export ~/backup-precutover-AAAAMMDD-HHMM.sql
+
+(reemplazá AAAAMMDD-HHMM por la fecha y hora reales; el comando corre en el
+servidor Linux vía SSH, pero si armás el nombre desde PowerShell tené en
+cuenta que la sustitución de comandos es distinta)
 
 Confirmame la ruta y el tamaño del archivo. Si pesa menos de 1 MB,
 sospechá y avisame: esa base tiene 842 posts, debería pesar bastante más.
