@@ -114,16 +114,28 @@ tiene que abrir.
 
 *Vuelta atrás:* borrar el subdominio. El sitio en vivo nunca se enteró.
 
-**A3. Adjuntar los dominios en Vercel.**
-Vercel → proyecto `usina-de-justicia` → Settings → Domains. Agregar:
-- `www.usinadejusticia.org.ar` — este es el **canónico** (todo el sitio
-  declara `https://www.usinadejusticia.org.ar` en sus etiquetas canonical).
-- `usinadejusticia.org.ar` — configurarlo como **redirect a www**.
+**A3. Adjuntar `www` en Vercel.** ✅ **HECHO (26-ago)**
+`vercel domains add www.usinadejusticia.org.ar usina-de-justicia`.
 
-Vercel va a mostrar "Invalid Configuration" porque el DNS todavía no apunta
-ahí. **Es lo esperado en este paso.** Anotar los valores exactos de DNS que
-muestra Vercel (típicamente un CNAME `cname.vercel-dns.com` para `www` y un
-registro A para el apex) — se usan en la fase D.
+`www.usinadejusticia.org.ar` es el **canónico** (todo el sitio declara
+`https://www.usinadejusticia.org.ar` en sus etiquetas canonical).
+
+**El dominio pelado se adjunta recién en la fase D**, no acá: adjuntarlo
+antes no aporta nada y dispara una verificación de propiedad que todavía no
+hace falta.
+
+Vercel muestra el dominio como "Invalid Configuration" porque el DNS todavía
+no apunta ahí. **Es lo esperado en este paso.**
+
+Valor exacto que pidió Vercel (`vercel domains inspect`), para la fase C:
+
+```
+A    www    76.76.21.21
+```
+
+No pidió ningún TXT de verificación de propiedad.
+
+*Vuelta atrás:* quitar el dominio del proyecto.
 
 *Vuelta atrás:* quitar los dominios del proyecto.
 
@@ -177,7 +189,25 @@ sus imágenes. Si las noticias cargan, la API por el subdominio anda.
 ### Fase C — El switch de `www` (acá el público empieza a ver el sitio nuevo)
 
 **C1.** En el editor de zona DNS: cambiar el registro de `www` para que
-apunte a Vercel, con el valor que dio el paso A3.
+apunte a Vercel.
+
+| | Valor |
+|---|---|
+| **Antes (anotar para la vuelta atrás)** | `CNAME` · `www` → `www.usinadejusticia.org.ar.cdn.hstgr.net` |
+| **Después** | `A` · `www` → `76.76.21.21` · TTL 300 |
+
+Ese es el valor literal que devolvió `vercel domains inspect`, no una
+suposición.
+
+> ### ⛔ No cambiar los nameservers a Vercel
+> Vercel ofrece, como alternativa, delegarle el dominio entero
+> (`ns1/ns2.vercel-dns.com`). **No hay que hacerlo.** La zona actual tiene
+> **5 registros MX de Google Workspace y un SPF `include:_spf.google.com`**:
+> mover los nameservers deja a la organización **sin correo**, incluido
+> `info@usinadejusticia.org.ar`, que es la casilla a la que llegan los
+> mensajes del formulario de contacto. Y también se llevaría puesto el
+> subdominio `wp.`, es decir, la fuente de contenido del sitio nuevo.
+> El registro A puntual deja el resto de la zona intacto.
 
 > **Importante:** el CDN de Hostinger **está activo** para `www` — medido, no
 > supuesto: `www.usinadejusticia.org.ar` es hoy un CNAME a
