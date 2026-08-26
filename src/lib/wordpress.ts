@@ -19,9 +19,21 @@ import { CATEGORY_MAP, SITE_SECTIONS } from '@/types/wordpress'
 // CONFIGURACIÓN
 // ============================================
 
+// Host de WordPress. Misma perilla que usa next.config.mjs (WP_HOST) para
+// el optimizador de imágenes, la CSP y los redirects de /wp-content — ver el
+// comentario largo allá y docs/CUTOVER.md.
+//
+// Por qué una variable y no el dominio escrito a mano: en el cutover, el
+// dominio actual pasa a servir ESTE sitio y WordPress se muda a un
+// subdominio. Con la variable, ese día es un cambio de configuración en
+// Vercel (reversible en un minuto borrándola), no un cambio de código.
+//
+// NEXT_PUBLIC_WP_API_URL se mantiene con prioridad por compatibilidad: es
+// la variable que documentaba el plan maestro y permite apuntar a una
+// instalación completamente distinta (por ejemplo un WordPress de staging).
 const WP_API_URL =
   process.env.NEXT_PUBLIC_WP_API_URL ||
-  'https://usinadejusticia.org.ar/wp-json/wp/v2'
+  `https://${process.env.WP_HOST || 'usinadejusticia.org.ar'}/wp-json/wp/v2`
 
 const FETCH_TIMEOUT = 15000
 

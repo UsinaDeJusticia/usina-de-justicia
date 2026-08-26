@@ -1,3 +1,33 @@
+// ============================================================
+// DÓNDE VIVE WORDPRESS — la única perilla del cutover
+// ============================================================
+// Hoy WordPress y el sitio público comparten el mismo dominio
+// (usinadejusticia.org.ar). En el cutover, ese dominio pasa a servir ESTE
+// sitio y WordPress se muda a un subdominio propio. Para que ese día sea un
+// cambio de configuración y no un cambio de código bajo presión, el host de
+// WordPress se lee de una variable de entorno y de ella se derivan las tres
+// cosas que dependen de él: la API REST (src/lib/wordpress.ts), los dominios
+// permitidos del optimizador de imágenes, y la Content-Security-Policy.
+//
+// Valor por defecto = el dominio actual, así que MIENTRAS NADIE SETEE
+// WP_HOST el comportamiento es exactamente el de siempre. El cutover se
+// activa poniendo WP_HOST=wp.usinadejusticia.org.ar en Vercel y
+// redesplegando; se revierte borrando la variable. Ver docs/CUTOVER.md.
+const WP_HOST = process.env.WP_HOST || 'usinadejusticia.org.ar'
+
+// El dominio con el que se publicó el contenido histórico. 215 de los 842
+// posts migrados tienen imágenes con la URL absoluta
+// https://usinadejusticia.org.ar/wp-content/... escrita dentro del cuerpo
+// del post (auditoría del 26-ago-2026), más los PDFs de memorias y balances.
+// Ese host tiene que seguir permitido por la CSP y por el optimizador de
+// imágenes aunque WordPress se mude, porque esas URLs viven dentro del
+// contenido y no se reescriben solas. La regla de redirect /wp-content/*
+// de más abajo se encarga de que sigan resolviendo.
+const LEGACY_WP_HOST = 'usinadejusticia.org.ar'
+
+/** Hosts únicos a permitir (WP_HOST y el legacy pueden coincidir hoy). */
+const WP_HOSTS = [...new Set([WP_HOST, LEGACY_WP_HOST])]
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   trailingSlash: false,
@@ -10,17 +40,52 @@ const nextConfig = {
     // lento) en cada revalidación y baja la duración de carga de la imagen
     // LCP del hero (Perf Home, gate G4).
     minimumCacheTTL: 3600,
-    remotePatterns: [
-      {
-        protocol: 'https',
-        hostname: 'usinadejusticia.org.ar',
-        pathname: '/wp-content/uploads/**',
-      },
-    ],
+    remotePatterns: WP_HOSTS.map((hostname) => ({
+      protocol: 'https',
+      hostname,
+      pathname: '/wp-content/uploads/**',
+    })),
   },
 
   async redirects() {
     return [
+      // === ARCHIVOS DE WORDPRESS (/wp-content, /wp-admin) ===
+      // Va PRIMERO de todo: después del cutover, este sitio pasa a responder
+      // en el dominio con el que se publicó todo el contenido histórico, y
+      // esas URLs tienen que seguir resolviendo al WordPress real.
+      //
+      // Cubre de una sola regla:
+      //  - Las imágenes con URL absoluta dentro del cuerpo de 215 de los 842
+      //    posts migrados (no se reescriben solas; están en el HTML guardado).
+      //  - Los PDFs de memorias y balances enlazados desde
+      //    /nosotros/transparencia.
+      //  - Cualquier otro archivo subido a la biblioteca de medios que algún
+      //    contenido enlace y que no hayamos inventariado.
+      //
+      // Mientras WP_HOST siga siendo el dominio actual esta regla es inocua
+      // (redirige a sí mismo un path que este sitio no sirve igual); recién
+      // hace trabajo real cuando WordPress se muda. Ver docs/CUTOVER.md.
+      {
+        source: '/wp-content/:path*',
+        destination: `https://${WP_HOST}/wp-content/:path*`,
+        permanent: true,
+      },
+      // Comodidad para el equipo: entrar al panel por el dominio de siempre
+      // sigue funcionando y lleva al WordPress real, en vez de dar 404.
+      // `permanent: false` (307) a propósito: la ubicación del panel es una
+      // decisión de infraestructura que puede cambiar, y un 301 se queda
+      // cacheado en el navegador de cada persona del equipo.
+      {
+        source: '/wp-admin/:path*',
+        destination: `https://${WP_HOST}/wp-admin/:path*`,
+        permanent: false,
+      },
+      {
+        source: '/wp-login.php',
+        destination: `https://${WP_HOST}/wp-login.php`,
+        permanent: false,
+      },
+
       // === WORDPRESS VIEJO: IVUJUS (Fase 4 / Ola C — SEO técnico) ===
       // Estas 22 reglas van PRIMERO, antes que cualquier otra (Next.js aplica
       // la primera que matchea): 19 posts + 3 páginas planas que pertenecen
@@ -259,11 +324,15 @@ const nextConfig = {
               "default-src 'self'",
               "script-src 'self' 'unsafe-inline'",
               "style-src 'self' 'unsafe-inline'",
-              "img-src 'self' data: https://usinadejusticia.org.ar",
+              // Los hosts de WordPress se derivan de WP_HOST (ver arriba):
+              // durante y después del cutover hay que permitir tanto el
+              // subdominio nuevo como el dominio histórico con el que se
+              // publicaron las imágenes que viven dentro del contenido.
+              `img-src 'self' data: ${WP_HOSTS.map((h) => `https://${h}`).join(' ')}`,
               "font-src 'self'",
               "frame-src https://www.youtube.com https://www.youtube-nocookie.com https://www.canva.com https://www.facebook.com https://www.yumpu.com",
-              "media-src 'self' https://usinadejusticia.org.ar",
-              "connect-src 'self' https://usinadejusticia.org.ar",
+              `media-src 'self' ${WP_HOSTS.map((h) => `https://${h}`).join(' ')}`,
+              `connect-src 'self' ${WP_HOSTS.map((h) => `https://${h}`).join(' ')}`,
               "object-src 'none'",
               "base-uri 'self'",
               "form-action 'self'",
