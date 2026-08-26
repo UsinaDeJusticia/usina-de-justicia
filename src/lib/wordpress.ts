@@ -125,6 +125,27 @@ function stripHtmlForExcerpt(html: string, maxLength = 200): string {
   return text.substring(0, maxLength).replace(/\s+\S*$/, '') + '…'
 }
 
+/**
+ * El extracto/descripción con el que se completa `<meta name="description">`
+ * y el `description` del JSON-LD `NewsArticle` de cada post — nunca vacío.
+ *
+ * ~98 de los 842 posts migrados (auditoría de contenido delgado, 26-ago-2026:
+ * ver docs/ESTADO.md) son solo un embed de YouTube/Facebook o una imagen sin
+ * ningún párrafo de texto — por ejemplo la cobertura de una entrevista de TV
+ * publicada sin bajada. `wp.excerpt.rendered` para esos posts es un string
+ * vacío (WordPress no tiene de qué generar un resumen automático), así que
+ * sin este fallback la página queda con una meta description vacía: un bug
+ * de SEO real e independiente de cualquier decisión editorial sobre si
+ * indexar o no ese contenido.
+ *
+ * El fallback es el título del post — dato real, ya publicado, nunca
+ * inventado — no un texto genérico.
+ */
+function excerptOrTitleFallback(excerptHtml: string, title: string, maxLength = 200): string {
+  const excerpt = stripHtmlForExcerpt(excerptHtml, maxLength)
+  return excerpt || title
+}
+
 // ============================================
 // TRANSFORMADORES: WP → Tipos existentes
 // ============================================
@@ -191,6 +212,11 @@ function wpPostToArticulo(
     titulo: decodeHtml(wp.title.rendered),
     slug: wp.slug,
     contenido: wp.content.rendered,
+    // Sin fallback al título acá a propósito: `extracto` alimenta el copy
+    // visible de ArticleCard.tsx debajo del título — si cayera al mismo
+    // texto del título, la tarjeta mostraría el título duplicado dos veces
+    // seguidas. El fallback para SEO/social va en `seoDescription`, que no
+    // se muestra en pantalla.
     extracto: stripHtmlForExcerpt(wp.excerpt.rendered),
     imagenDestacada,
     categoria,
@@ -202,7 +228,7 @@ function wpPostToArticulo(
     updatedAt: wp.modified,
     // SEOFields — valores por defecto, se pueden mejorar después
     seoTitle: decodeHtml(wp.title.rendered),
-    seoDescription: stripHtmlForExcerpt(wp.excerpt.rendered, 160),
+    seoDescription: excerptOrTitleFallback(wp.excerpt.rendered, decodeHtml(wp.title.rendered), 160),
   }
 }
 

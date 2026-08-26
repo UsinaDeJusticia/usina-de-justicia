@@ -42,9 +42,13 @@ export function ArticleCard({ articulo }: ArticleCardProps) {
             {articulo.titulo}
           </Link>
         </h3>
-        <p className="text-body-sm text-grey-700 mt-2 line-clamp-3">
-          {articulo.extracto}
-        </p>
+        {/* ~98 de 842 posts (auditoría de contenido delgado, 26-ago-2026)
+            son solo un embed de video/imagen sin texto propio — extracto
+            queda vacío para no duplicar el título (ver wordpress.ts). Sin
+            este guard, esos posts mostraban un párrafo vacío con margen. */}
+        {articulo.extracto && (
+          <p className="text-body-sm text-grey-700 mt-2 line-clamp-3">{articulo.extracto}</p>
+        )}
         <Link
           href={`/noticias/${articulo.slug}`}
           className="inline-flex items-center gap-1 text-body-sm font-bold text-navy-600 no-underline hover:underline mt-4"
