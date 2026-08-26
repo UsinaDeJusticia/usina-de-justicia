@@ -146,6 +146,28 @@ sus imágenes. Si las noticias cargan, la API por el subdominio anda.
 
 *Vuelta atrás:* borrar la variable `WP_HOST` y redesplegar. Un minuto.
 
+> **Verificación objetiva, mejor que mirar las imágenes.** La cabecera de
+> seguridad del sitio se arma desde la misma variable, así que sirve de
+> prueba directa:
+>
+> ```
+> curl -sI https://usina-de-justicia.vercel.app/ | grep -i content-security-policy
+> ```
+>
+> Tiene que aparecer `https://wp.usinadejusticia.org.ar` en `img-src`,
+> `media-src` y `connect-src`, **y el host viejo tiene que seguir estando
+> ahí también**. Los dos conviven a propósito (`LEGACY_WP_HOST` en
+> `next.config.mjs`): así ningún paso intermedio del cutover puede dejar
+> imágenes bloqueadas.
+
+> **No confundir con un error:** después del `search-replace`, las **imágenes
+> destacadas** de las noticias siguen viniendo del host viejo. Es correcto y
+> esperado. La imagen destacada no está escrita en el cuerpo del post —
+> WordPress la arma a partir de la opción `siteurl`, que sigue siendo la
+> vieja y **tiene que seguir siéndolo hasta la fase D**. Se normaliza sola
+> con los `define` del paso D1. Como el host viejo sigue permitido por la
+> CSP, entretanto no se rompe nada.
+
 > **Este es el paso que más conviene no apurar.** Es la única verificación
 > real de que WordPress responde bien por el subdominio, y se hace **sin
 > ningún riesgo** porque el dominio público todavía no se movió.
@@ -157,9 +179,13 @@ sus imágenes. Si las noticias cargan, la API por el subdominio anda.
 **C1.** En el editor de zona DNS: cambiar el registro de `www` para que
 apunte a Vercel, con el valor que dio el paso A3.
 
-> **Importante:** si el CDN de Hostinger está activo para `www`, hay que
-> desactivarlo primero, o Hostinger puede volver a poner su propio CNAME y
-> pisar el cambio.
+> **Importante:** el CDN de Hostinger **está activo** para `www` — medido, no
+> supuesto: `www.usinadejusticia.org.ar` es hoy un CNAME a
+> `www.usinadejusticia.org.ar.cdn.hstgr.net` (147.79.72.184 / 147.79.79.145),
+> y el apex resuelve a 88.223.87.33 / 147.79.79.206, también del CDN. El
+> subdominio `wp.` en cambio va directo al servidor (147.93.37.235).
+> Hay que **desactivar el CDN para `www` antes** de cambiar el registro, o
+> Hostinger vuelve a poner su propio CNAME y pisa el cambio.
 
 **C2.** Esperar a que Vercel valide el dominio y emita el certificado SSL
 (unos minutos). En Settings → Domains tiene que pasar de "Invalid
