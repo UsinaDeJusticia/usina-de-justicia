@@ -1,3 +1,4 @@
+import { jsonLdScript } from '@/lib/json-ld'
 import type { Metadata } from 'next'
 import { Nunito, Nunito_Sans } from 'next/font/google'
 import './globals.css'
@@ -110,7 +111,7 @@ export default function RootLayout({
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
-            __html: JSON.stringify(organizationSchema),
+            __html: jsonLdScript(organizationSchema),
           }}
         />
       </head>

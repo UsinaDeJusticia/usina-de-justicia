@@ -1,3 +1,4 @@
+import { jsonLdScript } from '@/lib/json-ld'
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import Image from 'next/image'
@@ -142,7 +143,7 @@ export default async function NoticiaArticlePage({ params }: SlugPageProps) {
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
-          __html: JSON.stringify(buildNewsArticleJsonLd(articulo, slug)),
+          __html: jsonLdScript(buildNewsArticleJsonLd(articulo, slug)),
         }}
       />
 

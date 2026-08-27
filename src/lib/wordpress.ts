@@ -641,19 +641,20 @@ const SANITIZE_OPTIONS: sanitizeHtml.IOptions = {
 export function cleanWPContent(html: string): string {
   const sanitized = sanitizeHtml(html, SANITIZE_OPTIONS)
 
+  // Acá vivían ocho sustituciones más que quitaban `class="elementor-*"`,
+  // `data-elementor-*`, `data-settings`, `data-id` y `class="wp-block-*"`.
+  // Se eliminaron el 27-ago-2026 porque **no hacían nada**: la lista de
+  // atributos permitidos de arriba solo deja pasar `style` e `id`, así que
+  // `sanitize-html` ya los había borrado en la línea anterior. Comprobado
+  // ejecutándolas contra HTML real de Elementor antes de sacarlas.
+  //
+  // No era código muerto inofensivo, y por eso se saca en una auditoría de
+  // seguridad: dos de ellas borraban la etiqueta de APERTURA de un `<div>` o
+  // un `<section>` sin tocar su cierre. Si alguien alguna vez volviera a
+  // permitir `class` para recuperar estilos, esas dos empezarían a dejar
+  // cierres huérfanos y el contenido de la nota se escaparía de su
+  // contenedor. Un problema latente esperando un cambio razonable.
   return sanitized
-    .replace(/\s*class="elementor-[^"]*"/g, '')
-    .replace(/\s*data-elementor-[^=]*="[^"]*"/g, '')
-    .replace(/\s*data-widget_type="[^"]*"/g, '')
-    .replace(/\s*data-id="[^"]*"/g, '')
-    .replace(/\s*data-element_type="[^"]*"/g, '')
-    .replace(/\s*data-settings='[^']*'/g, '')
-    .replace(/<div[^>]*class="elementor-[^"]*"[^>]*>\s*<\/div>/g, '')
-    .replace(
-      /<(?:div|section)[^>]*class="[^"]*elementor[^"]*"[^>]*>/g,
-      ''
-    )
-    .replace(/\s*class="wp-block-[^"]*"/g, '')
     .replace(
       /<hr\s*\/?>/g,
       '<hr class="my-8 border-t-2 border-gray-200" />'

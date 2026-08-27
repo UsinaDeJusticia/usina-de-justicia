@@ -53,12 +53,33 @@ const NAMED_ENTITIES: Record<string, string> = {
   pound: '£',
 }
 
+/**
+ * Convierte un punto de código numérico en carácter, o devuelve `null` si no
+ * es uno válido.
+ *
+ * `String.fromCodePoint` lanza `RangeError` con cualquier valor por encima de
+ * U+10FFFF. Como esta función procesa HTML que viene de WordPress, una
+ * entidad como `&#x110000;` —que se escribe sola, sin ninguna herramienta
+ * especial— tumbaba la conversión entera con una excepción no capturada, y
+ * en `/api/md` eso era un error 500.
+ */
+function codePointToChar(codePoint: number): string | null {
+  if (!Number.isInteger(codePoint) || codePoint < 0 || codePoint > 0x10ffff) {
+    return null
+  }
+  return String.fromCodePoint(codePoint)
+}
+
 export function decodeEntities(input: string): string {
   return input
-    .replace(/&#x([0-9a-fA-F]+);/g, (_, hex) =>
-      String.fromCodePoint(Number.parseInt(hex, 16))
+    .replace(
+      /&#x([0-9a-fA-F]+);/g,
+      (match, hex) => codePointToChar(Number.parseInt(hex, 16)) ?? match
     )
-    .replace(/&#(\d+);/g, (_, dec) => String.fromCodePoint(Number.parseInt(dec, 10)))
+    .replace(
+      /&#(\d+);/g,
+      (match, dec) => codePointToChar(Number.parseInt(dec, 10)) ?? match
+    )
     .replace(/&([a-zA-Z]+);/g, (match, name) => NAMED_ENTITIES[name] ?? match)
 }
 

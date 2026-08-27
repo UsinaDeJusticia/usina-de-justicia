@@ -1,3 +1,4 @@
+import { jsonLdScript } from '@/lib/json-ld'
 import { generatePageMetadata } from '@/lib/metadata'
 import { Breadcrumbs } from '@/components/layout/Breadcrumbs'
 import { Hero } from '@/components/necesito-ayuda/Hero'
@@ -47,7 +48,7 @@ export default function NecesitoAyudaPage() {
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
+        dangerouslySetInnerHTML={{ __html: jsonLdScript(faqJsonLd) }}
       />
 
       <div className="max-w-content mx-auto px-4 md:px-10">

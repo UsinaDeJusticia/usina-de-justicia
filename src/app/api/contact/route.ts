@@ -23,6 +23,12 @@ interface ContactBody {
   telefono?: string
   asunto?: string
   mensaje?: string
+  /**
+   * Campo trampa. No se muestra en el formulario y una persona nunca lo
+   * completa; un robot que rellena todo lo que encuentra, sí. Se llama
+   * `sitioWeb` justamente porque suena a campo legítimo.
+   */
+  sitioWeb?: string
 }
 
 const ASUNTOS: Record<string, string> = {
@@ -48,11 +54,47 @@ export async function POST(request: Request) {
     )
   }
 
-  const { nombre, email, asunto, mensaje, telefono } = body
+  const { nombre, email, asunto, mensaje, telefono, sitioWeb: campoTrampa } = body
 
   if (!isNonEmptyString(nombre) || !isNonEmptyString(email) || !isNonEmptyString(mensaje)) {
     return NextResponse.json(
       { sent: false, error: 'Nombre, email y mensaje son obligatorios.' },
+      { status: 400 }
+    )
+  }
+
+  // Campo trampa: está oculto en el formulario, así que una persona nunca lo
+  // completa y un robot que rellena todo lo que encuentra, sí. Se responde
+  // 200 a propósito, sin enviar nada: si devolviéramos un error, quien
+  // automatiza el abuso se daría cuenta y ajustaría el script.
+  if (isNonEmptyString(campoTrampa)) {
+    return NextResponse.json({ sent: true })
+  }
+
+  // Topes de longitud antes de gastar la llamada a Resend. Sin esto, un
+  // mensaje de varios megabytes viaja entero al proveedor y consume la cuota
+  // igual. Los valores son holgados para un formulario de contacto real.
+  const excedidos = [
+    ['nombre', nombre, 120],
+    ['email', email, 254],
+    ['asunto', typeof asunto === 'string' ? asunto : '', 200],
+    ['mensaje', mensaje, 5000],
+    ['teléfono', typeof telefono === 'string' ? telefono : '', 40],
+  ].find(([, valor, tope]) => (valor as string).length > (tope as number))
+
+  if (excedidos) {
+    return NextResponse.json(
+      { sent: false, error: `El campo ${excedidos[0]} es demasiado largo.` },
+      { status: 400 }
+    )
+  }
+
+  // Validación de forma, no de existencia: sirve para descartar basura
+  // evidente antes de llamar al proveedor. Un email sintácticamente válido
+  // puede no existir igual, y eso no lo resuelve ningún regex.
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) {
+    return NextResponse.json(
+      { sent: false, error: 'El email no parece válido.' },
       { status: 400 }
     )
   }
@@ -110,8 +152,10 @@ export async function POST(request: Request) {
     })
 
     if (!resendResponse.ok) {
-      const detail = await resendResponse.text().catch(() => '')
-      console.error('[/api/contact] Resend devolvió un error:', resendResponse.status, detail)
+      // Solo el código. El cuerpo del error de Resend suele repetir el campo
+      // que falló —o sea, el email de quien escribió— y este archivo dice
+      // explícitamente que no se loguean datos personales del formulario.
+      console.error('[/api/contact] Resend devolvió un error:', resendResponse.status)
       return NextResponse.json(
         {
           sent: false,

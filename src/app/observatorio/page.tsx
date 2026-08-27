@@ -1,3 +1,4 @@
+import { jsonLdScript } from '@/lib/json-ld'
 import Link from 'next/link'
 import { Breadcrumbs } from '@/components/layout/Breadcrumbs'
 import { Button } from '@/components/ui/Button'
@@ -67,7 +68,7 @@ export default async function ObservatorioPage() {
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        dangerouslySetInnerHTML={{ __html: jsonLdScript(jsonLd) }}
       />
 
       <div className="max-w-content mx-auto px-4 md:px-10">

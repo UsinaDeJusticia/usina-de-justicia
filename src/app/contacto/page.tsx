@@ -13,6 +13,10 @@ export default function ContactoPage() {
     telefono: '',
     asunto: '',
     mensaje: '',
+    // Campo trampa contra el envío automatizado: está oculto, así que solo
+    // lo completa un robot que rellena todo lo que encuentra. Si llega con
+    // algo, el servidor descarta el mensaje. Ver src/app/api/contact/route.ts.
+    sitioWeb: '',
   })
   const [enviado, setEnviado] = useState(false)
   const [enviando, setEnviando] = useState(false)
@@ -151,7 +155,7 @@ export default function ContactoPage() {
                     className="mt-6"
                     onClick={() => {
                       setEnviado(false)
-                      setFormData({ nombre: '', email: '', telefono: '', asunto: '', mensaje: '' })
+                      setFormData({ nombre: '', email: '', telefono: '', asunto: '', mensaje: '', sitioWeb: '' })
                     }}
                   >
                     Enviar otro mensaje
@@ -247,6 +251,28 @@ export default function ContactoPage() {
                         placeholder="Contanos cómo podemos ayudarte..."
                       />
                     </div>
+
+                    {/*
+                      Campo trampa contra el envío automatizado. No se ve, no
+                      recibe foco con el tabulador y los lectores de pantalla
+                      lo ignoran, así que una persona no puede completarlo ni
+                      por accidente. Un robot que rellena todos los campos del
+                      formulario, sí — y ahí el servidor descarta el mensaje.
+
+                      Va posicionado fuera de la pantalla y no con `hidden`
+                      ni `display:none` a propósito: los robots que valen algo
+                      saltean los campos ocultos de la forma obvia.
+                    */}
+                    <input
+                      type="text"
+                      name="sitioWeb"
+                      value={formData.sitioWeb}
+                      onChange={handleChange}
+                      tabIndex={-1}
+                      autoComplete="off"
+                      aria-hidden="true"
+                      className="absolute -left-[9999px] w-px h-px opacity-0"
+                    />
 
                     {error && (
                       <div className="flex items-start gap-3 p-4 rounded-xs bg-warning-bg border border-warning text-body-sm text-ink">

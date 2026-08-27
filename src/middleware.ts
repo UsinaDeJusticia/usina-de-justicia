@@ -68,5 +68,11 @@ export const config = {
   // Solo rutas de documento: se excluyen los assets internos de Next y
   // cualquier archivo con extensión (imágenes, fuentes, PDFs), que no
   // tienen una representación markdown ni necesitan Vary: Accept.
-  matcher: ['/((?!_next/static|_next/image|images/).*)'],
+  //
+  // El `.*\\.[^/]+$` del final se agregó el 27-ago-2026: hasta entonces el
+  // comentario decía que se excluía "cualquier archivo con extensión" pero el
+  // patrón no lo hacía, así que un PDF o un favicon servido desde /public
+  // pasaba igual por acá y, con `Accept: text/markdown`, terminaba
+  // reescrito a /api/md, que intentaba leer un binario como texto.
+  matcher: ['/((?!_next/static|_next/image|images/|.*\\.[^/]+$).*)'],
 }

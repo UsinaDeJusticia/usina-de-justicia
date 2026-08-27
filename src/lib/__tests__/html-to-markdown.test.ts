@@ -161,3 +161,24 @@ describe('htmlToMarkdown', () => {
     assert.equal(htmlToMarkdown('<h2>Título</h2>\n\n\n<p>Cuerpo</p>'), '## Título\n\nCuerpo')
   })
 })
+
+describe('decodeEntities — entidades numéricas inválidas', () => {
+  // Regresión del 27-ago-2026. `String.fromCodePoint` lanza `RangeError` con
+  // cualquier valor por encima de U+10FFFF, y estas entidades se escriben
+  // solas en cualquier editor. La excepción no estaba capturada, así que
+  // tumbaba la conversión entera: en /api/md, un error 500.
+  it('deja intacta la entidad cuando el punto de código no existe', () => {
+    assert.equal(decodeEntities('antes &#x110000; despues'), 'antes &#x110000; despues')
+    assert.equal(decodeEntities('antes &#99999999; despues'), 'antes &#99999999; despues')
+  })
+
+  it('sigue decodificando las válidas', () => {
+    assert.equal(decodeEntities('&#x41;&#66;'), 'AB')
+    assert.equal(decodeEntities('&#x1F600;'), '\u{1F600}')
+  })
+
+  it('no rompe con una entidad de valor cero o negativo mal formada', () => {
+    assert.equal(decodeEntities('&#x0;'), '\u0000')
+    assert.equal(decodeEntities('&#xZZ;'), '&#xZZ;')
+  })
+})
