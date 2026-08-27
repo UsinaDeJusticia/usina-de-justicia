@@ -1,3 +1,4 @@
+import { jsonLdScript } from '@/lib/json-ld'
 import Link from 'next/link'
 import { ChevronRight, Home } from 'lucide-react'
 import type { BreadcrumbItem } from '@/types'
@@ -30,7 +31,7 @@ export function Breadcrumbs({ items }: BreadcrumbsProps) {
     <nav aria-label="Breadcrumb" className="py-4">
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+        dangerouslySetInnerHTML={{ __html: jsonLdScript(schema) }}
       />
       <ol className="flex items-center flex-wrap gap-1 text-body-sm text-neutral-500">
         <li>

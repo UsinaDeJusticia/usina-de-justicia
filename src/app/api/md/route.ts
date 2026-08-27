@@ -1,6 +1,10 @@
 import { NextResponse } from 'next/server'
 import { siteConfig } from '@/lib/site-config'
-import { MARKDOWN_MEDIA_TYPE, MARKDOWN_PATH_HEADER } from '@/lib/agent-negotiation'
+import {
+  MARKDOWN_MEDIA_TYPE,
+  MARKDOWN_PATH_HEADER,
+  resolveInternalUrl,
+} from '@/lib/agent-negotiation'
 import { extractMainContent, htmlToMarkdown, decodeEntities } from '@/lib/html-to-markdown'
 
 // ============================================
@@ -27,6 +31,16 @@ import { extractMainContent, htmlToMarkdown, decodeEntities } from '@/lib/html-t
 
 /** Igual que el ISR del resto del sitio (`revalidate = 300`). */
 const CACHE_CONTROL = 'public, s-maxage=300, stale-while-revalidate=86400'
+
+/** Mismo valor que `src/lib/fetch-retry.ts`, por coherencia. */
+const FETCH_TIMEOUT_MS = 15000
+
+/**
+ * Tope de lo que se convierte a markdown. La página más pesada del sitio
+ * ronda los 200 KB, así que 2 MB deja margen de sobra sin dejar la puerta
+ * abierta a que una respuesta enorme haga crecer la memoria sin límite.
+ */
+const MAX_HTML_BYTES = 2 * 1024 * 1024
 
 function markdownResponse(body: string, status: number) {
   return new NextResponse(body, {
@@ -86,13 +100,14 @@ export async function GET(request: Request) {
     requestUrl.searchParams.get('path') ??
     '/'
 
-  // Solo rutas internas: sin esto, `?path=https://otro-sitio` convertiría
-  // este endpoint en un proxy abierto que hace fetch a cualquier origen.
-  if (!path.startsWith('/') || path.startsWith('//')) {
+  // Único control de seguridad de este endpoint: la ruta pedida tiene que
+  // resolver dentro de nuestro propio origen. La validación vive en
+  // `resolveInternalUrl` —con sus tests— porque compararla como texto es
+  // evadible y ya lo fue: ver el comentario de esa función.
+  const target = resolveInternalUrl(path, requestUrl.origin)
+  if (target === null) {
     return markdownResponse(notFoundMarkdown(path), 404)
   }
-
-  const target = new URL(path, requestUrl.origin)
 
   let pageResponse: Response
   try {
@@ -102,6 +117,12 @@ export async function GET(request: Request) {
         // a /api/md (aunque ya se excluye /api/, no depender solo de eso).
         Accept: 'text/html',
       },
+      // Sin esto, una página que tarda deja la función viva hasta el timeout
+      // de la plataforma. El resto del proyecto ya usa este mismo valor, en
+      // src/lib/fetch-retry.ts; acá no se puede reutilizar esa función porque
+      // necesitamos el caché de Next (`next.revalidate`), que fetchWithRetry
+      // no expone.
+      signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
       next: { revalidate: 300 },
     })
   } catch (error) {
@@ -126,7 +147,14 @@ export async function GET(request: Request) {
     return markdownResponse(notFoundMarkdown(path), pageResponse.status)
   }
 
-  const html = await pageResponse.text()
+  // Cortar por tamaño antes de materializar el texto: `.text()` sin límite
+  // sobre una respuesta grande hace crecer la memoria de la función sin tope.
+  const declaredLength = Number(pageResponse.headers.get('content-length') ?? '0')
+  if (declaredLength > MAX_HTML_BYTES) {
+    return markdownResponse(notFoundMarkdown(path), 404)
+  }
+
+  const html = (await pageResponse.text()).slice(0, MAX_HTML_BYTES)
 
   const title =
     extractTag(html, /<title[^>]*>([\s\S]*?)<\/title>/i) ?? siteConfig.name

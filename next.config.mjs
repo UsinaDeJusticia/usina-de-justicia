@@ -322,7 +322,13 @@ const nextConfig = {
         headers: [
           { key: 'X-Frame-Options', value: 'DENY' },
           { key: 'X-Content-Type-Options', value: 'nosniff' },
-          { key: 'Referrer-Policy', value: 'origin-when-cross-origin' },
+          // `strict-origin-when-cross-origin` y no `origin-when-cross-origin`:
+          // la diferencia es que este NO manda nada al bajar de HTTPS a HTTP.
+          // Importa particularmente en este sitio, donde la URL visitada puede
+          // revelar que alguien estuvo consultando /necesito-ayuda — una
+          // persona atravesando la muerte de un familiar no tiene por qué
+          // dejar ese rastro en el registro de un tercero.
+          { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
           // Negociación de contenido con agentes (ver src/middleware.ts): la
           // misma URL sirve HTML o Markdown según el header `Accept`, así que
           // los caches intermedios tienen que variar por él. Sin esto, un CDN
@@ -374,8 +380,26 @@ const nextConfig = {
           },
           {
             key: 'Permissions-Policy',
-            value:
-              'camera=(), microphone=(), geolocation=(), payment=(), usb=()',
+            // Lo que NO se lista acá queda habilitado y, además, delegable a
+            // los iframes vía su atributo `allow`. El contenido de las notas
+            // permite iframes de YouTube, Canva, Facebook y Yumpu, así que la
+            // lista corta dejaba a esas plataformas con más permisos de los
+            // que necesitan para mostrar un video o un documento.
+            value: [
+              'camera=()',
+              'microphone=()',
+              'geolocation=()',
+              'payment=()',
+              'usb=()',
+              'display-capture=()',
+              'serial=()',
+              'bluetooth=()',
+              'midi=()',
+              'idle-detection=()',
+              'xr-spatial-tracking=()',
+              'browsing-topics=()',
+              'interest-cohort=()',
+            ].join(', '),
           },
           // CSP v1 pragmática. 'unsafe-inline' en script-src/style-src es
           // una concesión consciente: hay JSON-LD y scripts inline de Next,

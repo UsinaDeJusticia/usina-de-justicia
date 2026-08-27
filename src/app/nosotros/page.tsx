@@ -1,3 +1,4 @@
+import { jsonLdScript } from '@/lib/json-ld'
 import Link from 'next/link'
 import { Breadcrumbs } from '@/components/layout/Breadcrumbs'
 import { Trayectoria } from '@/components/home/Trayectoria'
@@ -182,7 +183,7 @@ export default function NosotrosPage() {
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        dangerouslySetInnerHTML={{ __html: jsonLdScript(jsonLd) }}
       />
 
       <div className="max-w-content mx-auto px-4 md:px-10">

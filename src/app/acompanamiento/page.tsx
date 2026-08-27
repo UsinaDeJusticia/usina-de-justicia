@@ -1,3 +1,4 @@
+import { jsonLdScript } from '@/lib/json-ld'
 import { Breadcrumbs } from '@/components/layout/Breadcrumbs'
 import { Button } from '@/components/ui/Button'
 import { ArticleCard } from '@/components/noticias/ArticleCard'
@@ -197,11 +198,11 @@ export default async function AcompanamientoPage() {
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        dangerouslySetInnerHTML={{ __html: jsonLdScript(jsonLd) }}
       />
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
+        dangerouslySetInnerHTML={{ __html: jsonLdScript(faqJsonLd) }}
       />
 
       <div className="max-w-content mx-auto px-4 md:px-10">
