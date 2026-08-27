@@ -84,7 +84,31 @@ propagarse. Con 300, minutos.
 
 *Verificación:* ninguna, no es visible. *Vuelta atrás:* no hace falta.
 
-> **El DNS se puede manejar por API, y conviene.** Hostinger expone la zona
+> ### El DNS se hace a mano en hPanel — la API no está disponible en esta cuenta
+>
+> Se evaluó automatizar el DNS y **no se pudo**: la API de Hostinger no está
+> habilitada en el plan de esta cuenta (verificado por Emanuel en
+> `hpanel.hostinger.com/api`). Queda documentado abajo por si el plan cambia.
+>
+> **Y no hay una segunda vía por SSH.** No es una cuestión de permisos: el
+> SSH da una terminal *dentro del servidor* donde vive WordPress (archivos,
+> base de datos, WP-CLI), mientras que la zona DNS vive en el panel de
+> control de Hostinger, que es un sistema aparte. Desde adentro del servidor
+> no hay nada que editar.
+>
+> Así que el reparto real es: **dos registros los cambia una persona a mano
+> en hPanel**, y todo lo demás —`wp-config.php` por SSH, los dominios en
+> Vercel por CLI, y todas las verificaciones— lo hace un agente.
+>
+> Como no hay backup por API, **el respaldo de la zona son dos cosas**: una
+> captura de pantalla del editor de zona completo antes de tocar nada, y un
+> volcado de los registros resolubles hecho por consulta DNS (solo lectura,
+> no necesita credenciales). Ver el paso A1b.
+
+<details>
+<summary>Si algún día la API se habilita (referencia)</summary>
+
+> Hostinger expone la zona
 > por su API pública (`developers.hostinger.com`), con token generado desde
 > hPanel:
 >
@@ -108,6 +132,28 @@ propagarse. Con 300, minutos.
 > defecto: **no se usa nunca en este runbook.**
 >
 > El interruptor del CDN **no** está en esa API: eso sí es hPanel a mano.
+
+</details>
+
+**A1b. Respaldo de la zona, sin credenciales.**
+Antes de cambiar ningún TTL: captura de pantalla del editor de zona
+completo, con todos los registros visibles. Es la vuelta atrás.
+
+Y un volcado por consulta DNS, que se puede automatizar y no necesita
+acceso a ninguna cuenta:
+
+```
+dig +noall +answer usinadejusticia.org.ar A MX TXT NS
+dig +noall +answer www.usinadejusticia.org.ar A CNAME
+dig +noall +answer wp.usinadejusticia.org.ar A CNAME
+```
+
+Guardarlo en un archivo con fecha, fuera del repositorio.
+
+Los dos respaldos se complementan: la captura muestra la zona tal como la
+administra Hostinger (incluidos registros que quizá no se consulten nunca),
+y el volcado muestra qué está resolviendo el mundo de verdad en este momento
+— que es contra lo que se compara después del switch.
 
 > **Atajo con WP-CLI.** Hostinger incluye acceso SSH con WP-CLI preinstalado
 > en los planes Premium y superiores (verificar con `wp --info` una vez
