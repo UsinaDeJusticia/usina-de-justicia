@@ -1,6 +1,52 @@
 # Cutover — poner el sitio nuevo en el dominio real
 
-**Estado:** preparado, sin ejecutar. Última actualización: 26-ago-2026.
+**Estado: EJECUTADO Y VERIFICADO — 27-ago-2026, 01:35 UTC.**
+El sitio nuevo está en vivo en `www.usinadejusticia.org.ar` y en el dominio
+pelado. WordPress vive en `wp.usinadejusticia.org.ar`.
+
+El documento se conserva completo como registro de qué se hizo, en qué orden
+y por qué. Lo que sigue después está en la fase E, al final.
+
+### Verificación final (27-ago)
+
+| Qué | Resultado |
+|---|---|
+| Dominio pelado y `www` en el DNS | `76.76.21.21`, sin `AAAA`, coincidente en Google, Cloudflare, Quad9 y el autoritativo de Hostinger |
+| Los dos dominios asignados al proyecto de Vercel | Sí (confirmado en la sección `Projects` de `vercel domains inspect`) |
+| Certificados SSL | Emitidos para los dos, 90 días |
+| Dominio pelado → canónico | `308` conservando la ruta, probado en raíz y en `/noticias` |
+| 8 páginas principales con `www` | `200` |
+| URL vieja con fecha | `308` → `/noticias/:slug` |
+| Página inexistente | `404` propio |
+| `sitemap.xml` y `robots.txt` | `200` |
+| API de WordPress en `wp.` | `200` |
+| `wp-admin` | `302` al login **dentro** de `wp.` |
+| Imágenes del contenido en `/noticias` | 144 apuntando a `wp.`, **0 al host viejo**; la primera pedida devolvió `200 image/jpeg` |
+
+**La normalización de las imágenes destacadas se confirmó.** Durante la fase
+B quedó anotado que seguían viniendo del host viejo, y que eso era correcto
+porque no viven en `post_content` sino que WordPress las arma desde la opción
+`siteurl`. Los `define` del paso C2a las normalizaron solas: cero referencias
+al host viejo en la página renderizada.
+
+> **Dos desvíos del smoke test que NO eran fallas**, y conviene saber
+> distinguirlos porque van a reaparecer en cualquier cutover futuro:
+>
+> El dominio pelado devolvía `200` en la home y `404` en `/noticias` desde la
+> máquina que corrió las pruebas, en vez de `308`. Causa: el resolutor DNS de
+> esa máquina todavía tenía cacheado el valor viejo y las respuestas venían de
+> Hostinger (`Server: LiteSpeed`, `X-Powered-By: PHP`) — la home desde la
+> caché de LiteSpeed, `/noticias` como un 404 real del WordPress viejo.
+> Forzando la conexión a la IP de Vercel con `curl --resolve`, las dos
+> devolvieron el `308` correcto.
+>
+> Moraleja: cuando algo "falla" justo después de un cambio de DNS, primero
+> hay que preguntarse **desde dónde se está resolviendo**. Las cabeceras de
+> la respuesta dicen quién contestó.
+
+---
+
+**Historial:** preparado el 26-ago-2026, ejecutado el 27.
 
 Este documento es el runbook del único paso que falta para que el público
 vea el sitio nuevo. Está pensado para seguirse en orden, con verificación
@@ -75,7 +121,53 @@ editor de zona DNS con los registros (A, CNAME, MX…), **el DNS se administra
 ahí** y TAD/NIC no se tocan en todo el cutover. Si en cambio los nameservers
 apuntan a NIC, los cambios de las fases D y E se hacen en TAD.
 
-**A1. Bajar el TTL a 300 segundos.**
+**A1. Bajar el TTL a 300 segundos.** ✅ **YA ESTABA (27-ago)**
+
+El export de la zona lo confirma: `www` y el apex **ya tienen TTL 300**, y
+las respuestas del CDN salen con TTL 60. Los pone así el propio CDN de
+Hostinger. **No hay que esperar 24 horas**, que era el único paso del
+runbook con reloj.
+
+### La zona real, y qué NO se toca (export del 27-ago-2026)
+
+La zona la sirven `athena` y `apollo.dns-parking.com` — o sea **Hostinger**,
+no NIC. Eso cierra el paso A0: TAD y NIC no se tocan en todo el cutover.
+
+Solo se modifican **dos** registros. Todo lo demás queda intacto, y estos
+cinco en particular son críticos:
+
+| Registro | Qué es | Qué pasa si se rompe |
+|---|---|---|
+| `@` MX ×5 (Google) | El correo de la organización | Usina se queda sin mail |
+| `@` TXT `v=spf1 …google.com` | SPF | El correo saliente empieza a caer en spam |
+| `_dmarc` TXT | Política DMARC | Ídem |
+| `resend._domainkey` TXT | DKIM de Resend | **Deja de funcionar el formulario de contacto** |
+| `send` MX + TXT (Amazon SES) | Rebotes de Resend | Ídem |
+| `wp` A/AAAA | El WordPress real | El sitio nuevo se queda sin contenido |
+
+**El apex no es un registro A: es un `ALIAS` al CDN** (`usinadejusticia.org.ar.cdn.hstgr.net`).
+Hostinger usa ALIAS para poder apuntar el dominio pelado a un nombre, cosa
+que un CNAME no puede hacer en la raíz de una zona. Cambiarlo no es "editar
+la IP": hay que reemplazar el tipo de registro.
+
+**`wp` tiene además un `ALIAS` al CDN**, encima de su A y su AAAA. Hoy no
+está en uso —`wp.usinadejusticia.org.ar` resuelve a 147.93.37.235, la IP
+directa del servidor, verificado por consulta— pero conviene saberlo por si
+al desactivar el CDN algo se mueve ahí.
+
+> #### Los CAA: el riesgo que casi nunca se mira
+> La zona tiene 12 registros `CAA`, que son una lista blanca de qué
+> autoridades pueden emitir un certificado para este dominio. Si la
+> autoridad que usa Vercel no estuviera en esa lista, **el certificado SSL
+> no se emitiría y el sitio quedaría inaccesible por HTTPS después del
+> switch**, sin ningún mensaje de error obvio que apunte a la causa.
+>
+> Verificado: la lista incluye `letsencrypt.org` y `pki.goog`, en `issue` y
+> en `issuewild`. Son las dos que usa Vercel. **No hay bloqueo.** No hay que
+> tocar ningún CAA — pero si alguna vez el certificado no se emite, este es
+> el primer lugar donde mirar.
+
+
 En el editor de zona, bajar el TTL de los registros del apex y de `www` a
 300 (5 minutos). **Hacer esto al menos 24 horas antes del switch.** El TTL
 es cuánto tiempo el mundo recuerda la dirección vieja; con el valor por
@@ -84,7 +176,31 @@ propagarse. Con 300, minutos.
 
 *Verificación:* ninguna, no es visible. *Vuelta atrás:* no hace falta.
 
-> **El DNS se puede manejar por API, y conviene.** Hostinger expone la zona
+> ### El DNS se hace a mano en hPanel — la API no está disponible en esta cuenta
+>
+> Se evaluó automatizar el DNS y **no se pudo**: la API de Hostinger no está
+> habilitada en el plan de esta cuenta (verificado por Emanuel en
+> `hpanel.hostinger.com/api`). Queda documentado abajo por si el plan cambia.
+>
+> **Y no hay una segunda vía por SSH.** No es una cuestión de permisos: el
+> SSH da una terminal *dentro del servidor* donde vive WordPress (archivos,
+> base de datos, WP-CLI), mientras que la zona DNS vive en el panel de
+> control de Hostinger, que es un sistema aparte. Desde adentro del servidor
+> no hay nada que editar.
+>
+> Así que el reparto real es: **dos registros los cambia una persona a mano
+> en hPanel**, y todo lo demás —`wp-config.php` por SSH, los dominios en
+> Vercel por CLI, y todas las verificaciones— lo hace un agente.
+>
+> Como no hay backup por API, **el respaldo de la zona son dos cosas**: una
+> captura de pantalla del editor de zona completo antes de tocar nada, y un
+> volcado de los registros resolubles hecho por consulta DNS (solo lectura,
+> no necesita credenciales). Ver el paso A1b.
+
+<details>
+<summary>Si algún día la API se habilita (referencia)</summary>
+
+> Hostinger expone la zona
 > por su API pública (`developers.hostinger.com`), con token generado desde
 > hPanel:
 >
@@ -108,6 +224,28 @@ propagarse. Con 300, minutos.
 > defecto: **no se usa nunca en este runbook.**
 >
 > El interruptor del CDN **no** está en esa API: eso sí es hPanel a mano.
+
+</details>
+
+**A1b. Respaldo de la zona, sin credenciales.**
+Antes de cambiar ningún TTL: captura de pantalla del editor de zona
+completo, con todos los registros visibles. Es la vuelta atrás.
+
+Y un volcado por consulta DNS, que se puede automatizar y no necesita
+acceso a ninguna cuenta:
+
+```
+dig +noall +answer usinadejusticia.org.ar A MX TXT NS
+dig +noall +answer www.usinadejusticia.org.ar A CNAME
+dig +noall +answer wp.usinadejusticia.org.ar A CNAME
+```
+
+Guardarlo en un archivo con fecha, fuera del repositorio.
+
+Los dos respaldos se complementan: la captura muestra la zona tal como la
+administra Hostinger (incluidos registros que quizá no se consulten nunca),
+y el volcado muestra qué está resolviendo el mundo de verdad en este momento
+— que es contra lo que se compara después del switch.
 
 > **Atajo con WP-CLI.** Hostinger incluye acceso SSH con WP-CLI preinstalado
 > en los planes Premium y superiores (verificar con `wp --info` una vez
@@ -216,13 +354,52 @@ sus imágenes. Si las noticias cargan, la API por el subdominio anda.
 **C1.** En el editor de zona DNS: cambiar el registro de `www` para que
 apunte a Vercel.
 
-| | Valor |
-|---|---|
-| **Antes (anotar para la vuelta atrás)** | `CNAME` · `www` → `www.usinadejusticia.org.ar.cdn.hstgr.net` |
-| **Después** | `A` · `www` → `76.76.21.21` · TTL 300 |
+Al desactivar el CDN, Hostinger reemplazó solo los registros que
+administraba. Estado real tras ese paso (export del 27-ago 00:37 UTC):
 
-Ese es el valor literal que devolvió `vercel domains inspect`, no una
-suposición.
+```
+@     1800 IN A     147.93.37.235
+@     1800 IN AAAA  2a02:4780:13:991:0:1652:e8c3:6
+www    300 IN CNAME usinadejusticia.org.ar.
+```
+
+Los cambios, y la vuelta atrás de cada uno:
+
+| Registro | Antes | Después |
+|---|---|---|
+| `@` A | `147.93.37.235` · TTL 1800 | `76.76.21.21` · TTL 300 |
+| `@` AAAA | `2a02:4780:13:991:0:1652:e8c3:6` · TTL 1800 | **BORRADO** |
+| `www` | `CNAME` → `usinadejusticia.org.ar.` · TTL 300 | `A` → `76.76.21.21` · TTL 300 |
+
+`76.76.21.21` es el valor literal que devolvió `vercel domains inspect`.
+
+> #### ⚠️ El registro AAAA hay que BORRARLO, no cambiarlo
+> Es la dirección IPv6 del servidor de Hostinger. Vercel no ofrece una
+> dirección IPv6 para este método, así que no hay con qué reemplazarla.
+>
+> **Si se deja, buena parte del tráfico sigue viendo el sitio viejo**: los
+> clientes con IPv6 —hoy, casi todos los celulares— prefieren IPv6 sobre
+> IPv4, así que irían al `AAAA` (WordPress) ignorando el registro A nuevo.
+> Y desde una conexión solo-IPv4 se vería todo bien, sin ningún síntoma.
+>
+> Es el tipo de error que se descubre por reportes de usuarios días
+> después, no en el smoke test.
+
+`www` se pasa a registro `A` explícito en vez de dejarlo como `CNAME` al
+apex. Resolvería igual, pero Vercel verifica la configuración del dominio y
+un `A` es exactamente lo que pidió: no vale la pena arriesgar un "Invalid
+Configuration" por ahorrarse una edición.
+
+> #### La importación de zona es la vuelta atrás, no la herramienta de cambio
+> El editor de hPanel permite importar un archivo de zona. **No se usa para
+> hacer estos cambios**: una importación probablemente reemplace la zona
+> entera, y un error mínimo en el archivo se lleva puestos los MX de Google
+> (sin correo) o el DKIM de Resend (sin formulario de contacto). Tres
+> ediciones chicas son más seguras que una operación grande sobre todo.
+>
+> **Para revertir, en cambio, es ideal**: importar el export guardado
+> devuelve la zona entera a un estado que generó el propio Hostinger, de
+> una sola vez.
 
 > ### ⛔ No cambiar los nameservers a Vercel
 > Vercel ofrece, como alternativa, delegarle el dominio entero
@@ -242,8 +419,24 @@ suposición.
 > Hay que **desactivar el CDN para `www` antes** de cambiar el registro, o
 > Hostinger vuelve a poner su propio CNAME y pisa el cambio.
 
-**C2. El dominio pelado, el mismo día.** El apex se mueve junto con `www`,
-no en una fase aparte.
+> **Los dos registros se mueven en dos tiempos, no de golpe.** Primero `www`,
+> se verifica que el sitio nuevo responde bien ahí, y recién después el apex.
+> Mientras tanto el apex sigue mostrando el sitio viejo, que es el estado
+> actual: no se pierde nada. Así, cuando llega el turno del apex, ya no queda
+> ninguna incógnita sobre si Vercel enruta y emite el certificado.
+>
+> Esto reemplaza a una prueba previa que resultó imposible: se intentó probar
+> el apex antes de mover el DNS, forzando la conexión a la IP de Vercel con
+> `curl --resolve` y `-k`. **No funciona**, y el motivo vale anotarlo: `-k`
+> solo desactiva la validación del certificado del lado del cliente, pero
+> Vercel corta el handshake TLS antes de eso, porque no tiene ningún
+> certificado emitido para un dominio que todavía no verificó. No hay nada
+> que ignorar. Un control forzando `usina-de-justicia.vercel.app` por esa
+> misma IP sí devolvió 200, lo que confirma que la IP y la conectividad
+> estaban bien.
+
+**C2. El dominio pelado.** Se mueve el mismo día que `www`, después de
+verificarlo, no en una fase aparte.
 
 > **Por qué cambió esto.** El plan original movía primero `www` y dejaba el
 > dominio pelado para después. Emanuel señaló lo obvio: **casi nadie escribe
