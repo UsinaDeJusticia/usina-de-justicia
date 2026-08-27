@@ -1,6 +1,52 @@
 # Cutover — poner el sitio nuevo en el dominio real
 
-**Estado:** preparado, sin ejecutar. Última actualización: 26-ago-2026.
+**Estado: EJECUTADO Y VERIFICADO — 27-ago-2026, 01:35 UTC.**
+El sitio nuevo está en vivo en `www.usinadejusticia.org.ar` y en el dominio
+pelado. WordPress vive en `wp.usinadejusticia.org.ar`.
+
+El documento se conserva completo como registro de qué se hizo, en qué orden
+y por qué. Lo que sigue después está en la fase E, al final.
+
+### Verificación final (27-ago)
+
+| Qué | Resultado |
+|---|---|
+| Dominio pelado y `www` en el DNS | `76.76.21.21`, sin `AAAA`, coincidente en Google, Cloudflare, Quad9 y el autoritativo de Hostinger |
+| Los dos dominios asignados al proyecto de Vercel | Sí (confirmado en la sección `Projects` de `vercel domains inspect`) |
+| Certificados SSL | Emitidos para los dos, 90 días |
+| Dominio pelado → canónico | `308` conservando la ruta, probado en raíz y en `/noticias` |
+| 8 páginas principales con `www` | `200` |
+| URL vieja con fecha | `308` → `/noticias/:slug` |
+| Página inexistente | `404` propio |
+| `sitemap.xml` y `robots.txt` | `200` |
+| API de WordPress en `wp.` | `200` |
+| `wp-admin` | `302` al login **dentro** de `wp.` |
+| Imágenes del contenido en `/noticias` | 144 apuntando a `wp.`, **0 al host viejo**; la primera pedida devolvió `200 image/jpeg` |
+
+**La normalización de las imágenes destacadas se confirmó.** Durante la fase
+B quedó anotado que seguían viniendo del host viejo, y que eso era correcto
+porque no viven en `post_content` sino que WordPress las arma desde la opción
+`siteurl`. Los `define` del paso C2a las normalizaron solas: cero referencias
+al host viejo en la página renderizada.
+
+> **Dos desvíos del smoke test que NO eran fallas**, y conviene saber
+> distinguirlos porque van a reaparecer en cualquier cutover futuro:
+>
+> El dominio pelado devolvía `200` en la home y `404` en `/noticias` desde la
+> máquina que corrió las pruebas, en vez de `308`. Causa: el resolutor DNS de
+> esa máquina todavía tenía cacheado el valor viejo y las respuestas venían de
+> Hostinger (`Server: LiteSpeed`, `X-Powered-By: PHP`) — la home desde la
+> caché de LiteSpeed, `/noticias` como un 404 real del WordPress viejo.
+> Forzando la conexión a la IP de Vercel con `curl --resolve`, las dos
+> devolvieron el `308` correcto.
+>
+> Moraleja: cuando algo "falla" justo después de un cambio de DNS, primero
+> hay que preguntarse **desde dónde se está resolviendo**. Las cabeceras de
+> la respuesta dicen quién contestó.
+
+---
+
+**Historial:** preparado el 26-ago-2026, ejecutado el 27.
 
 Este documento es el runbook del único paso que falta para que el público
 vea el sitio nuevo. Está pensado para seguirse en orden, con verificación
