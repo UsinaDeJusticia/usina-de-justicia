@@ -75,7 +75,53 @@ editor de zona DNS con los registros (A, CNAME, MX…), **el DNS se administra
 ahí** y TAD/NIC no se tocan en todo el cutover. Si en cambio los nameservers
 apuntan a NIC, los cambios de las fases D y E se hacen en TAD.
 
-**A1. Bajar el TTL a 300 segundos.**
+**A1. Bajar el TTL a 300 segundos.** ✅ **YA ESTABA (27-ago)**
+
+El export de la zona lo confirma: `www` y el apex **ya tienen TTL 300**, y
+las respuestas del CDN salen con TTL 60. Los pone así el propio CDN de
+Hostinger. **No hay que esperar 24 horas**, que era el único paso del
+runbook con reloj.
+
+### La zona real, y qué NO se toca (export del 27-ago-2026)
+
+La zona la sirven `athena` y `apollo.dns-parking.com` — o sea **Hostinger**,
+no NIC. Eso cierra el paso A0: TAD y NIC no se tocan en todo el cutover.
+
+Solo se modifican **dos** registros. Todo lo demás queda intacto, y estos
+cinco en particular son críticos:
+
+| Registro | Qué es | Qué pasa si se rompe |
+|---|---|---|
+| `@` MX ×5 (Google) | El correo de la organización | Usina se queda sin mail |
+| `@` TXT `v=spf1 …google.com` | SPF | El correo saliente empieza a caer en spam |
+| `_dmarc` TXT | Política DMARC | Ídem |
+| `resend._domainkey` TXT | DKIM de Resend | **Deja de funcionar el formulario de contacto** |
+| `send` MX + TXT (Amazon SES) | Rebotes de Resend | Ídem |
+| `wp` A/AAAA | El WordPress real | El sitio nuevo se queda sin contenido |
+
+**El apex no es un registro A: es un `ALIAS` al CDN** (`usinadejusticia.org.ar.cdn.hstgr.net`).
+Hostinger usa ALIAS para poder apuntar el dominio pelado a un nombre, cosa
+que un CNAME no puede hacer en la raíz de una zona. Cambiarlo no es "editar
+la IP": hay que reemplazar el tipo de registro.
+
+**`wp` tiene además un `ALIAS` al CDN**, encima de su A y su AAAA. Hoy no
+está en uso —`wp.usinadejusticia.org.ar` resuelve a 147.93.37.235, la IP
+directa del servidor, verificado por consulta— pero conviene saberlo por si
+al desactivar el CDN algo se mueve ahí.
+
+> #### Los CAA: el riesgo que casi nunca se mira
+> La zona tiene 12 registros `CAA`, que son una lista blanca de qué
+> autoridades pueden emitir un certificado para este dominio. Si la
+> autoridad que usa Vercel no estuviera en esa lista, **el certificado SSL
+> no se emitiría y el sitio quedaría inaccesible por HTTPS después del
+> switch**, sin ningún mensaje de error obvio que apunte a la causa.
+>
+> Verificado: la lista incluye `letsencrypt.org` y `pki.goog`, en `issue` y
+> en `issuewild`. Son las dos que usa Vercel. **No hay bloqueo.** No hay que
+> tocar ningún CAA — pero si alguna vez el certificado no se emite, este es
+> el primer lugar donde mirar.
+
+
 En el editor de zona, bajar el TTL de los registros del apex y de `www` a
 300 (5 minutos). **Hacer esto al menos 24 horas antes del switch.** El TTL
 es cuánto tiempo el mundo recuerda la dirección vieja; con el valor por
@@ -262,13 +308,18 @@ sus imágenes. Si las noticias cargan, la API por el subdominio anda.
 **C1.** En el editor de zona DNS: cambiar el registro de `www` para que
 apunte a Vercel.
 
-| | Valor |
-|---|---|
-| **Antes (anotar para la vuelta atrás)** | `CNAME` · `www` → `www.usinadejusticia.org.ar.cdn.hstgr.net` |
-| **Después** | `A` · `www` → `76.76.21.21` · TTL 300 |
+| Registro | Antes (del export de la zona) | Después |
+|---|---|---|
+| `www` | `CNAME` → `www.usinadejusticia.org.ar.cdn.hstgr.net.` · TTL 300 | `A` → `76.76.21.21` · TTL 300 |
+| `@` | `ALIAS` → `usinadejusticia.org.ar.cdn.hstgr.net.` · TTL 300 | `A` → `76.76.21.21` · TTL 300 |
 
-Ese es el valor literal que devolvió `vercel domains inspect`, no una
-suposición.
+`76.76.21.21` es el valor literal que devolvió `vercel domains inspect`, no
+una suposición. En los dos casos **cambia el tipo de registro**, no solo el
+valor: el CDN los tenía como `CNAME` y `ALIAS`.
+
+Al desactivar el CDN (paso previo), Hostinger probablemente reemplace solos
+esos dos registros por otra cosa. **Exportar la zona de nuevo en ese momento
+y mirar qué quedó antes de editar**, en vez de asumir.
 
 > ### ⛔ No cambiar los nameservers a Vercel
 > Vercel ofrece, como alternativa, delegarle el dominio entero
