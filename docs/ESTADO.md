@@ -238,6 +238,26 @@ Ninguno bloquea el trabajo técnico; varios sí bloquean el CUTOVER final:
 12. ~~**Auditoría de profundidad de rastreo + contenido delgado ("thin content")**~~ — **HECHA (26-ago)**, con datos reales de los 842 posts publicados (vía REST API, no una estimación):
     - **Profundidad de rastreo**: `/noticias` general son 71 páginas (842 posts ÷ 12), "prensa" (la categoría más larga) son 34. Con el paginador viejo (solo Anterior/Siguiente + ventana de 5 números) llegar a una página del medio tomaba 15-20 clics — medido, no supuesto. **Arreglado**: `src/components/noticias/Pagination.tsx` suma botones de salto ±10 páginas (`ChevronsLeft`/`ChevronsRight`), visibles solo en secciones de más de 10 páginas — con esto el máximo baja a ~7-8 clics desde cualquier punta. Importante: esto es una mejora de UX/crawl para navegación humana y de agentes que siguen links — el sitemap.xml ya lista las 842 URLs directas (1 salto), así que un crawler que lo respeta nunca dependió de la paginación para encontrar contenido.
     - **Contenido delgado**: 98 de los 842 posts (11.6%) tienen **cero caracteres de texto propio** — son solo un embed de YouTube/Facebook o una imagen, sin ningún párrafo (ej. la cobertura de una entrevista de TV sin bajada). Eso hacía que `wp.excerpt.rendered` viniera vacío de WordPress, y de ahí bajaba a un `<meta name="description">` vacío real en esas 98 páginas — bug de SEO concreto, no una decisión editorial. **Arreglado**: `src/lib/wordpress.ts` (`seoDescription`, usado en `generateMetadata`, OpenGraph y el JSON-LD `NewsArticle` de `src/app/noticias/[slug]/page.tsx`) cae al título del post cuando no hay excerpt — dato real, nunca inventado. El campo `extracto` que sí se muestra en pantalla (`ArticleCard.tsx`) queda como estaba (vacío) para no duplicar el título dos veces en la tarjeta; se agregó un guard para no renderizar un `<p>` vacío en esos casos.
+
+      **Medición corregida y decisión editorial tomada (27-ago).** Se volvió a medir contra la API pública, esta vez sobre los 842 posts y con el histograma completo:
+
+      | Largo del texto propio | Posts |
+      |---|---|
+      | exactamente 0 | 108 |
+      | 1-39 | 184 |
+      | 40-99 | 39 |
+      | 100-199 | 96 |
+      | 200-499 | 160 |
+      | 500-999 | 85 |
+      | 1000+ | 170 |
+
+      Los "98" de la medición anterior eran, con una diferencia menor de método, **el tramo de exactamente 0 (108)**. Los 292 que arrojó la remedición usan un umbral más laxo (<40) e incluyen 184 posts que sí tienen algo, aunque sea un epígrafe. Las dos cifras eran ciertas y medían cosas distintas. **No hay separación nítida entre "vacíos" y "con texto"**: hay posts en todos los tramos, así que cualquier umbral es una convención — un primer intento de justificarlo con una distribución calculada *sobre el conjunto ya filtrado* era circular y se descartó.
+
+      Los 292 se clasificaron en tres grupos: **A — 83** posts con nombre propio de una víctima en el título o en las categorías `historias`/`acompanamiento`; **B — 169** de prensa y entrevistas sin caso concreto; **C — 40** institucionales. De los que parecían no tener ni siquiera un embed, solo **~16 están genuinamente vacíos** — el resto tiene embeds de Canva o de WordPress que el detector no reconocía.
+
+      **Decisión: no se aplica `noindex` a ninguno.** El problema que resolvería es difuso (calidad promedio del sitio) y el que crearía es concreto: **83 páginas con nombre propio fuera del buscador**, que es exactamente donde una familia busca a la persona y tiene que encontrar a Usina. El bug real de esas páginas —la descripción para buscadores vacía— ya estaba arreglado.
+
+      **Plan editorial acordado, por orden de valor, sin plazo:** (1) las que son un caso **y** están vacías del todo —ej. una "Historia de …" con cero contenido, donde hoy una familia llega a un título y nada más—; (2) el resto del Grupo A, dos o tres oraciones cada una (~7 horas repartibles); (3) el Grupo B, una línea de contexto cuando haya tiempo, y si nunca ocurre tampoco es grave; (4) el Grupo C queda como está. El CSV con la clasificación quedó **fuera del repositorio a propósito**: contiene nombres de víctimas.
     - **Decisión que NO se tomó sin consultar**: no se le puso `noindex` a esos 98 posts. Es contenido real (apariciones en TV/radio, videos institucionales) con valor de interés público, y despriorizarlo de la búsqueda podría ir en contra del objetivo de descubribilidad de marca (auditoría de agent-readiness, PR #9) — más volumen de páginas mencionando "Usina de Justicia" ayuda ahí, no estorba. Si Emanuel quiere revisar esto con otro criterio, es una decisión editorial suya, no técnica.
 13. ~~**Botón "Donar con MercadoPago" roto en `/donar`**~~ — **RESUELTO (22-ago)**: Emanuel pasó el link nuevo (`https://link.mercadopago.com.ar/asociacionusinadejus`, un link de pago de monto libre, no el plan de suscripción fijo viejo) y confirmó que la Comisión Directiva decidió que el importe sea libre — se reemplazó el `href` y se reescribió el párrafo que sugería "$20.000 mensuales / 100 personas" (esa cifra era una sugerencia atada al plan fijo viejo, ya no aplica con monto libre).
 
