@@ -84,6 +84,31 @@ propagarse. Con 300, minutos.
 
 *Verificación:* ninguna, no es visible. *Vuelta atrás:* no hace falta.
 
+> **El DNS se puede manejar por API, y conviene.** Hostinger expone la zona
+> por su API pública (`developers.hostinger.com`), con token generado desde
+> hPanel:
+>
+> | Qué | Endpoint |
+> |---|---|
+> | Leer la zona entera (= backup) | `GET /api/dns/v1/zones/{dominio}` |
+> | Probar sin aplicar (= dry-run) | `POST /api/dns/v1/zones/{dominio}/validate` |
+> | Borrar un registro puntual (filtra por `name` + `type`) | `DELETE /api/dns/v1/zones/{dominio}` |
+> | Crear/actualizar registros | `PUT /api/dns/v1/zones/{dominio}` |
+>
+> Es preferible al editor de hPanel por tres motivos: deja un **backup JSON
+> de la zona completa** antes de tocar nada, tiene un **paso de validación**
+> previo, y apunta a un registro puntual por nombre y tipo en vez de a lo
+> que uno cliquee.
+>
+> **Dos cosas que NO hay que hacer por ahí.** El `PUT` acepta
+> `overwrite: true`, que **reemplaza la zona entera**: eso se llevaría
+> puestos los 5 MX de Google Workspace, el SPF y el subdominio `wp.`. Va
+> siempre `overwrite: false`. Y existe un
+> `POST /api/dns/v1/zones/{dominio}/reset` que restaura los registros por
+> defecto: **no se usa nunca en este runbook.**
+>
+> El interruptor del CDN **no** está en esa API: eso sí es hPanel a mano.
+
 > **Atajo con WP-CLI.** Hostinger incluye acceso SSH con WP-CLI preinstalado
 > en los planes Premium y superiores (verificar con `wp --info` una vez
 > conectado). Los pasos A3-backup, D1 y la instalación del plugin se pueden
@@ -114,16 +139,28 @@ tiene que abrir.
 
 *Vuelta atrás:* borrar el subdominio. El sitio en vivo nunca se enteró.
 
-**A3. Adjuntar los dominios en Vercel.**
-Vercel → proyecto `usina-de-justicia` → Settings → Domains. Agregar:
-- `www.usinadejusticia.org.ar` — este es el **canónico** (todo el sitio
-  declara `https://www.usinadejusticia.org.ar` en sus etiquetas canonical).
-- `usinadejusticia.org.ar` — configurarlo como **redirect a www**.
+**A3. Adjuntar `www` en Vercel.** ✅ **HECHO (26-ago)**
+`vercel domains add www.usinadejusticia.org.ar usina-de-justicia`.
 
-Vercel va a mostrar "Invalid Configuration" porque el DNS todavía no apunta
-ahí. **Es lo esperado en este paso.** Anotar los valores exactos de DNS que
-muestra Vercel (típicamente un CNAME `cname.vercel-dns.com` para `www` y un
-registro A para el apex) — se usan en la fase D.
+`www.usinadejusticia.org.ar` es el **canónico** (todo el sitio declara
+`https://www.usinadejusticia.org.ar` en sus etiquetas canonical).
+
+**El dominio pelado se adjunta recién en la fase D**, no acá: adjuntarlo
+antes no aporta nada y dispara una verificación de propiedad que todavía no
+hace falta.
+
+Vercel muestra el dominio como "Invalid Configuration" porque el DNS todavía
+no apunta ahí. **Es lo esperado en este paso.**
+
+Valor exacto que pidió Vercel (`vercel domains inspect`), para la fase C:
+
+```
+A    www    76.76.21.21
+```
+
+No pidió ningún TXT de verificación de propiedad.
+
+*Vuelta atrás:* quitar el dominio del proyecto.
 
 *Vuelta atrás:* quitar los dominios del proyecto.
 
@@ -146,6 +183,28 @@ sus imágenes. Si las noticias cargan, la API por el subdominio anda.
 
 *Vuelta atrás:* borrar la variable `WP_HOST` y redesplegar. Un minuto.
 
+> **Verificación objetiva, mejor que mirar las imágenes.** La cabecera de
+> seguridad del sitio se arma desde la misma variable, así que sirve de
+> prueba directa:
+>
+> ```
+> curl -sI https://usina-de-justicia.vercel.app/ | grep -i content-security-policy
+> ```
+>
+> Tiene que aparecer `https://wp.usinadejusticia.org.ar` en `img-src`,
+> `media-src` y `connect-src`, **y el host viejo tiene que seguir estando
+> ahí también**. Los dos conviven a propósito (`LEGACY_WP_HOST` en
+> `next.config.mjs`): así ningún paso intermedio del cutover puede dejar
+> imágenes bloqueadas.
+
+> **No confundir con un error:** después del `search-replace`, las **imágenes
+> destacadas** de las noticias siguen viniendo del host viejo. Es correcto y
+> esperado. La imagen destacada no está escrita en el cuerpo del post —
+> WordPress la arma a partir de la opción `siteurl`, que sigue siendo la
+> vieja y **tiene que seguir siéndolo hasta la fase D**. Se normaliza sola
+> con los `define` del paso D1. Como el host viejo sigue permitido por la
+> CSP, entretanto no se rompe nada.
+
 > **Este es el paso que más conviene no apurar.** Es la única verificación
 > real de que WordPress responde bien por el subdominio, y se hace **sin
 > ningún riesgo** porque el dominio público todavía no se movió.
@@ -155,17 +214,80 @@ sus imágenes. Si las noticias cargan, la API por el subdominio anda.
 ### Fase C — El switch de `www` (acá el público empieza a ver el sitio nuevo)
 
 **C1.** En el editor de zona DNS: cambiar el registro de `www` para que
-apunte a Vercel, con el valor que dio el paso A3.
+apunte a Vercel.
 
-> **Importante:** si el CDN de Hostinger está activo para `www`, hay que
-> desactivarlo primero, o Hostinger puede volver a poner su propio CNAME y
-> pisar el cambio.
+| | Valor |
+|---|---|
+| **Antes (anotar para la vuelta atrás)** | `CNAME` · `www` → `www.usinadejusticia.org.ar.cdn.hstgr.net` |
+| **Después** | `A` · `www` → `76.76.21.21` · TTL 300 |
 
-**C2.** Esperar a que Vercel valide el dominio y emita el certificado SSL
-(unos minutos). En Settings → Domains tiene que pasar de "Invalid
-Configuration" a válido.
+Ese es el valor literal que devolvió `vercel domains inspect`, no una
+suposición.
+
+> ### ⛔ No cambiar los nameservers a Vercel
+> Vercel ofrece, como alternativa, delegarle el dominio entero
+> (`ns1/ns2.vercel-dns.com`). **No hay que hacerlo.** La zona actual tiene
+> **5 registros MX de Google Workspace y un SPF `include:_spf.google.com`**:
+> mover los nameservers deja a la organización **sin correo**, incluido
+> `info@usinadejusticia.org.ar`, que es la casilla a la que llegan los
+> mensajes del formulario de contacto. Y también se llevaría puesto el
+> subdominio `wp.`, es decir, la fuente de contenido del sitio nuevo.
+> El registro A puntual deja el resto de la zona intacto.
+
+> **Importante:** el CDN de Hostinger **está activo** para `www` — medido, no
+> supuesto: `www.usinadejusticia.org.ar` es hoy un CNAME a
+> `www.usinadejusticia.org.ar.cdn.hstgr.net` (147.79.72.184 / 147.79.79.145),
+> y el apex resuelve a 88.223.87.33 / 147.79.79.206, también del CDN. El
+> subdominio `wp.` en cambio va directo al servidor (147.93.37.235).
+> Hay que **desactivar el CDN para `www` antes** de cambiar el registro, o
+> Hostinger vuelve a poner su propio CNAME y pisa el cambio.
+
+**C2. El dominio pelado, el mismo día.** El apex se mueve junto con `www`,
+no en una fase aparte.
+
+> **Por qué cambió esto.** El plan original movía primero `www` y dejaba el
+> dominio pelado para después. Emanuel señaló lo obvio: **casi nadie escribe
+> el "www"**. Mover solo `www` dejaría a la mayor parte del tráfico real
+> viendo el sitio viejo, que es justo lo que el cutover quiere terminar. El
+> punto de parada de esta fase sigue existiendo, pero ahora está después de
+> mover los dos, no en el medio.
+
+Los dos pasos del apex van **juntos y en este orden**, porque el primero hace
+que WordPress redirija al subdominio y eso sería visible mientras el apex
+siga siendo la puerta de entrada:
+
+**C2a.** En `wp-config.php`, antes de `require_once ABSPATH . 'wp-settings.php';`:
+
+```php
+define('WP_HOME','https://wp.usinadejusticia.org.ar');
+define('WP_SITEURL','https://wp.usinadejusticia.org.ar');
+```
+
+Le dice a WordPress cuál es su dirección. No toca la base de datos: **la
+vuelta atrás es borrar las dos líneas.** Copiar el archivo antes.
+
+**El orden importa y no es intercambiable.** Si se mueve el DNS del apex
+*antes* de poner estos `define`, WordPress sigue creyendo que vive en el
+apex y manda ahí a todo el que entre por `wp.` — incluido el panel. El
+resultado sería `wp-admin` inalcanzable y la API del sitio nuevo rota, las
+dos cosas a la vez. Con este orden, la única consecuencia intermedia es que
+durante unos minutos quien entre al apex ve el sitio viejo servido desde la
+URL `wp.`, que es inofensivo.
+
+**C2b.** En el DNS, cambiar los registros del apex a `A` → `76.76.21.21`.
+
+**C3.** Esperar a que Vercel valide los dos dominios y emita los
+certificados SSL (unos minutos). En Settings → Domains tienen que pasar de
+"Invalid Configuration" a válidos.
 
 *Verificación — smoke test:*
+
+| Qué probar | Qué tiene que pasar |
+|---|---|
+| `https://usinadejusticia.org.ar/` | **Redirige a `https://www.usinadejusticia.org.ar/`** |
+| `https://usinadejusticia.org.ar/noticias` | Redirige a la misma ruta con `www` |
+| `https://wp.usinadejusticia.org.ar/wp-admin` | El panel de WordPress, sin rebotar |
+| Publicar un post de prueba | Aparece en el sitio nuevo en ≤5 minutos |
 
 | Qué probar | Qué tiene que pasar |
 |---|---|
@@ -180,53 +302,42 @@ Configuration" a válido.
 | Una URL vieja, ej. `/2023/06/15/algo` | Redirige a `/noticias/algo` |
 | Una URL inventada | Muestra el 404 propio, no un error del servidor |
 
-*Vuelta atrás:* devolver el registro `www` a su valor anterior (el CNAME del
-CDN de Hostinger). Con el TTL en 300, vuelve en minutos.
+| Una imagen vieja dentro de un post | Sigue viéndose (la sirve el redirect de `/wp-content`) |
+
+*Vuelta atrás, en este orden:* devolver los registros de `www` y del apex a
+sus valores anteriores (están en el backup JSON de la zona, paso A1) y
+borrar las dos líneas de `wp-config.php`. Con el TTL en 300, minutos.
 
 > ### ⏸ Punto de parada válido
-> Después de esta fase, **el sitio nuevo ya está en vivo para el público**
-> y WordPress sigue intacto en el dominio pelado, con su panel y su API sin
-> tocar. Se puede quedar así días o semanas sin problema. La única
-> consecuencia es que quien escriba el dominio **sin** `www` va a seguir
-> viendo el sitio viejo.
+> Después de esta fase el cutover está hecho: **el sitio nuevo está en vivo
+> para el público en los dos dominios**, y WordPress sigue funcionando
+> entero en `wp.`, con su panel y su API intactos.
 >
-> Si el día del cutover algo se complica, **parar acá es una buena decisión**,
-> no una a medias.
+> Todo lo que viene después (fase E) es mejora, no cierre. Si el día del
+> cutover algo se complica, **parar acá es una buena decisión**, no una a
+> medias.
 
 ---
 
-### Fase D — El apex, y WordPress declara su nueva casa
+### El redirect del apex ya está resuelto en código
 
-Estos dos pasos van **juntos y en este orden**, porque el D1 hace que
-WordPress redirija al subdominio, y eso sería visible para el público
-mientras el apex siga siendo la puerta de entrada.
+No hace falta configurar el redirect del dominio pelado en el panel de
+Vercel: `next.config.mjs` tiene una regla que manda cualquier pedido que
+llegue al apex al canónico con `www`, conservando la ruta (308).
 
-**D1.** Editar `wp-config.php` (hPanel → Administrador de archivos, o por
-FTP). Antes de la línea `require_once ABSPATH . 'wp-settings.php';` agregar:
+Se hizo así, y no con la opción del panel, por una razón concreta: **se
+puede verificar antes del cutover**. La opción del panel recién se puede
+probar cuando el DNS ya se movió, que es exactamente el peor momento para
+descubrir un error. La regla en código se probó con un build real y
+peticiones con distintas cabeceras `Host`: el apex da 308 al canónico
+conservando la ruta, `www` responde 200 sin redirigir, y un subdominio
+cualquiera no matchea.
 
-```php
-define('WP_HOME','https://wp.usinadejusticia.org.ar');
-define('WP_SITEURL','https://wp.usinadejusticia.org.ar');
-```
-
-Esto le dice a WordPress cuál es su dirección. Son dos líneas y no tocan la
-base de datos: **la vuelta atrás es borrarlas.** Hacer una copia del archivo
-antes, por las dudas.
-
-**D2.** En el DNS: cambiar los registros A del apex a los valores de Vercel
-(paso A3).
-
-*Verificación:*
-
-| Qué probar | Qué tiene que pasar |
-|---|---|
-| `https://usinadejusticia.org.ar/` | Redirige a `https://www.usinadejusticia.org.ar/` |
-| `https://wp.usinadejusticia.org.ar/wp-admin` | El panel de WordPress, sin rebotar |
-| Publicar un post de prueba | Aparece en el sitio nuevo en ≤5 minutos |
-| Una imagen vieja dentro de un post | Sigue viéndose (la sirve el redirect de `/wp-content`) |
-
-*Vuelta atrás:* devolver los registros A del apex y borrar las dos líneas de
-`wp-config.php`.
+Ese último caso no es paranoia: Next pasa el valor del matcher a una
+expresión regular **sin anclarla**, así que un `usinadejusticia.org.ar` sin
+`^...$` también habría matcheado como substring dentro de
+`www.usinadejusticia.org.ar` — y el canónico se habría redirigido a sí mismo
+en un bucle infinito. El valor va anclado y con los puntos escapados por eso.
 
 ---
 

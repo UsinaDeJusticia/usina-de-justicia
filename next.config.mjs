@@ -25,6 +25,28 @@ const WP_HOST = process.env.WP_HOST || 'usinadejusticia.org.ar'
 // de más abajo se encarga de que sigan resolviendo.
 const LEGACY_WP_HOST = 'usinadejusticia.org.ar'
 
+// ============================================================
+// EL DOMINIO SIN www — que es el que la gente escribe
+// ============================================================
+// Todo el sitio declara https://www.usinadejusticia.org.ar como canónico
+// (etiquetas canonical, sitemap, OpenGraph, JSON-LD). Pero casi nadie
+// escribe el "www" a mano: la mayoría teclea el dominio pelado. Si el
+// dominio pelado no llevara al sitio nuevo, la mayor parte del tráfico
+// seguiría viendo el sitio viejo.
+//
+// La regla de más abajo lo resuelve: cualquier pedido que llegue al dominio
+// pelado se redirige al canónico conservando la ruta. Es inocua hasta que
+// el dominio pelado apunte a este sitio — hoy ese host ni siquiera llega
+// acá.
+//
+// Los puntos van escapados y el valor va anclado con ^...$ A PROPÓSITO: sin
+// eso, "usinadejusticia.org.ar" también matchearía como substring dentro de
+// "www.usinadejusticia.org.ar" y el canónico se redirigiría a sí mismo en
+// un bucle infinito. Verificado con un build real y las dos cabeceras Host
+// antes de mergear, no deducido.
+const APEX_HOST = 'usinadejusticia.org.ar'
+const CANONICAL_HOST = 'www.usinadejusticia.org.ar'
+
 /** Hosts únicos a permitir (WP_HOST y el legacy pueden coincidir hoy). */
 const WP_HOSTS = [...new Set([WP_HOST, LEGACY_WP_HOST])]
 
@@ -84,6 +106,20 @@ const nextConfig = {
         source: '/wp-login.php',
         destination: `https://${WP_HOST}/wp-login.php`,
         permanent: false,
+      },
+
+      // === DOMINIO PELADO → CANÓNICO CON www ===
+      // Va DESPUÉS de las tres reglas de WordPress de arriba a propósito: así
+      // usinadejusticia.org.ar/wp-admin llega al panel en un solo salto, en
+      // vez de rebotar primero por www. Y va ANTES que todo lo demás para que
+      // ninguna otra regla procese un pedido que todavía está en el host
+      // equivocado (si no, un post viejo daría dos redirects encadenados y
+      // aterrizaría con el canónico incorrecto).
+      {
+        source: '/:path*',
+        has: [{ type: 'host', value: `^${APEX_HOST.replace(/\./g, '\\.')}$` }],
+        destination: `https://${CANONICAL_HOST}/:path*`,
+        permanent: true,
       },
 
       // === WORDPRESS VIEJO: IVUJUS (Fase 4 / Ola C — SEO técnico) ===
