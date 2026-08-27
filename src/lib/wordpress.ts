@@ -3,7 +3,7 @@
 // Transforma respuestas WP → tipos Articulo/Categoria/Tag de @/types
 
 import sanitizeHtml from 'sanitize-html'
-import { fetchWithRetry } from './fetch-retry'
+import { fetchWithRetry } from './fetch-retry.ts'
 import type { Articulo, Categoria, Tag, ImageAsset } from '@/types'
 import type {
   WPPost,
@@ -13,7 +13,7 @@ import type {
   PaginatedResponse,
   SiteSection,
 } from '@/types/wordpress'
-import { CATEGORY_MAP, SITE_SECTIONS } from '@/types/wordpress'
+import { CATEGORY_MAP, SITE_SECTIONS } from '../types/wordpress.ts'
 
 // ============================================
 // CONFIGURACIÓN
@@ -474,7 +474,40 @@ export async function getArticulosByTagSlug(
 // fijas — nunca url() ni expression(), que quedan excluidos por construcción
 // al no matchear ninguno de los regex de abajo.
 const NUM_UNIT = /^-?\d+(\.\d+)?(px|%|rem|em|vh|vw)$/
-const SHORTHAND_NUM_UNIT = /^(-?\d+(\.\d+)?(px|%|rem|em|vh|vw)?\s*){1,4}$/
+// Cuatro medidas separadas por espacios, al estilo de `padding: 8px 16px`.
+//
+// Reescrito el 27-ago-2026 por una vulnerabilidad de denegación de servicio
+// medida, no teórica. La versión anterior era:
+//
+//     /^(-?\d+(\.\d+)?(px|%|rem|em|vh|vw)?\s*){1,4}$/
+//
+// y tenía dos ambigüedades que se combinaban mal: la unidad era opcional y el
+// separador `\s*` podía matchear vacío, así que una tira de dígitos podía
+// repartirse entre las cuatro repeticiones de muchísimas formas distintas.
+// Ante un valor que NO matchea, el motor de expresiones regulares las prueba
+// todas. Medido en este proyecto:
+//
+//     200 dígitos      703 ms
+//     400 dígitos   10.881 ms
+//     600 dígitos   54.653 ms
+//
+// Esto corre dentro de `cleanWPContent()`, en el render del Server Component
+// de cada nota, así que bloquea el hilo: un solo post con
+// `style="border-radius:111…x"` dejaba esa página en error permanente y
+// quemaba CPU en cada revalidación.
+//
+// La versión de abajo elimina la ambigüedad: separador obligatorio entre
+// medidas (`\s+`, no `\s*`), grupos no capturantes, y el primer valor fuera
+// de la repetición. Con eso solo hay una manera posible de partir la entrada.
+//
+// El `(?=.{1,64}$)` del principio es una segunda línea de defensa: descarta
+// de entrada cualquier valor absurdamente largo, antes de que el motor
+// empiece a trabajar. `margin: -10.5rem 100vh 0 12px` son 27 caracteres, así
+// que 64 es holgado para cualquier valor legítimo. `sanitize-html` solo
+// acepta expresiones regulares acá, no funciones, por eso el tope va dentro
+// del propio patrón.
+const SHORTHAND_NUM_UNIT =
+  /^(?=.{1,64}$)-?\d+(?:\.\d+)?(?:px|%|rem|em|vh|vw)?(?:\s+-?\d+(?:\.\d+)?(?:px|%|rem|em|vh|vw)?){0,3}$/
 const ASPECT_RATIO = /^\d+(\.\d+)?\s*\/\s*\d+(\.\d+)?$/
 const POSITION_VALUE = /^(relative|absolute)$/
 const OVERFLOW_VALUE = /^(visible|hidden|scroll|auto)$/

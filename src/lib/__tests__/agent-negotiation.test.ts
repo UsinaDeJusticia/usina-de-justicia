@@ -9,7 +9,11 @@
 
 import { describe, it } from 'node:test'
 import assert from 'node:assert/strict'
-import { parseAcceptHeader, prefersMarkdown } from '../agent-negotiation.ts'
+import {
+  parseAcceptHeader,
+  prefersMarkdown,
+  resolveInternalUrl,
+} from '../agent-negotiation.ts'
 
 describe('parseAcceptHeader', () => {
   it('asume q=1 cuando no viene el parámetro', () => {
@@ -85,3 +89,62 @@ describe('prefersMarkdown', () => {
 // bloque `headers()` de next.config.mjs (el middleware no sirve para esto,
 // Next.js sobrescribe el header después). Se verifica end-to-end con curl
 // contra el build de producción — ver docs/ESTADO.md.
+
+describe('resolveInternalUrl', () => {
+  const ORIGIN = 'https://www.usinadejusticia.org.ar'
+
+  it('resuelve rutas normales dentro del sitio', () => {
+    for (const ruta of ['/', '/noticias', '/nosotros/equipo', '/noticias/pagina/3']) {
+      const url = resolveInternalUrl(ruta, ORIGIN)
+      assert.notEqual(url, null, `debería resolver ${ruta}`)
+      assert.equal(url?.origin, ORIGIN)
+      assert.equal(url?.pathname, ruta)
+    }
+  })
+
+  it('conserva la query, que la usan las páginas con filtros', () => {
+    const url = resolveInternalUrl('/noticias?page=2', ORIGIN)
+    assert.equal(url?.href, `${ORIGIN}/noticias?page=2`)
+  })
+
+  // Los cuatro casos de abajo son el motivo de que esta función exista. El
+  // guard anterior comparaba el texto de entrada y solo cubría el segundo:
+  // los otros tres pasaban, y convertían /api/md en un proxy abierto que
+  // devolvía contenido ajeno bajo nuestro dominio.
+  it('rechaza la barra invertida, que el estándar trata como barra normal', () => {
+    assert.equal(resolveInternalUrl('/\\ejemplo-ajeno.test', ORIGIN), null)
+    assert.equal(resolveInternalUrl('/\\/ejemplo-ajeno.test', ORIGIN), null)
+    assert.equal(resolveInternalUrl('/\\ejemplo-ajeno.test/algo', ORIGIN), null)
+  })
+
+  it('rechaza la doble barra', () => {
+    assert.equal(resolveInternalUrl('//ejemplo-ajeno.test', ORIGIN), null)
+  })
+
+  it('rechaza espacios en blanco intercalados, que el parser descarta antes de leer', () => {
+    assert.equal(resolveInternalUrl('/\t/ejemplo-ajeno.test', ORIGIN), null)
+    assert.equal(resolveInternalUrl('/\n/ejemplo-ajeno.test', ORIGIN), null)
+    assert.equal(resolveInternalUrl('/\r/ejemplo-ajeno.test', ORIGIN), null)
+  })
+
+  it('rechaza una URL absoluta, aunque sea del mismo esquema', () => {
+    assert.equal(resolveInternalUrl('https://ejemplo-ajeno.test', ORIGIN), null)
+    assert.equal(resolveInternalUrl('http://ejemplo-ajeno.test', ORIGIN), null)
+  })
+
+  it('rechaza una dirección IP, que es la vía a servicios internos', () => {
+    assert.equal(resolveInternalUrl('/\\169.254.169.254/latest/meta-data/', ORIGIN), null)
+  })
+
+  it('rechaza otro subdominio del mismo dominio', () => {
+    // wp. es nuestro, pero no es este origen: que este endpoint pueda leerlo
+    // sería una vía para exponer el panel a través del sitio público.
+    assert.equal(resolveInternalUrl('/\\wp.usinadejusticia.org.ar/wp-admin/', ORIGIN), null)
+  })
+
+  it('acepta la barra invertida cuando viene codificada, porque ahí es un carácter común', () => {
+    // %5c no es un separador: resuelve dentro del sitio y da 404 normal.
+    const url = resolveInternalUrl('/%5cejemplo-ajeno.test', ORIGIN)
+    assert.equal(url?.origin, ORIGIN)
+  })
+})

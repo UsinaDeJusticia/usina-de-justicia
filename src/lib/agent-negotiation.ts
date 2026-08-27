@@ -102,3 +102,38 @@ export function prefersMarkdown(acceptHeader: string | null): boolean {
 
   return markdownQ > qualityFor(entries, 'text/html')
 }
+
+/**
+ * Resuelve una ruta pedida por el cliente contra el origen del sitio, y
+ * devuelve `null` si el resultado apunta a cualquier otro lado.
+ *
+ * Existe como función aparte, y no como un `if` dentro del handler, por dos
+ * razones: es el único control de seguridad de `/api/md`, y necesita tests
+ * propios que fijen los casos de evasión.
+ *
+ * **La validación es sobre el resultado, no sobre el texto de entrada.** Esa
+ * es la parte que importa. La versión anterior comparaba el string
+ * (`!path.startsWith('/') || path.startsWith('//')`) y era evadible: el
+ * parser de URL del estándar trata la barra invertida como equivalente a la
+ * barra en los esquemas http y https, y además descarta tabuladores y saltos
+ * de línea en cualquier posición del input antes de parsear.
+ *
+ * Con eso, `/\ejemplo-ajeno.test` empieza con una sola barra y no empieza con
+ * dos —o sea, pasaba el control— y sin embargo resuelve a un host arbitrario.
+ * El endpoint quedaba convertido en un proxy abierto que devolvía contenido
+ * de terceros bajo nuestro dominio. Lo mismo con `/<TAB>/otro-host`.
+ *
+ * Preguntar por `origin` cierra todas esas variantes de una sola vez, porque
+ * no intenta adivinar las formas que puede tomar la entrada: mira dónde
+ * terminó apuntando.
+ */
+export function resolveInternalUrl(path: string, origin: string): URL | null {
+  let target: URL
+  try {
+    target = new URL(path, origin)
+  } catch {
+    return null
+  }
+
+  return target.origin === new URL(origin).origin ? target : null
+}
