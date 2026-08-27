@@ -80,6 +80,13 @@ export const siteConfig = {
       { label: 'Publicaciones', href: '/observatorio' },
       { label: 'Informes', href: '/recursos' },
       { label: 'Amicus curiae', href: '/noticias/categoria/incidencia' },
+      // "Noticias" se agregó en ago-2026, al revisar la sugerencia de la
+      // Comisión de replicar el menú superior en el pie. El pie ya tenía
+      // navegación por columnas —así que no hacía falta construirla— pero
+      // faltaba justo la sección que más crece: /noticias, con las 842 notas
+      // publicadas, era la única del menú principal que no estaba enlazada
+      // desde acá.
+      { label: 'Noticias', href: '/noticias' },
       { label: 'Prensa', href: '/noticias/categoria/prensa' },
     ],
     contacto: [

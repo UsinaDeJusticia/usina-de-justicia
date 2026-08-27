@@ -71,6 +71,67 @@ Por eso el análisis separa las sugerencias en dos grupos:
 
 ---
 
+## Estado de ejecución (27-ago-2026)
+
+Emanuel aprobó arrancar con el bloque "ahora mismo". Lo implementado va en la
+rama `feature/sugerencias-comision`.
+
+### Hecho
+
+| # | Qué se hizo | Archivo |
+|---|---|---|
+| 1 | El párrafo del hero **nombra la entidad**: antes describía la tarea sin decir nunca de quién era, y obligaba a Google y a los asistentes a deducir el sujeto | `src/components/home/HeroEditorial.tsx` |
+| 7 | Quitada la oración sobre Santa Fe y CABA | `src/components/home/Observatorio.tsx` |
+| 11 | Ley 15.232 sumada al marco legal, **enlazando la nota real** de WordPress (ago-2021) en vez de describir la norma de memoria | `src/app/acompanamiento/page.tsx` |
+| 13 y 14 | Descripciones combinadas: la frase de la Comisión ordena la idea, y se conservan `amicus curiae`, `Ley 27.372` y "el único curso de Victimología Penal del país" | `src/components/home/Pillars.tsx` |
+| 15 | Agregado **Noticias** al pie: era la única sección del menú principal que no estaba enlazada ahí | `src/lib/site-config.ts` |
+| 16 | Íconos de redes de 16 a 20 px y de gris claro a azul | `src/components/layout/Footer.tsx` |
+| 17 | "apartidaria" / "apartisan" quitada de los seis lugares, verificado con grep negativo | 6 archivos |
+
+### Cerrado sin código
+
+**Punto 5 — la foto del convenio con Panamá ya no está.** El hero editorial
+muestra la **última nota publicada en WordPress** (`HeroEditorial` recibe
+`latestArticle` desde `src/app/page.tsx`), así que esa imagen rotó sola: hoy
+muestra "Reunión consultiva para víctimas". Verificado contra la portada de
+producción. Se descartó agregar un mecanismo para fijar o excluir notas: es
+código nuevo para un problema que se resuelve solo.
+
+Dato útil que apareció de paso: esa "foto de Panamá" probablemente venga del
+post *"Usina de Justicia llevará a la OEA un proyecto histórico…"*, que habla
+de la **56ª Asamblea General de la OEA en Panamá** — no de un convenio con el
+país. Vale confirmarlo con la Comisión antes de darlo por cerrado del todo.
+
+### Corrido de bloque
+
+**Punto 12 no se puede hacer todavía.** Pide un orden dentro de Acompañamiento
+que incluye mover ahí "Si perdiste a un ser querido" (punto 9, pendiente de
+que la Comisión aclare si sale de la portada) y el Observatorio (punto 6, que
+espera datos de Search Console). Sin esas dos definiciones no queda nada que
+ordenar. **Pasa al bloque de "cuando respondan".**
+
+### Sobre el punto 3, que sigue abierto
+
+Al verificar el enlace de la Ley 15.232 aparecieron **tres notas reales sobre
+la OEA**, todas de junio de 2026: el proyecto de Convención Interamericana,
+su presentación en la 56ª Asamblea General, y el convenio con el Instituto
+Dominicano de Derecho Procesal —que menciona a IVUJUS como "entidad
+reconocida por la OEA"—. Es material concreto y publicado.
+
+Eso **no responde** la pregunta que Emanuel le hizo a la Comisión, pero la
+acota: ya no es "¿existe algo?" sino "¿alcanza esto para una sección propia,
+o hay más?".
+
+### Verificación
+
+`pnpm test` 72/72 · `pnpm build` y `tsc --noEmit` limpios · grep negativo de
+"apartidaria" en cero · los siete cambios comprobados contra el servidor
+construido, en la portada y en `/acompanamiento` · hero medido a 1280 y a
+390 px sin desborde horizontal, y revisado a ojo, porque es la parte más
+visible del sitio y el archivo ya tuvo un problema de salto de layout.
+
+---
+
 ## Análisis punto por punto
 
 ### 1. Describir qué es Usina al principio ✅

@@ -15,16 +15,30 @@ const pillars = [
   {
     Icon: Gavel,
     title: 'Incidencia en políticas públicas',
+    // Descripción combinada (sugerencias de la Comisión, ago-2026). Ellos
+    // propusieron reemplazarla por "Participación técnica en debates
+    // parlamentarios, diplomacia internacional y presentaciones judiciales".
+    // Está mejor escrita, pero no contiene un solo término por el que alguien
+    // busque: "amicus curiae" y "Ley 27.372" se escriben tal cual en el
+    // buscador, "participación técnica en debates parlamentarios" no lo
+    // escribe nadie. Así que se quedan las dos cosas: la frase de ellos
+    // ordena la idea, y los términos concretos siguen ahí para encontrarla.
     description:
-      'Amicus curiae, proyectos de ley y participación activa en la aplicación de la Ley 27.372.',
+      'Participación técnica en debates parlamentarios, diplomacia internacional y presentaciones judiciales: amicus curiae, proyectos de ley y aplicación de la Ley 27.372.',
     label: 'Ver incidencia',
     href: '/noticias/categoria/incidencia',
   },
   {
     Icon: BookOpen,
     title: 'Capacitación e investigación',
+    // Mismo criterio que arriba: se suma "investigar para entender, capacitar
+    // para transformar" —la frase de la Comisión— pero se conserva "el único
+    // curso de Victimología Penal del país", que es una afirmación concreta y
+    // verificable. Lo que se descartó de su propuesta fue "impacto social
+    // real, sostenible y medible": no dice nada que se pueda comprobar ni
+    // buscar.
     description:
-      'A través de IVUJUS, el único curso de Victimología Penal del país y formación a magistrados.',
+      'Investigar para entender, capacitar para transformar. A través de IVUJUS, el único curso de Victimología Penal del país y formación a magistrados.',
     label: 'Ir a IVUJUS',
     href: siteConfig.externalLinks.ivujus,
   },

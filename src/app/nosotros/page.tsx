@@ -23,7 +23,7 @@ import {
 export const metadata = generatePageMetadata({
   title: 'Nosotros',
   description:
-    'Usina de Justicia es una Asociación Civil apartidaria que desde 2014 acompaña a las víctimas de homicidio y femicidio y trabaja por una justicia que contemple sus derechos.',
+    'Usina de Justicia es una Asociación Civil que desde 2014 acompaña a las víctimas de homicidio y femicidio y trabaja por una justicia que contemple sus derechos.',
   path: '/nosotros',
 })
 
@@ -205,7 +205,7 @@ export default function NosotrosPage() {
             trabajan y apoyan nuestra labor.
           </p>
           <p className="mt-4 text-body-lg text-grey-700 max-w-narrow leading-relaxed">
-            Somos una Asociación Civil apartidaria que desde 2014 trabajamos para
+            Somos una Asociación Civil que desde 2014 trabajamos para
             acompañar a las víctimas de homicidio y femicidio y recuperar una Justicia
             justa que contemple a estas víctimas.
           </p>

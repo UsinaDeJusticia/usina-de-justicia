@@ -56,7 +56,7 @@ export default function EnglishLandingPage() {
             Standing with victims of homicide and femicide in Argentina
           </h1>
           <p className="text-body-lg text-grey-700 max-w-narrow leading-relaxed">
-            Usina de Justicia is an apartisan Argentine civil association
+            Usina de Justicia is an Argentine civil association
             (&ldquo;Asociación Civil&rdquo;), officially founded on November 12, 2014. We
             accompany the families of homicide and femicide victims and work toward a
             justice system that takes their rights into account.

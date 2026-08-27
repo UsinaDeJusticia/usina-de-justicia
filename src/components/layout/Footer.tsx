@@ -45,7 +45,7 @@ export function Footer() {
             />
           </Link>
           <p className="mt-3.5 text-body-sm text-grey-700 leading-relaxed max-w-[320px]">
-            Asociación Civil apartidaria por los derechos de las víctimas de homicidio y femicidio.
+            Asociación Civil por los derechos de las víctimas de homicidio y femicidio.
           </p>
         </div>
 
@@ -104,7 +104,15 @@ export function Footer() {
             </Link>
           </div>
 
-          <div className="flex items-center gap-4 text-grey-700">
+          {/*
+            Íconos agrandados y con más contraste en ago-2026. La Comisión
+            pidió "agregar los logos de las redes sociales" — y ya estaban
+            acá. Que tres personas los hayan pedido igual significa que no
+            los vieron: 16 píxeles en gris claro, dentro de la barra legal
+            del fondo. El pedido era real, solo que el problema no era de
+            contenido sino de visibilidad.
+          */}
+          <div className="flex items-center gap-5 text-navy-700">
             {socialLinks.map(({ key, label, Icon }) => (
               <a
                 key={key}
@@ -116,14 +124,14 @@ export function Footer() {
                 className={cnFocus('hover:text-navy-700 no-underline rounded-xs transition-colors duration-base ease-out')}
               >
                 {Icon ? (
-                  <Icon className="w-4 h-4" strokeWidth={1.75} aria-hidden="true" />
+                  <Icon className="w-5 h-5" strokeWidth={2} aria-hidden="true" />
                 ) : label === 'X' ? (
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
                     <path d="M18 3h3l-7.5 8.5L22 21h-6l-4.5-6-5 6H3l8-9.2L2 3h6l4 5.5L18 3z" />
                   </svg>
                 ) : (
                   // TikTok tampoco tiene ícono outline en lucide-react.
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
                     <path d="M16.6 3c.4 2 1.7 3.6 3.6 4.1v3c-1.3 0-2.5-.4-3.6-1.1v6.8a5.9 5.9 0 1 1-5-5.8v3.1a2.8 2.8 0 1 0 2 2.7V3h3z" />
                   </svg>
                 )}
