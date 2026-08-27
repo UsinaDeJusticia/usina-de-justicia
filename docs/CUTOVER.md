@@ -308,18 +308,52 @@ sus imágenes. Si las noticias cargan, la API por el subdominio anda.
 **C1.** En el editor de zona DNS: cambiar el registro de `www` para que
 apunte a Vercel.
 
-| Registro | Antes (del export de la zona) | Después |
+Al desactivar el CDN, Hostinger reemplazó solo los registros que
+administraba. Estado real tras ese paso (export del 27-ago 00:37 UTC):
+
+```
+@     1800 IN A     147.93.37.235
+@     1800 IN AAAA  2a02:4780:13:991:0:1652:e8c3:6
+www    300 IN CNAME usinadejusticia.org.ar.
+```
+
+Los cambios, y la vuelta atrás de cada uno:
+
+| Registro | Antes | Después |
 |---|---|---|
-| `www` | `CNAME` → `www.usinadejusticia.org.ar.cdn.hstgr.net.` · TTL 300 | `A` → `76.76.21.21` · TTL 300 |
-| `@` | `ALIAS` → `usinadejusticia.org.ar.cdn.hstgr.net.` · TTL 300 | `A` → `76.76.21.21` · TTL 300 |
+| `@` A | `147.93.37.235` · TTL 1800 | `76.76.21.21` · TTL 300 |
+| `@` AAAA | `2a02:4780:13:991:0:1652:e8c3:6` · TTL 1800 | **BORRADO** |
+| `www` | `CNAME` → `usinadejusticia.org.ar.` · TTL 300 | `A` → `76.76.21.21` · TTL 300 |
 
-`76.76.21.21` es el valor literal que devolvió `vercel domains inspect`, no
-una suposición. En los dos casos **cambia el tipo de registro**, no solo el
-valor: el CDN los tenía como `CNAME` y `ALIAS`.
+`76.76.21.21` es el valor literal que devolvió `vercel domains inspect`.
 
-Al desactivar el CDN (paso previo), Hostinger probablemente reemplace solos
-esos dos registros por otra cosa. **Exportar la zona de nuevo en ese momento
-y mirar qué quedó antes de editar**, en vez de asumir.
+> #### ⚠️ El registro AAAA hay que BORRARLO, no cambiarlo
+> Es la dirección IPv6 del servidor de Hostinger. Vercel no ofrece una
+> dirección IPv6 para este método, así que no hay con qué reemplazarla.
+>
+> **Si se deja, buena parte del tráfico sigue viendo el sitio viejo**: los
+> clientes con IPv6 —hoy, casi todos los celulares— prefieren IPv6 sobre
+> IPv4, así que irían al `AAAA` (WordPress) ignorando el registro A nuevo.
+> Y desde una conexión solo-IPv4 se vería todo bien, sin ningún síntoma.
+>
+> Es el tipo de error que se descubre por reportes de usuarios días
+> después, no en el smoke test.
+
+`www` se pasa a registro `A` explícito en vez de dejarlo como `CNAME` al
+apex. Resolvería igual, pero Vercel verifica la configuración del dominio y
+un `A` es exactamente lo que pidió: no vale la pena arriesgar un "Invalid
+Configuration" por ahorrarse una edición.
+
+> #### La importación de zona es la vuelta atrás, no la herramienta de cambio
+> El editor de hPanel permite importar un archivo de zona. **No se usa para
+> hacer estos cambios**: una importación probablemente reemplace la zona
+> entera, y un error mínimo en el archivo se lleva puestos los MX de Google
+> (sin correo) o el DKIM de Resend (sin formulario de contacto). Tres
+> ediciones chicas son más seguras que una operación grande sobre todo.
+>
+> **Para revertir, en cambio, es ideal**: importar el export guardado
+> devuelve la zona entera a un estado que generó el propio Hostinger, de
+> una sola vez.
 
 > ### ⛔ No cambiar los nameservers a Vercel
 > Vercel ofrece, como alternativa, delegarle el dominio entero
@@ -339,8 +373,24 @@ y mirar qué quedó antes de editar**, en vez de asumir.
 > Hay que **desactivar el CDN para `www` antes** de cambiar el registro, o
 > Hostinger vuelve a poner su propio CNAME y pisa el cambio.
 
-**C2. El dominio pelado, el mismo día.** El apex se mueve junto con `www`,
-no en una fase aparte.
+> **Los dos registros se mueven en dos tiempos, no de golpe.** Primero `www`,
+> se verifica que el sitio nuevo responde bien ahí, y recién después el apex.
+> Mientras tanto el apex sigue mostrando el sitio viejo, que es el estado
+> actual: no se pierde nada. Así, cuando llega el turno del apex, ya no queda
+> ninguna incógnita sobre si Vercel enruta y emite el certificado.
+>
+> Esto reemplaza a una prueba previa que resultó imposible: se intentó probar
+> el apex antes de mover el DNS, forzando la conexión a la IP de Vercel con
+> `curl --resolve` y `-k`. **No funciona**, y el motivo vale anotarlo: `-k`
+> solo desactiva la validación del certificado del lado del cliente, pero
+> Vercel corta el handshake TLS antes de eso, porque no tiene ningún
+> certificado emitido para un dominio que todavía no verificó. No hay nada
+> que ignorar. Un control forzando `usina-de-justicia.vercel.app` por esa
+> misma IP sí devolvió 200, lo que confirma que la IP y la conectividad
+> estaban bien.
+
+**C2. El dominio pelado.** Se mueve el mismo día que `www`, después de
+verificarlo, no en una fase aparte.
 
 > **Por qué cambió esto.** El plan original movía primero `www` y dejaba el
 > dominio pelado para después. Emanuel señaló lo obvio: **casi nadie escribe
