@@ -335,14 +335,42 @@ const nextConfig = {
           // termina sobrescrito. Verificado con curl contra el build de
           // producción: por middleware el header salía sin `Accept`.
           { key: 'Vary', value: 'Accept' },
-          // Sin includeSubDomains ni preload: decisión deliberada. WordPress
-          // se va a mudar a un subdominio propio (p. ej. wp.usinadejusticia
-          // .org.ar) en el cutover, y ese subdominio no tiene por qué
-          // heredar HSTS del dominio principal todavía. Cuando el cutover
-          // esté estable se puede endurecer a includeSubDomains + preload.
+          // `includeSubDomains` agregado el 27-ago-2026, con el cutover ya
+          // ejecutado y estable. Antes estaba deliberadamente afuera: el
+          // subdominio de WordPress todavía no existía y no tenía por qué
+          // heredar HSTS del dominio principal.
+          //
+          // OJO CON EL ALCANCE REAL, que es menor de lo que parece —
+          // medido, no supuesto. `includeSubDomains` protege los subdominios
+          // DEL HOST QUE ENVÍA la cabecera. Este sitio la envía desde
+          // www.usinadejusticia.org.ar, así que cubre subdominios de
+          // `www.…`, que no existen. **NO alcanza a wp.usinadejusticia
+          // .org.ar.**
+          //
+          // Alcanzarlo requeriría enviarla desde el dominio pelado, y ese
+          // solo responde un 308 al canónico. Verificado con curl contra el
+          // build de producción: esa respuesta 308 NO lleva ninguna de las
+          // cabeceras de seguridad de este bloque, porque los redirects
+          // cortocircuitan antes de que se apliquen.
+          //
+          // Entonces, ¿por qué dejarlo? Porque es la postura correcta y no
+          // cuesta nada: el día que el dominio pelado sirva contenido en vez
+          // de redirigir, la protección aplica sola. Lo que NO hay que hacer
+          // es creer que hoy protege el panel de WordPress: no lo hace. Si
+          // alguna vez se quiere esa protección, va configurada del lado de
+          // Hostinger, en wp. — con la contrapartida de que un certificado
+          // vencido ahí dejaría al equipo afuera del panel sin posibilidad
+          // de "continuar igual", así que no es gratis.
+          //
+          // `preload` NO se agrega, y es deliberado. Inscribiría el dominio
+          // en una lista que viene compilada dentro de los navegadores, y
+          // salir de ahí lleva meses: cualquier error de configuración de
+          // HTTPS en cualquier subdominio quedaría sin vuelta atrás rápida.
+          // Para una organización que acaba de mudar toda su infraestructura,
+          // esa rigidez no compensa lo poco que agrega sobre lo que ya hay.
           {
             key: 'Strict-Transport-Security',
-            value: 'max-age=31536000',
+            value: 'max-age=31536000; includeSubDomains',
           },
           {
             key: 'Permissions-Policy',
