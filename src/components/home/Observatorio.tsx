@@ -31,10 +31,19 @@ export function Observatorio() {
           <h2 className="font-display font-extrabold text-ink text-[clamp(1.875rem,3.2vw,2.75rem)] mt-2.5 mb-4">
             Sin datos no hay política pública.
           </h2>
+          {/*
+            La oración "Lo hacemos junto a las cámaras de Diputados de Santa Fe
+            y la Ciudad de Buenos Aires" se quitó en ago-2026, a pedido del
+            equipo. El motivo es correcto y conviene dejarlo escrito: el cuadro
+            que está al lado cita como fuentes el relevamiento propio de Usina
+            Y el Ministerio de Seguridad de la Nación, así que esa oración
+            describía el trabajo como más chico de lo que el propio bloque
+            muestra. La convivencia con Santa Fe sigue registrada donde
+            corresponde, en la línea de tiempo de Trayectoria.tsx (2020).
+          */}
           <p className="text-body text-grey-700 leading-[1.7]">
             Relevamos, analizamos y publicamos información sobre homicidios, femicidios
-            y el funcionamiento del sistema penal en las 24 jurisdicciones. Lo hacemos
-            junto a las cámaras de Diputados de Santa Fe y la Ciudad de Buenos Aires.
+            y el funcionamiento del sistema penal en las 24 jurisdicciones.
           </p>
           <div className="flex flex-col gap-2.5 mt-6">
             {links.map((l) => (

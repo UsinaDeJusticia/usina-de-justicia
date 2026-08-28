@@ -1,3 +1,4 @@
+import Link from 'next/link'
 import { jsonLdScript } from '@/lib/json-ld'
 import { Breadcrumbs } from '@/components/layout/Breadcrumbs'
 import { Button } from '@/components/ui/Button'
@@ -335,6 +336,35 @@ export default async function AcompanamientoPage() {
               </li>
             ))}
           </ul>
+
+          {/*
+            Ley 15.232 — sugerencia de la Comisión (ago-2026), con un
+            argumento que vale registrar: la mayoría de los hechos de
+            inseguridad ocurren en el ámbito provincial, así que para buena
+            parte de quien lee esta página la ley provincial es más útil que
+            la nacional.
+
+            Se enlaza a la nota publicada en WordPress en vez de resumir la
+            ley acá. Dos motivos: no describimos de memoria una norma que no
+            tenemos delante, y el contenido queda donde el equipo puede
+            actualizarlo sin depender de un cambio de código.
+          */}
+          <div className="mt-10 pt-8 border-t border-grey-200 max-w-[720px]">
+            <h3 className="font-display font-bold text-ink text-[1.25rem] mb-2.5">
+              En la provincia de Buenos Aires: Ley 15.232
+            </h3>
+            <p className="text-body text-grey-700 leading-[1.7] mb-3">
+              La mayoría de los hechos ocurre en el ámbito provincial. La provincia de
+              Buenos Aires tiene su propia Ley de Víctimas, la 15.232, sancionada en
+              2020 y reglamentada en 2021, en cuyo debate participó Usina de Justicia.
+            </p>
+            <Link
+              href="/noticias/reglamentacion-de-la-ley-de-victimas-nro-15-232-de-la-provincia-de-buenos-aires"
+              className="text-body font-bold text-navy-600 no-underline hover:underline"
+            >
+              Leer sobre la reglamentación de la Ley 15.232 →
+            </Link>
+          </div>
         </div>
       </section>
 

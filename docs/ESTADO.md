@@ -135,6 +135,53 @@ Se evaluó vitest y se descartó: 40 paquetes y un build script de `esbuild`
 que `pnpm-workspace.yaml` dejó deliberadamente sin aprobar, para testear dos
 módulos de funciones puras.
 
+## Rama mergeada: `feature/sugerencias-comision` (27/28-ago-2026 — merge a master autorizado explícitamente por Emanuel el 28-ago)
+
+1. **Bloque "ahora mismo" de las sugerencias de la Comisión** (27-ago):
+   puntos 1, 5, 7, 11, 13, 14, 15, 16 y 17 — detalle y veredictos en
+   `docs/SUGERENCIAS-COMISION.md`. Compartido con la Comisión vía enlace
+   temporal de Vercel (los previews tienen SSO; el enlace `_vercel_share`
+   dura 23 h y se regenera a pedido — OJO: pedir uno nuevo INVALIDA el
+   anterior, no verificar el preview después de generar el que se entrega).
+2. **Buscador del sitio** (28-ago): `/buscar` + `GET /api/buscar?q=` +
+   lupa en el header. Índice en memoria con MiniSearch (7.2.0, cero deps,
+   sin scripts de install) sobre los ~842 posts (payload recortado por
+   `_fields`) más 16 páginas institucionales curadas a mano; folding de
+   acentos/ñ propio, prefix, fuzzy, boost de título, AND→OR. Refresco cada
+   5 min (memo + revalidate 300). Sin nada indexable nuevo: página noindex,
+   `disallow: /buscar` en robots, `X-Robots-Tag: noindex` en la API;
+   llms.txt ahora documenta el endpoint para agentes. Los ~88 PDFs de
+   /recursos quedaron diferidos a v2 (duplican títulos de posts ya
+   indexados). Motor testeado sin red (15 casos nuevos, suite 72→87).
+   **Verificado en el preview de Vercel** (28-ago): la directora encontró
+   la nota que no hallaba ("Lucianito y el gran bonete") — validación real
+   del caso de uso que originó el pedido.
+3. **Búsqueda accesible desde todo el sitio** (28-ago, pedido de Emanuel
+   tras esa validación): la lupa del header ahora despliega una barra de
+   búsqueda (desktop y mobile, mismo patrón de panel que el nav móvil), y
+   hay cajas de búsqueda en el pie de página y en el 404 — este último es
+   exactamente donde cae quien busca una nota con un link viejo. Pie y 404
+   siguen siendo server components (`next/form`); `BuscadorClient` sincroniza
+   la query entrante cuando se busca estando ya en /buscar.
+4. **Optimización de latencia del buscador** (28-ago, Emanuel reportó
+   demora): el memo del índice pasó a stale-while-revalidate (el índice
+   vencido se sirve igual y el refresco corre de fondo — nadie espera una
+   reconstrucción salvo la primerísima de una instancia fría) +
+   deduplicación de construcciones concurrentes (antes, cada tecleo durante
+   una reconstrucción disparaba la suya: N tandas de ~10 requests a WP) +
+   pings de calentamiento (abrir la barra del header o llegar a /buscar
+   dispara la construcción vía `after()` de next/server, mientras la
+   persona tipea). Suite 87→90.
+5. **Dataset de /observatorio corregido** (28-ago, aviso de Search Console,
+   dos problemas "no críticos"): `creator` ahora lleva el tipo inline (el
+   validador de Google no sigue referencias @id entre bloques) y se agregó
+   `license` apuntando a /legal/terminos — decisión de Emanuel, opción
+   conservadora; si la Comisión aprueba una licencia abierta (CC BY) es un
+   cambio de una línea. De paso se quitó de /observatorio la oración de
+   Santa Fe/CABA (la misma corrección factual del punto 7 de la Comisión,
+   que en la portada ya estaba hecha). OJO: el aviso de Search Console se
+   cierra recién cuando esta rama llegue a producción y Google recrawlee.
+
 ## Rama en curso: `fix/build-resiliente-wp` (21-ago-2026, sin PR todavía)
 
 **Problema:** dos builds de producción se cayeron enteros por hipos

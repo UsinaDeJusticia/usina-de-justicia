@@ -10,7 +10,9 @@ export default function robots(): MetadataRoute.Robots {
     rules: {
       userAgent: '*',
       allow: '/',
-      disallow: '/api/',
+      // /buscar: resultados de búsqueda interna, nunca indexables (la página
+      // además lleva noIndex en su metadata y la API X-Robots-Tag: noindex).
+      disallow: ['/api/', '/buscar'],
     },
     sitemap: `${siteConfig.url}/sitemap.xml`,
   }

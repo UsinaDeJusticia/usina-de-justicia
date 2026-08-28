@@ -1,6 +1,6 @@
 # Usina de Justicia
 
-> Asociación civil argentina, apartidaria, fundada el 12 de noviembre de 2014.
+> Asociación civil argentina, fundada el 12 de noviembre de 2014.
 > Acompaña a familiares de víctimas de homicidio y femicidio con asesoramiento
 > legal, contención emocional y difusión de los casos, en forma gratuita, e
 > impulsa reformas para que las víctimas tengan participación real en el
@@ -68,6 +68,7 @@ también en Markdown, con el índice de secciones para poder recuperarse.
 - [Observatorio](https://www.usinadejusticia.org.ar/observatorio): relevamiento y análisis de homicidios, femicidios y sistema penal.
 - [Noticias](https://www.usinadejusticia.org.ar/noticias): archivo editorial completo, organizado en 6 categorías.
 - [Recursos](https://www.usinadejusticia.org.ar/recursos): informes, guías y publicaciones descargables.
+- [Buscar](https://www.usinadejusticia.org.ar/buscar): buscador de todo el sitio — noticias, informes y páginas.
 - [Doná](https://www.usinadejusticia.org.ar/donar): cómo sostener el trabajo de la organización.
 - [Contacto](https://www.usinadejusticia.org.ar/contacto): formulario, teléfono, email y redes.
 - [About (English)](https://www.usinadejusticia.org.ar/en): resumen institucional en inglés.
@@ -89,10 +90,15 @@ también en Markdown, con el índice de secciones para poder recuperarse.
   `NewsArticle`, `FAQPage`, `Dataset`, `Service`, `AboutPage`, `CollectionPage`
   y `BreadcrumbList` según la ruta.
 
-No hay API pública, especificación OpenAPI, webhooks ni servidor MCP: es un
-sitio de contenido institucional, no un producto de software. El contenido se
-publica en WordPress y se sirve vía este sitio; la vía de acceso programático
-es el sitemap más la negociación de contenido en Markdown descrita arriba.
+La única API pública es la del buscador del sitio:
+`GET https://www.usinadejusticia.org.ar/api/buscar?q=palabras` devuelve JSON
+con `{ total, resultados: [{ tipo, titulo, extracto, href, categoria,
+fechaPublicacion }] }` (máximo 30 resultados; tolera tildes y errores de
+tipeo). No hay especificación OpenAPI, webhooks ni servidor MCP: es un sitio
+de contenido institucional, no un producto de software. El contenido se
+publica en WordPress y se sirve vía este sitio; las otras vías de acceso
+programático son el sitemap más la negociación de contenido en Markdown
+descrita arriba.
 
 ## Política de uso
 

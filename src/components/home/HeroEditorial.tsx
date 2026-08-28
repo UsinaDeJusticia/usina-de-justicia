@@ -25,9 +25,27 @@ export function HeroEditorial({ latestArticle }: HeroEditorialProps) {
           <br />
           <span className="text-navy-600">para las víctimas.</span>
         </h1>
-        <p className="text-body-lg text-grey-700 mt-5 max-w-[520px]">
-          Acompañamos a las familias que perdieron a un ser querido por un hecho de
-          inseguridad en Argentina, con contención emocional y asesoramiento legal.
+        {/*
+          Este párrafo NOMBRA a la entidad a propósito, y no es un detalle de
+          estilo. Antes decía "Acompañamos a las familias que…": describía la
+          tarea sin decir nunca de quién era. Eso obligaba a Google y a los
+          asistentes de IA a deducir el sujeto del menú o del logo — y cuando
+          alguien pregunta "qué es Usina de Justicia", lo que hace falta es
+          una definición en prosa, no una inferencia.
+
+          Sugerencia de la Comisión (ago-2026): "ir siempre de lo general a lo
+          particular; describir qué es Usina de Justicia". Es el texto de más
+          peso de todo el sitio, así que el cambio se hizo acá y no agregando
+          una sección nueva.
+
+          Los datos no se inventaron: la fecha de fundación sale de
+          Trayectoria.tsx y de public/llms.txt, y que el servicio es gratuito
+          lo confirmó el equipo en agosto (ver docs/COPY-acompanamiento-guias.md).
+        */}
+        <p className="text-body-lg text-grey-700 mt-5 max-w-[560px]">
+          Usina de Justicia es una asociación civil argentina que desde 2014
+          acompaña a las familias que perdieron a un ser querido por un hecho de
+          inseguridad, con contención emocional y asesoramiento legal gratuitos.
           Trabajamos contra la impunidad y por los derechos de las víctimas en el
           proceso penal.
         </p>

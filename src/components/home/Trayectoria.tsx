@@ -52,7 +52,7 @@ export function Trayectoria() {
             Diez años transformando la justicia.
           </h2>
           <p className="text-[15px] text-grey-700 leading-[1.7]">
-            Una asociación civil apartidaria, sin subvenciones públicas, sostenida por
+            Una asociación civil sin subvenciones públicas, sostenida por
             el compromiso de víctimas, profesionales y ciudadanos.
           </p>
         </div>
