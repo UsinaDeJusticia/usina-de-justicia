@@ -421,6 +421,88 @@ export async function getAllPublishedPostSlugs(): Promise<SitemapPostEntry[]> {
 }
 
 // ============================================
+// API: BUSCADOR (payload mínimo, todas las páginas en paralelo)
+// ============================================
+
+/** Post recortado para el índice del buscador (src/lib/buscador.ts). */
+export interface PostBuscador {
+  id: number
+  titulo: string
+  extracto: string
+  slug: string
+  fechaPublicacion: string // ISO, igual que Articulo.fechaPublicacion
+  categoria: string // nombre visible de la categoría principal
+}
+
+/** Shape crudo que devuelve WP con el _fields de abajo. */
+interface WPPostBuscadorRaw {
+  id: number
+  title: { rendered: string }
+  excerpt: { rendered: string }
+  slug: string
+  date: string
+  categories: number[]
+}
+
+/**
+ * Todos los posts publicados con el payload mínimo para el índice del
+ * buscador. Mismo fan-out que getAllPublishedPostSlugs: la primera página
+ * revela X-WP-TotalPages y el resto se pide en paralelo. El _fields recorta
+ * la respuesta a una fracción del payload con _embed. Las categorías se
+ * resuelven con getWPCategories() (memoizada 5 min) — NO con
+ * getCategoriasMap, que dispara un fetch sin caché en cada llamada.
+ */
+export async function getAllPostsBuscador(): Promise<PostBuscador[]> {
+  const baseParams = {
+    per_page: 100,
+    status: 'publish',
+    _fields: 'id,title,excerpt,slug,date,categories',
+    orderby: 'date',
+    order: 'desc',
+  } as const
+
+  const [categorias, primera] = await Promise.all([
+    getWPCategories(),
+    wpFetch<WPPostBuscadorRaw[]>('/posts', { ...baseParams, page: 1 }),
+  ])
+
+  const catMap = new Map(categorias.map((c) => [Number(c.id), c]))
+
+  const totalPages = parseInt(primera.headers.get('X-WP-TotalPages') || '1', 10)
+  const resto =
+    totalPages <= 1
+      ? []
+      : await Promise.all(
+          Array.from({ length: totalPages - 1 }, (_, i) =>
+            wpFetch<WPPostBuscadorRaw[]>('/posts', { ...baseParams, page: i + 2 })
+          )
+        )
+
+  const posts = [primera.data, ...resto.map((r) => r.data)].flat()
+
+  return posts.map((wp) => {
+    // Misma regla que wpPostToArticulo: preferir la categoría nueva (una de
+    // las 6 de SITE_SECTIONS) sobre la legacy — ver el comentario largo allá.
+    const postCategorias = wp.categories
+      .map((catId) => catMap.get(catId))
+      .filter((c): c is Categoria => c !== undefined)
+    const categoria =
+      postCategorias.find((c) => c.slug in SITE_SECTIONS) ?? postCategorias[0]
+
+    return {
+      id: wp.id,
+      titulo: decodeHtml(wp.title.rendered),
+      // Sin fallback al título (mismo criterio que Articulo.extracto): un
+      // extracto vacío no se muestra ni se indexa duplicando el título.
+      extracto: stripHtmlForExcerpt(wp.excerpt.rendered),
+      slug: wp.slug,
+      fechaPublicacion: wp.date,
+      categoria: categoria?.nombre ?? 'Sin categoría',
+    }
+  })
+}
+
+// ============================================
 // API: TAGS
 // ============================================
 
