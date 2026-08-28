@@ -1,5 +1,7 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
+import Form from 'next/form'
+import { Search } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
 import { siteConfig } from '@/lib/site-config'
 
@@ -49,13 +51,41 @@ export default function NotFound() {
           .
         </p>
 
-        <div className="flex flex-wrap items-center gap-4 mb-14">
+        <div className="flex flex-wrap items-center gap-4 mb-10">
           <Button href="/" variant="primary" size="lg">
             Volver al inicio
           </Button>
           <Button href="/contacto" variant="secondary" size="lg">
             Escribinos
           </Button>
+        </div>
+
+        {/* Quien cae acá suele venir de un link viejo a una nota concreta —
+            la búsqueda ahí mismo es el camino más corto para recuperarla.
+            next/form navega a /buscar?q=... sin volver esta página cliente. */}
+        <div className="mb-14 max-w-narrow">
+          <h2 className="font-display font-bold text-h3 text-ink mb-3">
+            ¿Buscabas una nota?
+          </h2>
+          <Form action="/buscar" className="flex">
+            <label htmlFor="notfound-buscar" className="sr-only">
+              Buscar en el sitio
+            </label>
+            <input
+              id="notfound-buscar"
+              type="search"
+              name="q"
+              placeholder="Buscar noticias, informes y páginas…"
+              className="w-full bg-white border border-grey-200 rounded-xs rounded-r-none border-r-0 px-4 py-3 text-body text-ink placeholder:text-grey-500 transition-colors duration-base ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-navy-600 focus-visible:ring-offset-2 focus-visible:ring-offset-white"
+            />
+            <button
+              type="submit"
+              aria-label="Buscar"
+              className="px-4 border border-grey-200 rounded-xs rounded-l-none bg-white text-navy-700 hover:text-navy-600 hover:border-navy-600 transition-colors duration-base ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-navy-600 focus-visible:ring-offset-2 focus-visible:ring-offset-white"
+            >
+              <Search className="w-5 h-5" aria-hidden="true" />
+            </button>
+          </Form>
         </div>
 
         <div className="border-t border-grey-200 pt-8">

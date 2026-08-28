@@ -153,10 +153,16 @@ módulos de funciones puras.
    llms.txt ahora documenta el endpoint para agentes. Los ~88 PDFs de
    /recursos quedaron diferidos a v2 (duplican títulos de posts ya
    indexados). Motor testeado sin red (15 casos nuevos, suite 72→87).
-   **Verificación pendiente de red**: el sandbox bloqueó WP al momento de
-   probar `/api/buscar` end-to-end (la ruta degradó a 503 controlado, como
-   está diseñado); falta el smoke con WP alcanzable — queda para el preview
-   de Vercel.
+   **Verificado en el preview de Vercel** (28-ago): la directora encontró
+   la nota que no hallaba ("Lucianito y el gran bonete") — validación real
+   del caso de uso que originó el pedido.
+3. **Búsqueda accesible desde todo el sitio** (28-ago, pedido de Emanuel
+   tras esa validación): la lupa del header ahora despliega una barra de
+   búsqueda (desktop y mobile, mismo patrón de panel que el nav móvil), y
+   hay cajas de búsqueda en el pie de página y en el 404 — este último es
+   exactamente donde cae quien busca una nota con un link viejo. Pie y 404
+   siguen siendo server components (`next/form`); `BuscadorClient` sincroniza
+   la query entrante cuando se busca estando ya en /buscar.
 
 ## Rama en curso: `fix/build-resiliente-wp` (21-ago-2026, sin PR todavía)
 

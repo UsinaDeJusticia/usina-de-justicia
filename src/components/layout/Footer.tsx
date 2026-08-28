@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import Image from 'next/image'
-import { Facebook, Instagram } from 'lucide-react'
+import Form from 'next/form'
+import { Facebook, Instagram, Search } from 'lucide-react'
 import { siteConfig } from '@/lib/site-config'
 
 // Portado de design-system/home/Footer.jsx (FooterUJ): logo + 4 columnas de
@@ -47,6 +48,35 @@ export function Footer() {
           <p className="mt-3.5 text-body-sm text-grey-700 leading-relaxed max-w-[320px]">
             Asociación Civil por los derechos de las víctimas de homicidio y femicidio.
           </p>
+
+          {/* Búsqueda desde el pie (pedido de Emanuel, ago-2026, tras el
+              estreno del buscador): el pie está en todas las páginas, así
+              que la búsqueda queda consultable desde cualquier sección.
+              next/form navega a /buscar?q=... del lado del cliente y no
+              necesita 'use client': el pie sigue siendo server component. */}
+          <Form action="/buscar" className="mt-5 flex max-w-[320px]">
+            <label htmlFor="footer-buscar" className="sr-only">
+              Buscar en el sitio
+            </label>
+            <input
+              id="footer-buscar"
+              type="search"
+              name="q"
+              placeholder="Buscar en el sitio…"
+              className={cnFocus(
+                'w-full bg-white border border-grey-200 rounded-xs rounded-r-none border-r-0 px-3 py-2 text-body-sm text-ink placeholder:text-grey-500 transition-colors duration-base ease-out'
+              )}
+            />
+            <button
+              type="submit"
+              aria-label="Buscar"
+              className={cnFocus(
+                'px-3 border border-grey-200 rounded-xs rounded-l-none bg-white text-navy-700 hover:text-navy-600 hover:border-navy-600 transition-colors duration-base ease-out'
+              )}
+            >
+              <Search className="w-4 h-4" aria-hidden="true" />
+            </button>
+          </Form>
         </div>
 
         {footerColumns.map((col) => (

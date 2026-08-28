@@ -46,6 +46,18 @@ export function BuscadorClient() {
   const [estado, setEstado] = useState<Estado>('inactivo')
   const abortRef = useRef<AbortController | null>(null)
 
+  // Sincronización ENTRANTE: Next refleja en useSearchParams tanto la
+  // navegación de next/form como los replaceState nativos (soportado desde
+  // 14.1). Los cambios que produce este mismo componente al tipear llegan
+  // con el mismo valor que ya está en el input (no-op); los externos —
+  // buscar desde la barra del header o del pie estando YA en /buscar, donde
+  // el componente no se remonta— adoptan la query nueva.
+  const urlQ = searchParams.get('q') ?? ''
+  useEffect(() => {
+    if (urlQ.trim() !== q.trim()) setQ(urlQ)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [urlQ])
+
   useEffect(() => {
     const query = q.trim()
 
