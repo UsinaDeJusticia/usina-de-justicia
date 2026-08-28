@@ -135,6 +135,29 @@ Se evaluó vitest y se descartó: 40 paquetes y un build script de `esbuild`
 que `pnpm-workspace.yaml` dejó deliberadamente sin aprobar, para testear dos
 módulos de funciones puras.
 
+## Rama en curso: `feature/sugerencias-comision` (27/28-ago-2026, sin PR — NO se mergea en esta etapa por pedido de Emanuel)
+
+1. **Bloque "ahora mismo" de las sugerencias de la Comisión** (27-ago):
+   puntos 1, 5, 7, 11, 13, 14, 15, 16 y 17 — detalle y veredictos en
+   `docs/SUGERENCIAS-COMISION.md`. Compartido con la Comisión vía enlace
+   temporal de Vercel (los previews tienen SSO; el enlace `_vercel_share`
+   dura 23 h y se regenera a pedido — OJO: pedir uno nuevo INVALIDA el
+   anterior, no verificar el preview después de generar el que se entrega).
+2. **Buscador del sitio** (28-ago): `/buscar` + `GET /api/buscar?q=` +
+   lupa en el header. Índice en memoria con MiniSearch (7.2.0, cero deps,
+   sin scripts de install) sobre los ~842 posts (payload recortado por
+   `_fields`) más 16 páginas institucionales curadas a mano; folding de
+   acentos/ñ propio, prefix, fuzzy, boost de título, AND→OR. Refresco cada
+   5 min (memo + revalidate 300). Sin nada indexable nuevo: página noindex,
+   `disallow: /buscar` en robots, `X-Robots-Tag: noindex` en la API;
+   llms.txt ahora documenta el endpoint para agentes. Los ~88 PDFs de
+   /recursos quedaron diferidos a v2 (duplican títulos de posts ya
+   indexados). Motor testeado sin red (15 casos nuevos, suite 72→87).
+   **Verificación pendiente de red**: el sandbox bloqueó WP al momento de
+   probar `/api/buscar` end-to-end (la ruta degradó a 503 controlado, como
+   está diseñado); falta el smoke con WP alcanzable — queda para el preview
+   de Vercel.
+
 ## Rama en curso: `fix/build-resiliente-wp` (21-ago-2026, sin PR todavía)
 
 **Problema:** dos builds de producción se cayeron enteros por hipos
