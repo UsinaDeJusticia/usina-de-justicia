@@ -172,6 +172,15 @@ módulos de funciones puras.
    pings de calentamiento (abrir la barra del header o llegar a /buscar
    dispara la construcción vía `after()` de next/server, mientras la
    persona tipea). Suite 87→90.
+5. **Dataset de /observatorio corregido** (28-ago, aviso de Search Console,
+   dos problemas "no críticos"): `creator` ahora lleva el tipo inline (el
+   validador de Google no sigue referencias @id entre bloques) y se agregó
+   `license` apuntando a /legal/terminos — decisión de Emanuel, opción
+   conservadora; si la Comisión aprueba una licencia abierta (CC BY) es un
+   cambio de una línea. De paso se quitó de /observatorio la oración de
+   Santa Fe/CABA (la misma corrección factual del punto 7 de la Comisión,
+   que en la portada ya estaba hecha). OJO: el aviso de Search Console se
+   cierra recién cuando esta rama llegue a producción y Google recrawlee.
 
 ## Rama en curso: `fix/build-resiliente-wp` (21-ago-2026, sin PR todavía)
 

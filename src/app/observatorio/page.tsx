@@ -40,17 +40,30 @@ export const metadata = generatePageMetadata({
 // propio todavía — se linkea tal cual, con nota de que está en desarrollo.
 const MAPA_DELITO_URL = 'https://mapa-delito-usina.vercel.app'
 
-// Dataset: `creator` referencia por @id al NGO consolidado del layout raíz
-// (src/app/layout.tsx). `isBasedOn` apunta a la fuente oficial de
-// estadísticas criminales (SNIC, Ministerio de Seguridad de la Nación) que
-// alimenta el trabajo del observatorio; `distribution` es el Mapa del
-// Delito ya linkeado más abajo en esta misma página.
+// Dataset. Dos campos con historia (aviso de Search Console, 28-ago-2026):
+// - `creator` era solo una referencia @id al NGO del layout raíz; válida en
+//   el estándar, pero el validador de Google no sigue referencias entre
+//   bloques <script> y la marcaba como "tipo no válido". Ahora el tipo, el
+//   nombre y la URL van inline, conservando el @id para quien sí resuelve
+//   el grafo.
+// - `license` faltaba. Apunta a los términos del sitio (decisión de Emanuel,
+//   28-ago: la opción conservadora; si la Comisión algún día aprueba una
+//   licencia abierta tipo CC BY, se cambia esta línea y nada más).
+// `isBasedOn` apunta a la fuente oficial de estadísticas criminales (SNIC,
+// Ministerio de Seguridad de la Nación) que alimenta el trabajo del
+// observatorio; `distribution` es el Mapa del Delito ya linkeado más abajo.
 const jsonLd = {
   '@context': 'https://schema.org',
   '@type': 'Dataset',
   name: 'Observatorio de Usina de Justicia',
   description,
-  creator: { '@id': `${siteConfig.url}/#organization` },
+  creator: {
+    '@type': 'NGO',
+    '@id': `${siteConfig.url}/#organization`,
+    name: siteConfig.name,
+    url: siteConfig.url,
+  },
+  license: `${siteConfig.url}/legal/terminos`,
   isBasedOn: 'https://www.argentina.gob.ar/seguridad/estadisticascriminales',
   distribution: {
     '@type': 'DataDownload',
@@ -85,11 +98,15 @@ export default async function ObservatorioPage() {
             Sin datos no hay política pública.
           </h1>
           <p className="text-body-lg text-grey-700 max-w-narrow leading-relaxed">
+            {/* La oración "Lo hacemos junto a las cámaras de Diputados de
+                Santa Fe y la Ciudad de Buenos Aires" se quitó acá igual que
+                en la portada (punto 7 de la Comisión, corrección factual):
+                afirmaba de menos — el trabajo incluye también al Ministerio
+                de Seguridad de la Nación. */}
             Relevamos, analizamos y publicamos información sobre homicidios, femicidios y
-            el funcionamiento del sistema penal en las 24 jurisdicciones. Lo hacemos junto
-            a las cámaras de Diputados de Santa Fe y la Ciudad de Buenos Aires. Este
-            trabajo alimenta, a su vez, la incidencia en políticas públicas y la
-            capacitación de operadores del sistema de justicia.
+            el funcionamiento del sistema penal en las 24 jurisdicciones. Este trabajo
+            alimenta, a su vez, la incidencia en políticas públicas y la capacitación de
+            operadores del sistema de justicia.
           </p>
         </div>
       </section>
