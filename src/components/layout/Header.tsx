@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
-import { Menu, X } from 'lucide-react'
+import { Menu, Search, X } from 'lucide-react'
 import { siteConfig } from '@/lib/site-config'
 import { Button } from '@/components/ui/Button'
 import { cn } from '@/lib/utils'
@@ -79,6 +79,19 @@ export function Header() {
 
         {/* CTAs desktop */}
         <div className="hidden lg:flex items-center gap-2.5 shrink-0">
+          {/* Buscador: link plano a /buscar, sin modal a propósito — el repo
+              no tiene primitivas de modal y una página dedicada es más simple
+              y accesible. */}
+          <Link
+            href="/buscar"
+            aria-label="Buscar en el sitio"
+            className={cn(
+              'p-2 text-ink hover:text-navy-600 transition-colors duration-base ease-out rounded-xs',
+              focusRing
+            )}
+          >
+            <Search className="w-5 h-5" aria-hidden="true" />
+          </Link>
           <Button href={siteConfig.headerCta.help.href} variant="secondary" size="sm">
             {siteConfig.headerCta.help.label}
           </Button>
@@ -87,8 +100,18 @@ export function Header() {
           </Button>
         </div>
 
-        {/* Mobile: CTA donar + hamburguesa */}
+        {/* Mobile: lupa + CTA donar + hamburguesa */}
         <div className="flex items-center gap-2 lg:hidden">
+          <Link
+            href="/buscar"
+            aria-label="Buscar en el sitio"
+            className={cn(
+              'p-2 text-ink hover:text-navy-600 transition-colors duration-base ease-out rounded-xs',
+              focusRing
+            )}
+          >
+            <Search className="w-5 h-5" aria-hidden="true" />
+          </Link>
           <Button href={siteConfig.headerCta.donate.href} variant="primary" size="sm">
             {siteConfig.headerCta.donate.label}
           </Button>
