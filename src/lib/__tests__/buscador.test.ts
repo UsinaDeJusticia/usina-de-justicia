@@ -173,6 +173,54 @@ describe('getIndice', () => {
     assert.equal(llamadas, 2)
   })
 
+  it('deduplica construcciones concurrentes: dos llamadas frías, el loader corre una vez', async () => {
+    let llamadas = 0
+    const loaderLento = async () => {
+      llamadas++
+      await new Promise((r) => setTimeout(r, 20))
+      return []
+    }
+    await Promise.all([getIndice(loaderLento), getIndice(loaderLento)])
+    assert.equal(llamadas, 1)
+  })
+
+  it('índice vencido: se sirve el viejo al instante y el refresco corre de fondo', async () => {
+    // ttlMs: 0 fuerza que todo índice ya esté vencido.
+    await getIndice(async () => [], { ttlMs: 0 })
+
+    let refrescoTermino = false
+    const loaderLento = async () => {
+      await new Promise((r) => setTimeout(r, 30))
+      refrescoTermino = true
+      return []
+    }
+
+    const index = await getIndice(loaderLento, { ttlMs: 0 })
+    // Resolvió SIN esperar al loader: eso es servir stale.
+    assert.equal(refrescoTermino, false)
+    // Y el índice viejo es utilizable.
+    assert.ok(buscar(index, 'transparencia').total > 0)
+
+    // El refresco sí corre, de fondo.
+    await new Promise((r) => setTimeout(r, 50))
+    assert.equal(refrescoTermino, true)
+  })
+
+  it('un fallo del refresco de fondo no rompe: se sigue sirviendo el índice viejo', async () => {
+    let llamadas = 0
+    const loader = async () => {
+      llamadas++
+      if (llamadas > 1) throw new Error('WP caído (simulado)')
+      return []
+    }
+    await getIndice(loader, { ttlMs: 0 }) // construye ok (llamada 1)
+    await getIndice(loader, { ttlMs: 0 }) // sirve stale, refresco falla (2)
+    // Dejar que el refresco fallido termine (y su catch lo absorba).
+    await new Promise((r) => setTimeout(r, 10))
+    const index = await getIndice(loader, { ttlMs: 0 }) // sirve stale (3)
+    assert.ok(buscar(index, 'transparencia').total > 0)
+  })
+
   it('si el loader falla y no hay índice previo, rechaza', async () => {
     // El camino "stale ante fallo" (índice previo + TTL vencido + loader
     // roto) necesitaría fake timers para vencer el TTL — se documenta y no

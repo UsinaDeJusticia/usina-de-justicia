@@ -152,58 +152,90 @@ export function buscar(index: MiniSearch<DocBuscador>, q: string): RespuestaBusc
 }
 
 // ============================================
-// Memo del índice (module scope, 5 min — mismo TTL que el caché en memoria
-// de wordpress.ts). En Vercel el module scope persiste entre invocaciones
-// calientes de la función; en frío se reconstruye (~decenas de ms para ~860
-// documentos chicos).
+// Memo del índice: stale-while-revalidate en proceso + deduplicación.
+//
+// En Vercel el module scope persiste entre invocaciones calientes de la
+// función. El diseño anterior (memo simple con TTL) tenía dos costos que se
+// sentían como "la búsqueda demora": la primera búsqueda después de cada
+// vencimiento esperaba ~10 requests a un WordPress lento ANTES de responder,
+// y mientras tanto cada tecleo concurrente disparaba SU PROPIA
+// reconstrucción. Con esto, nadie espera nunca una reconstrucción salvo la
+// primerísima de una instancia fría, y nunca corre más de una a la vez.
 // ============================================
 
 const INDEX_TTL = 5 * 60 * 1000
 let indexMemo: { index: MiniSearch<DocBuscador>; timestamp: number } | null = null
+let buildEnCurso: Promise<MiniSearch<DocBuscador>> | null = null
+
+type CargarPosts = () => Promise<
+  Array<{
+    id: number
+    titulo: string
+    extracto: string
+    slug: string
+    fechaPublicacion: string
+    categoria: string
+  }>
+>
+
+async function construir(cargarPosts: CargarPosts): Promise<MiniSearch<DocBuscador>> {
+  const posts = await cargarPosts()
+  const docs: DocBuscador[] = [
+    ...posts.map((p) => ({
+      id: `post:${p.id}`,
+      tipo: 'post' as const,
+      titulo: p.titulo,
+      extracto: p.extracto,
+      href: `/noticias/${p.slug}`,
+      categoria: p.categoria,
+      fechaPublicacion: p.fechaPublicacion,
+    })),
+    ...PAGINAS_ESTATICAS,
+  ]
+  indexMemo = { index: buildIndex(docs), timestamp: Date.now() }
+  return indexMemo.index
+}
 
 /**
- * Devuelve el índice memoizado o lo reconstruye si venció. Recibe el loader
- * por parámetro (inyección) para que este módulo no dependa de wordpress.ts
- * y los tests puedan pasar fixtures. El route handler pasa
- * getAllPostsBuscador. Si la reconstrucción falla y hay un índice viejo,
- * se sirve el viejo (stale) antes que romper la búsqueda.
+ * Devuelve el índice con estrategia stale-while-revalidate:
+ * - Fresco → se devuelve.
+ * - Vencido → se devuelve IGUAL (viejo de a lo sumo unos minutos, sobre
+ *   contenido que cambia poco) y la reconstrucción corre de fondo.
+ * - Inexistente (instancia fría) → una sola construcción compartida por
+ *   todas las requests concurrentes, en vez de una por tecleo.
+ *
+ * El loader llega por inyección para que este módulo no dependa de
+ * wordpress.ts y los tests pasen fixtures; el route handler pasa
+ * getAllPostsBuscador. Si una reconstrucción de fondo falla, se sigue
+ * sirviendo el índice viejo (mejor stale que caído).
+ * `opts.ttlMs` existe solo para los tests.
  */
 export async function getIndice(
-  cargarPosts: () => Promise<
-    Array<{
-      id: number
-      titulo: string
-      extracto: string
-      slug: string
-      fechaPublicacion: string
-      categoria: string
-    }>
-  >
+  cargarPosts: CargarPosts,
+  opts?: { ttlMs?: number }
 ): Promise<MiniSearch<DocBuscador>> {
-  if (indexMemo && Date.now() - indexMemo.timestamp < INDEX_TTL) return indexMemo.index
-  try {
-    const posts = await cargarPosts()
-    const docs: DocBuscador[] = [
-      ...posts.map((p) => ({
-        id: `post:${p.id}`,
-        tipo: 'post' as const,
-        titulo: p.titulo,
-        extracto: p.extracto,
-        href: `/noticias/${p.slug}`,
-        categoria: p.categoria,
-        fechaPublicacion: p.fechaPublicacion,
-      })),
-      ...PAGINAS_ESTATICAS,
-    ]
-    indexMemo = { index: buildIndex(docs), timestamp: Date.now() }
-    return indexMemo.index
-  } catch (error) {
-    if (indexMemo) return indexMemo.index // stale antes que caído
-    throw error
+  const ttl = opts?.ttlMs ?? INDEX_TTL
+  if (indexMemo && Date.now() - indexMemo.timestamp < ttl) return indexMemo.index
+
+  if (!buildEnCurso) {
+    buildEnCurso = construir(cargarPosts).finally(() => {
+      buildEnCurso = null
+    })
+    // Catch sobre una REFERENCIA al promise (no reasigna buildEnCurso): en
+    // el camino stale nadie espera este promise, y un fallo sin catch sería
+    // un unhandled rejection. Quien sí lo espera (camino frío) recibe el
+    // rechazo original igual.
+    buildEnCurso.catch(() => {})
   }
+
+  // Camino stale: hay índice viejo → responder ya con el viejo.
+  if (indexMemo) return indexMemo.index
+  // Primera vez de la instancia: no hay nada para servir, se espera.
+  return buildEnCurso
 }
 
 /** Solo para tests: resetea el memo entre casos. */
 export function _resetIndiceParaTests(): void {
   indexMemo = null
+  buildEnCurso = null
 }

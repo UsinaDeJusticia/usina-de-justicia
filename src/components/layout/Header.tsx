@@ -45,6 +45,18 @@ export function Header() {
   const focusRing =
     'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-navy-600 focus-visible:ring-offset-2 focus-visible:ring-offset-white'
 
+  // Abrir la barra es el aviso más temprano de que alguien está por buscar:
+  // este ping hace que el servidor construya/refresque el índice mientras la
+  // persona todavía está tipeando (el endpoint responde al ping al instante
+  // y trabaja después — ver /api/buscar). Fire-and-forget a propósito.
+  const abrirBusqueda = () => {
+    // El ping va FUERA del updater de estado (los updaters deben ser puros;
+    // React puede invocarlos dos veces en modo estricto).
+    if (!searchOpen) fetch('/api/buscar?q=', { cache: 'no-store' }).catch(() => {})
+    setSearchOpen((v) => !v)
+    setMobileOpen(false)
+  }
+
   return (
     <header
       className={cn(
@@ -95,10 +107,7 @@ export function Header() {
               tener que descubrir la página /buscar. */}
           <button
             type="button"
-            onClick={() => {
-              setSearchOpen((v) => !v)
-              setMobileOpen(false)
-            }}
+            onClick={abrirBusqueda}
             aria-expanded={searchOpen}
             aria-controls="site-search"
             aria-label={searchOpen ? 'Cerrar búsqueda' : 'Abrir búsqueda'}
@@ -125,10 +134,7 @@ export function Header() {
         <div className="flex items-center gap-2 lg:hidden">
           <button
             type="button"
-            onClick={() => {
-              setSearchOpen((v) => !v)
-              setMobileOpen(false)
-            }}
+            onClick={abrirBusqueda}
             aria-expanded={searchOpen}
             aria-controls="site-search"
             aria-label={searchOpen ? 'Cerrar búsqueda' : 'Abrir búsqueda'}

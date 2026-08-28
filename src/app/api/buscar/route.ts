@@ -1,4 +1,4 @@
-import { NextResponse } from 'next/server'
+import { NextResponse, after } from 'next/server'
 import { getIndice, buscar, MIN_QUERY, MAX_QUERY } from '@/lib/buscador'
 import { getAllPostsBuscador } from '@/lib/wordpress'
 
@@ -42,9 +42,20 @@ export async function GET(request: Request) {
   const q = rawQ.trim().slice(0, MAX_QUERY)
 
   // Query vacía o de una letra: respuesta vacía válida (200), no un error —
-  // es el estado inicial normal de la página de búsqueda.
+  // es el estado inicial normal de la página de búsqueda, y también el PING
+  // DE CALENTAMIENTO que mandan el header y BuscadorClient cuando alguien
+  // está por buscar. Dos decisiones deliberadas acá:
+  // 1. after(): el índice se construye/refresca DESPUÉS de responder, así el
+  //    ping vuelve al instante y la primera búsqueda real encuentra el
+  //    índice listo (o casi).
+  // 2. no-store: si el CDN cacheara esta respuesta vacía, los pings nunca
+  //    llegarían a la función y el calentamiento sería un placebo.
   if (q.length < MIN_QUERY) {
-    return NextResponse.json({ total: 0, resultados: [] }, { headers: HEADERS })
+    after(() => getIndice(getAllPostsBuscador).catch(() => {}))
+    return NextResponse.json(
+      { total: 0, resultados: [] },
+      { headers: { 'Cache-Control': 'no-store', 'X-Robots-Tag': 'noindex' } }
+    )
   }
 
   try {

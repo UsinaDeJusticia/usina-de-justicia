@@ -163,6 +163,15 @@ módulos de funciones puras.
    exactamente donde cae quien busca una nota con un link viejo. Pie y 404
    siguen siendo server components (`next/form`); `BuscadorClient` sincroniza
    la query entrante cuando se busca estando ya en /buscar.
+4. **Optimización de latencia del buscador** (28-ago, Emanuel reportó
+   demora): el memo del índice pasó a stale-while-revalidate (el índice
+   vencido se sirve igual y el refresco corre de fondo — nadie espera una
+   reconstrucción salvo la primerísima de una instancia fría) +
+   deduplicación de construcciones concurrentes (antes, cada tecleo durante
+   una reconstrucción disparaba la suya: N tandas de ~10 requests a WP) +
+   pings de calentamiento (abrir la barra del header o llegar a /buscar
+   dispara la construcción vía `after()` de next/server, mientras la
+   persona tipea). Suite 87→90.
 
 ## Rama en curso: `fix/build-resiliente-wp` (21-ago-2026, sin PR todavía)
 
