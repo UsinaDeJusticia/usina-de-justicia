@@ -135,7 +135,7 @@ Se evaluó vitest y se descartó: 40 paquetes y un build script de `esbuild`
 que `pnpm-workspace.yaml` dejó deliberadamente sin aprobar, para testear dos
 módulos de funciones puras.
 
-## Rama en curso: `feature/sugerencias-comision` (27/28-ago-2026, sin PR — NO se mergea en esta etapa por pedido de Emanuel)
+## Rama mergeada: `feature/sugerencias-comision` (27/28-ago-2026 — merge a master autorizado explícitamente por Emanuel el 28-ago)
 
 1. **Bloque "ahora mismo" de las sugerencias de la Comisión** (27-ago):
    puntos 1, 5, 7, 11, 13, 14, 15, 16 y 17 — detalle y veredictos en
