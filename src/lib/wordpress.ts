@@ -601,7 +601,11 @@ const BOX_SHADOW_VALUE = new RegExp(
   `^(inset\\s+)?-?\\d+(\\.\\d+)?(px|em|rem)?(\\s+-?\\d+(\\.\\d+)?(px|em|rem)?){1,3}\\s+${COLOR_VALUE.source}(\\s+inset)?$`
 )
 
-const SANITIZE_OPTIONS: sanitizeHtml.IOptions = {
+// @types/sanitize-html@2.16.1 no declara 'allowedEmptyAttributes', aunque la
+// librería en runtime (sanitize-html@2.17.0) sí la soporta — desfasaje del
+// paquete de tipos. Se extiende el tipo acá en vez de silenciar todo el
+// objeto con 'any'.
+const SANITIZE_OPTIONS: sanitizeHtml.IOptions & { allowedEmptyAttributes?: string[] } = {
   allowedTags: [
     'p',
     'br',
@@ -637,7 +641,10 @@ const SANITIZE_OPTIONS: sanitizeHtml.IOptions = {
   ],
   // Nunca 'script', bajo ninguna condición.
   allowedAttributes: {
-    a: ['href', 'title', 'target', 'rel'],
+    // 'download': el bloque "Archivo" de WordPress lo usa en el botón de
+    // descarga, para que el navegador guarde el archivo en vez de navegar.
+    a: ['href', 'title', 'target', 'rel', 'download', 'class'],
+    div: ['class'],
     img: [
       'src',
       'srcset',
@@ -662,9 +669,26 @@ const SANITIZE_OPTIONS: sanitizeHtml.IOptions = {
       'loading',
     ],
     // 'class' se remueve deliberadamente (comportamiento previo para
-    // elementor/wp-block); 'style' e 'id' sí se preservan.
+    // elementor/wp-block) en TODOS los demás elementos; 'style' e 'id' sí
+    // se preservan. La única excepción son las dos clases del bloque
+    // "Archivo" listadas en allowedClasses, más abajo.
     '*': ['style', 'id'],
   },
+  // Único uso de 'class' en todo el saneado: las dos clases del bloque
+  // "Archivo" de WordPress (ver el comentario largo en globals.css, sección
+  // .wp-block-file). Al no estar acá, cualquier otra clase en 'a' o 'div'
+  // sigue descartándose igual que antes — allowedClasses no abre la puerta
+  // a nada más.
+  allowedClasses: {
+    div: ['wp-block-file'],
+    a: ['wp-block-file__button'],
+  },
+  // 'download' del botón del bloque "Archivo" llega sin valor
+  // (<a download>, no <a download="algo">) — sin esto, sanitize-html lo
+  // trata como un atributo "no booleano" con valor vacío y lo descarta.
+  // 'alt' es el default de la librería; se repite acá porque especificar
+  // esta opción reemplaza el default en vez de sumarse a él.
+  allowedEmptyAttributes: ['alt', 'download'],
   allowedIframeHostnames: [
     'www.youtube.com',
     'www.youtube-nocookie.com',

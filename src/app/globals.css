@@ -1,4 +1,17 @@
 @import 'tailwindcss';
+@plugin '@tailwindcss/typography';
+
+/*
+ * El plugin de arriba es lo que le da vida a las clases `prose`/`prose-*`
+ * que ya se usaban en varias páginas (noticias/[slug], legal/terminos,
+ * legal/privacidad, en/page) para mostrar contenido de WordPress — estaban
+ * escritas desde el principio pero el paquete nunca se instaló, así que
+ * Tailwind las ignoraba en silencio: sin este plugin, `prose-headings:*`
+ * no es un error, es simplemente una clase que no existe, y el Preflight de
+ * Tailwind ya había borrado el tamaño/peso/margen por defecto de los
+ * títulos. Resultado, en una nota con varios <h2>: título y párrafo con la
+ * misma tipografía, todo pegado. Corregido 30-ago-2026.
+ */
 
 /*
  * Fase 3 — Design System de Usina de Justicia.
@@ -188,4 +201,34 @@
     text-decoration: underline;
     text-underline-offset: 2px;
   }
+}
+
+/*
+ * Bloque "Archivo" de WordPress (Gutenberg core/file), tal como llega en el
+ * contenido de las notas: <div><a>nombre.pdf</a><a class="wp-block-file__button"
+ * download>Descarga</a></div>. src/lib/wordpress.ts le saca la clase a TODO
+ * el resto del contenido a propósito (evita que llegue diseño no controlado
+ * desde WordPress) — estas dos clases son la única excepción, puntual,
+ * porque sin ningún estilo de reemplazo los dos <a> quedaban pegados, sin
+ * espacio ("nombre.pdfDescarga"): WordPress les pone su propio botón vía el
+ * CSS del tema, que este sitio headless nunca carga. Diseño propio en vez de
+ * imitar el de WordPress. Corregido 30-ago-2026.
+ */
+.wp-block-file {
+  @apply flex flex-wrap items-center gap-3 my-6 px-4 py-3 bg-white border border-grey-200 rounded-xs;
+}
+
+.wp-block-file > a:first-child {
+  @apply font-bold text-ink;
+}
+
+.wp-block-file__button {
+  @apply ml-auto shrink-0 inline-flex items-center px-4 py-2 bg-navy-600 text-white text-body-sm font-bold rounded-xs no-underline;
+  /* @apply no admite 'duration-base' (utilidad derivada de un token
+     @theme) en este build de Tailwind v4 — mismo patrón que a:hover, arriba. */
+  transition: background-color var(--duration-base) var(--ease-out);
+}
+
+.wp-block-file__button:hover {
+  @apply bg-navy-800 text-white no-underline;
 }
