@@ -42,6 +42,56 @@ describe('cleanWPContent — saneado', () => {
     const salida = cleanWPContent('<iframe src="https://ejemplo-ajeno.test/x"></iframe>')
     assert.equal(salida.includes('ejemplo-ajeno.test'), false)
   })
+
+  it('descarta la clase de un div que no es el bloque "Archivo"', () => {
+    const salida = cleanWPContent('<div class="elementor-section">x</div>')
+    assert.equal(salida.includes('class'), false)
+  })
+
+  it('descarta la clase de un enlace que no es el botón del bloque "Archivo"', () => {
+    const salida = cleanWPContent('<a href="/x" class="elementor-button">clic</a>')
+    assert.equal(salida.includes('class'), false)
+  })
+})
+
+describe('cleanWPContent — bloque "Archivo" de WordPress (regresión 30-ago-2026)', () => {
+  // Antes de este arreglo, sanitize-html descartaba 'class' de TODO
+  // elemento, así que el botón de descarga del bloque nativo "Archivo" de
+  // WordPress (Gutenberg core/file) llegaba como dos <a> sueltos, sin
+  // ningún estilo ni espacio entre ellos — "nombre.pdfDescarga", pegados.
+  // Ver el CSS de reemplazo en src/app/globals.css (.wp-block-file).
+  const bloqueArchivo =
+    '<div class="wp-block-file"><a href="/x.pdf">Nombre del archivo</a>' +
+    '<a href="/x.pdf" class="wp-block-file__button" download>Descargar</a></div>'
+
+  it('conserva la clase del contenedor del bloque "Archivo"', () => {
+    const salida = cleanWPContent(bloqueArchivo)
+    assert.equal(salida.includes('class="wp-block-file"'), true)
+  })
+
+  it('conserva la clase del botón de descarga', () => {
+    const salida = cleanWPContent(bloqueArchivo)
+    assert.equal(salida.includes('class="wp-block-file__button"'), true)
+  })
+
+  it('conserva el atributo download del botón', () => {
+    const salida = cleanWPContent(bloqueArchivo)
+    assert.equal(salida.includes('download'), true)
+  })
+
+  it('no abre la puerta a clases arbitrarias en el mismo div', () => {
+    const salida = cleanWPContent('<div class="wp-block-file evil-tracker">x</div>')
+    assert.equal(salida.includes('wp-block-file'), true)
+    assert.equal(salida.includes('evil-tracker'), false)
+  })
+
+  it('no abre la puerta a clases arbitrarias en el mismo enlace', () => {
+    const salida = cleanWPContent(
+      '<a href="/x" class="wp-block-file__button evil-tracker">clic</a>'
+    )
+    assert.equal(salida.includes('wp-block-file__button'), true)
+    assert.equal(salida.includes('evil-tracker'), false)
+  })
 })
 
 describe('cleanWPContent — denegación de servicio por retroceso de regex', () => {

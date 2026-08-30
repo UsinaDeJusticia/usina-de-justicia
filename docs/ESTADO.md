@@ -17,6 +17,44 @@
 
 **Gate G4 ✅ COMPLETO (15-jul):** optimización integral verificada — Lighthouse ≥96 en Performance y 100 en SEO en las 5 plantillas clave (ver sección Optimización).
 
+## Rama en curso: `fix/estilo-contenido-wp` (30-ago-2026, sin PR todavía)
+
+Emanuel reportó, mostrando una nota real recién publicada ("Usina de Justicia
+pidió al CENAVID..."), que en el CRM (editor de WordPress) se ve bien pero en
+el sitio publicado los títulos no se distinguen del texto y el nombre del
+archivo para descargar queda pegado a la palabra "Descarga", sin espacio.
+
+Dos causas independientes, ambas propias, ninguna es una regresión reciente:
+
+1. **Faltaba `@tailwindcss/typography`.** Varias páginas (`noticias/[slug]`,
+   `legal/terminos`, `legal/privacidad`, `en/page`) ya usaban clases
+   `prose`/`prose-*` para el contenido de WordPress, pero el paquete nunca
+   se instaló — Tailwind las ignoraba en silencio, y su Preflight ya había
+   borrado el tamaño/peso/margen por defecto de los títulos. Instalado
+   (`@tailwindcss/typography@0.5.20`, sin scripts de instalación, publicado
+   hace meses) y registrado en `globals.css` con `@plugin`.
+2. **El bloque "Archivo" de WordPress** (Gutenberg core/file) llega como dos
+   `<a>` sueltos, sin espacio ni botón, porque `cleanWPContent`
+   (`src/lib/wordpress.ts`) le saca la clase a *todo* elemento a propósito
+   (para no dejar pasar diseño no controlado desde WordPress/Elementor).
+   Se agregó una excepción puntual vía `allowedClasses` de sanitize-html —
+   solo `wp-block-file` y `wp-block-file__button` sobreviven, con diseño
+   propio en `globals.css` (no se intenta imitar el botón de WordPress, que
+   de todos modos nunca llega a este sitio headless). De paso, hizo falta
+   `allowedEmptyAttributes: ['alt', 'download']`: sanitize-html descartaba
+   el atributo `download` del botón por venir sin valor.
+
+Cobertura: 7 tests nuevos en `wordpress-sanitize.test.ts` (conserva las dos
+clases del bloque, conserva `download`, y — importante — sigue descartando
+cualquier OTRA clase en esos mismos elementos). Suite 90→97.
+
+**Pendiente de verificar antes del PR**: la red de este entorno bloqueó
+WordPress de forma intermitente durante la sesión, así que la verificación
+visual completa (¿el título ya se ve grande y en negrita? ¿el botón de
+descarga tiene su propio estilo?) quedó para el preview de Vercel, que sí
+llega a WordPress. Los tests unitarios sobre HTML sintético ya confirman que
+la lógica de saneado hace exactamente lo esperado.
+
 ## Rama mergeada: `feature/acompanamiento-guias-derechos` (11-ago-2026, PR #3 → master)
 
 Trabajo posterior al merge de PR #2, sobre `/acompanamiento`, a pedido de Emanuel. No forma parte de las Fases 1-4 ni de los gates ya cerrados arriba — es evolución posterior. Detalle completo de fuentes y decisiones en `docs/COPY-acompanamiento-guias.md` v2.
