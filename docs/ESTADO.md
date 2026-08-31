@@ -17,7 +17,42 @@
 
 **Gate G4 ✅ COMPLETO (15-jul):** optimización integral verificada — Lighthouse ≥96 en Performance y 100 en SEO en las 5 plantillas clave (ver sección Optimización).
 
-## Rama en curso: `fix/estilo-contenido-wp` (30-ago-2026, sin PR todavía)
+## Rama en curso: `fix/cuota-image-optimization` (31-ago-2026, sin PR todavía — urgente, en producción)
+
+Vercel avisó que el proyecto agotó la cuota mensual de Image Optimization
+del plan Hobby (5.000 "transformations"). Verificado en vivo: pedir una
+variante de imagen no vista todavía devolvía **402**
+(`OPTIMIZED_IMAGE_REQUEST_PAYMENT_REQUIRED`) — imágenes rotas para
+cualquier visitante en notas nuevas y combinaciones de ancho no cacheadas.
+
+Causa: `next.config.mjs` no definía `deviceSizes`/`imageSizes`, así que
+aplicaban los 8+8 valores por defecto de Next.js — cada combinación
+ancho×imagen nueva es una transformation, y con tráfico real de un sitio
+de noticias la cuota se agota en días.
+
+Emanuel trajo un informe de otra sesión con diagnóstico y propuesta.
+Verificado contra el código antes de aplicar: **el informe se equivocaba
+en un punto** — proponía evaluar `unoptimized` en `ArticleCard.tsx`
+(tarjetas de listado), asumiendo bajo costo de banda. Comprobado que
+`imagenDestacada` toma `source_url` de WordPress directo
+(`src/lib/wordpress.ts:185`), la imagen completa sin recortar (hasta
+2560px, sufijo "-scaled" de WP) — desoptimizar ahí serviría fotos pesadas
+en cada miniatura del sitio entero. No se aplicó.
+
+Arreglo:
+1. `next.config.mjs`: `deviceSizes`/`imageSizes` recortados a los anchos
+   reales que pide el sitio (arreglo permanente) + `unoptimized: true`
+   global temporal (freno de emergencia: cero 402 garantizado mientras el
+   consumo del nuevo ciclo se estabiliza bajo la cuota).
+2. `Testimonios.tsx`: `unoptimized` en el `<Image>` de las fotos — sin
+   efecto hoy (ningún testimonio tiene foto cargada todavía), preparado
+   para cuando se agreguen.
+
+**Pendiente, no bloqueante**: sacar el `unoptimized: true` global de
+`next.config.mjs` cuando el panel de Vercel confirme consumo mensual bajo
+control con el recorte de tamaños puesto.
+
+## Rama mergeada: `fix/estilo-contenido-wp` (30-ago-2026, PR #20 → master)
 
 Emanuel reportó, mostrando una nota real recién publicada ("Usina de Justicia
 pidió al CENAVID..."), que en el CRM (editor de WordPress) se ve bien pero en
