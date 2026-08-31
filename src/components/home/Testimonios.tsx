@@ -103,6 +103,13 @@ export function Testimonios() {
                     fill
                     sizes="(min-width: 768px) 25vw, 50vw"
                     className="object-cover"
+                    // Sin efecto hoy (ningún testimonio tiene `foto` todavía —
+                    // pendiente el consentimiento de las familias). Cuando se
+                    // carguen, van a venir ya recortadas a este tamaño; pasar
+                    // por el optimizador de Vercel no aportaría nada y sí
+                    // sumaría transformations (cuota ajustada, ver
+                    // next.config.mjs).
+                    unoptimized
                   />
                 </div>
               ) : (

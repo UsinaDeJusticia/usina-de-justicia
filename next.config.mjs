@@ -62,6 +62,24 @@ const nextConfig = {
     // lento) en cada revalidación y baja la duración de carga de la imagen
     // LCP del hero (Perf Home, gate G4).
     minimumCacheTTL: 3600,
+    // Sin esto, Next usa 8 deviceSizes + 8 imageSizes por defecto: cada
+    // combinación ancho×imagen nueva es una "transformation" para Vercel, y
+    // el plan Hobby factura por transformation (no por imagen de origen).
+    // Con tráfico real de un sitio de noticias, la cuota mensual (5.000) se
+    // agota en días y las imágenes no vistas todavía devuelven 402
+    // (verificado en producción, 31-ago-2026: `OPTIMIZED_IMAGE_REQUEST_PAYMENT_REQUIRED`).
+    // Este recorte cubre los anchos reales que pide el sitio (ver `sizes` en
+    // ArticleCard, HeroEditorial, noticias/[slug] y Testimonios) sin las
+    // variantes intermedias (750/828/1200/2048) ni ultra-chicas (16/32/48)
+    // que nadie pide acá.
+    deviceSizes: [640, 1080, 1920],
+    imageSizes: [64, 256, 384],
+    // Freno de emergencia (31-ago-2026): la cuota del mes ya está agotada,
+    // así que hasta que el ciclo resetee y el consumo se estabilice bajo el
+    // límite con el recorte de arriba, se sirve la imagen de origen sin pasar
+    // por el optimizador — pesa más, pero nunca da 402. Sacar esta línea
+    // (y solo esta) cuando el panel de Vercel confirme consumo bajo control.
+    unoptimized: true,
     remotePatterns: WP_HOSTS.map((hostname) => ({
       protocol: 'https',
       hostname,
