@@ -1,4 +1,4 @@
-import { NextResponse, after } from 'next/server'
+import { NextResponse } from 'next/server'
 import { getIndice, buscar, MIN_QUERY, MAX_QUERY } from '@/lib/buscador'
 import { getAllPostsBuscador } from '@/lib/wordpress'
 
@@ -42,20 +42,17 @@ export async function GET(request: Request) {
   const q = rawQ.trim().slice(0, MAX_QUERY)
 
   // Query vacía o de una letra: respuesta vacía válida (200), no un error —
-  // es el estado inicial normal de la página de búsqueda, y también el PING
-  // DE CALENTAMIENTO que mandan el header y BuscadorClient cuando alguien
-  // está por buscar. Dos decisiones deliberadas acá:
-  // 1. after(): el índice se construye/refresca DESPUÉS de responder, así el
-  //    ping vuelve al instante y la primera búsqueda real encuentra el
-  //    índice listo (o casi).
-  // 2. no-store: si el CDN cacheara esta respuesta vacía, los pings nunca
-  //    llegarían a la función y el calentamiento sería un placebo.
+  // es el estado inicial normal de la página de búsqueda.
+  //
+  // Acá hubo un calentamiento anticipado (un `after()` que reconstruía el
+  // índice tras responder) y se quitó el 2-sep-2026: cada ping disparaba ~10
+  // llamadas a WP más indexar 858 documentos con MiniSearch, o sea CPU pura
+  // facturable, y con 4 visitas a /buscar cada 12h costaba mucho más de lo
+  // que ahorraba. El índice se construye igual en la primera búsqueda real y
+  // queda memoizado; el stale-while-revalidate de buscador.ts sigue evitando
+  // que alguien espere una reconstrucción.
   if (q.length < MIN_QUERY) {
-    after(() => getIndice(getAllPostsBuscador).catch(() => {}))
-    return NextResponse.json(
-      { total: 0, resultados: [] },
-      { headers: { 'Cache-Control': 'no-store', 'X-Robots-Tag': 'noindex' } }
-    )
+    return NextResponse.json({ total: 0, resultados: [] }, { headers: HEADERS })
   }
 
   try {

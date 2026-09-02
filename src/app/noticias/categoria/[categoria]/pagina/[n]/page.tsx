@@ -5,7 +5,7 @@ import type { SiteSection } from '@/types/wordpress'
 import { getSectionTotalPages, pageRangeParams } from '@/lib/pagination'
 import { CategoriaListView } from '../../_components/CategoriaListView'
 
-export const revalidate = 300
+export const revalidate = 1800
 
 // ============================================
 // GENERACIÓN ESTÁTICA: pre-generar las páginas 2..totalPages DE CADA

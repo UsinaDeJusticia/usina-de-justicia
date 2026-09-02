@@ -3,7 +3,7 @@ import { notFound, redirect } from 'next/navigation'
 import { NoticiasListView } from '../../_components/NoticiasListView'
 import { getGeneralTotalPages, pageRangeParams } from '@/lib/pagination'
 
-export const revalidate = 300
+export const revalidate = 1800
 
 // ============================================
 // GENERACIÓN ESTÁTICA: pre-generar todas las páginas 2..totalPages

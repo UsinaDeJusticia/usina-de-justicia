@@ -37,6 +37,34 @@ const WP_API_URL =
 
 const FETCH_TIMEOUT = 15000
 
+// ============================================
+// Ventanas de revalidación (ISR)
+//
+// Antes había un único `revalidate: 300` fijo acá abajo, en wpFetch. Eso
+// hacía que las 842 páginas de nota vencieran su caché cada 5 minutos, y como
+// un rastreador vuelve a la misma URL cada horas o días, NUNCA encontraba una
+// copia válida: cada visita de Googlebot disparaba un re-render completo
+// (sanitize-html sobre el artículo entero + render). Con la reindexación
+// post-migración eso llevó la CPU activa de Vercel de 2-4 min/día a 13+ min
+// por intervalo, con tráfico real bajísimo (verificado el 2-sep-2026 en los
+// logs: casi todo salía `cache=STALE`, casi ningún `HIT`).
+//
+// Ojo con el detalle de Next.js: el revalidate efectivo de una ruta es el
+// MÍNIMO entre el del segmento y el de CADA fetch que corre en él. Declarar
+// 24h en la página no alcanza si el fetch sigue en 300 — hay que pasar el
+// valor por acá.
+//
+// Alargar el reloj no retrasa nada editorialmente: el plugin de WordPress
+// avisa por webhook (/api/revalidate) con la ruta puntual de la nota en cada
+// publicación o edición, así que un cambio se ve al instante.
+// ============================================
+
+/** Listados, home y buscador: contenido que rota. */
+export const WP_REVALIDATE = 1800 // 30 min
+
+/** Notas individuales: contenido histórico que no cambia solo. */
+export const WP_REVALIDATE_ARCHIVO = 86400 // 24 h
+
 // Cache en memoria para categorías y autores (cambian poco)
 const cache = new Map<string, { data: unknown; timestamp: number }>()
 const CACHE_TTL = 5 * 60 * 1000 // 5 minutos
@@ -47,7 +75,8 @@ const CACHE_TTL = 5 * 60 * 1000 // 5 minutos
 
 async function wpFetch<T>(
   endpoint: string,
-  params: Record<string, string | number | boolean | undefined> = {}
+  params: Record<string, string | number | boolean | undefined> = {},
+  revalidate: number = WP_REVALIDATE
 ): Promise<{ data: T; headers: Headers }> {
   const url = new URL(`${WP_API_URL}${endpoint}`)
 
@@ -66,7 +95,7 @@ async function wpFetch<T>(
       url.toString(),
       {
         headers: { Accept: 'application/json' },
-        next: { revalidate: 300 },
+        next: { revalidate },
       },
       {
         timeoutMs: FETCH_TIMEOUT,
@@ -263,11 +292,17 @@ export async function getWPCategories(): Promise<Categoria[]> {
   return categorias
 }
 
-async function getCategoriasMap(): Promise<Map<number, Categoria>> {
-  const { data } = await wpFetch<WPCategory[]>('/categories', {
-    per_page: 100,
-    hide_empty: true,
-  })
+async function getCategoriasMap(
+  revalidate: number = WP_REVALIDATE
+): Promise<Map<number, Categoria>> {
+  const { data } = await wpFetch<WPCategory[]>(
+    '/categories',
+    {
+      per_page: 100,
+      hide_empty: true,
+    },
+    revalidate
+  )
   return new Map(data.map((cat) => [cat.id, wpCategoryToCategoria(cat)]))
 }
 
@@ -298,9 +333,12 @@ async function getCategoryIdsBySection(
 // ============================================
 
 export async function getArticulos(
-  params: WPQueryParams = {}
+  params: WPQueryParams = {},
+  revalidate: number = WP_REVALIDATE
 ): Promise<PaginatedResponse<Articulo>> {
-  const categoriasMap = await getCategoriasMap()
+  // El revalidate va a AMBOS fetches (categorías y posts): si uno queda
+  // corto, el mínimo arrastra a toda la ruta que los use.
+  const categoriasMap = await getCategoriasMap(revalidate)
 
   const queryParams: Record<string, string | number | boolean | undefined> = {
     page: params.page || 1,
@@ -322,7 +360,8 @@ export async function getArticulos(
 
   const { data: wpPosts, headers } = await wpFetch<WPPost[]>(
     '/posts',
-    queryParams
+    queryParams,
+    revalidate
   )
 
   const total = parseInt(headers.get('X-WP-Total') || '0', 10)
@@ -339,9 +378,13 @@ export async function getArticulos(
 }
 
 export async function getArticuloBySlug(
-  slug: string
+  slug: string,
+  // Una nota publicada no cambia sola: 24h por defecto. Sus consumidores son
+  // la página de la nota y su opengraph-image, las dos superficies que el
+  // rastreador barre de punta a punta.
+  revalidate: number = WP_REVALIDATE_ARCHIVO
 ): Promise<Articulo | null> {
-  const result = await getArticulos({ slug, perPage: 1 })
+  const result = await getArticulos({ slug, perPage: 1 }, revalidate)
   return result.data[0] || null
 }
 
@@ -405,7 +448,10 @@ export async function getAllPublishedPostSlugs(): Promise<SitemapPostEntry[]> {
 
   const { data: firstPage, headers } = await wpFetch<SitemapPostEntry[]>(
     '/posts',
-    { ...baseParams, page: 1 }
+    { ...baseParams, page: 1 },
+    // El sitemap declara su propia ventana (6h) en src/app/sitemap.ts; el
+    // fetch va largo para que el mínimo no lo baje a 30 min.
+    WP_REVALIDATE_ARCHIVO
   )
 
   const totalPages = parseInt(headers.get('X-WP-TotalPages') || '1', 10)
@@ -413,7 +459,11 @@ export async function getAllPublishedPostSlugs(): Promise<SitemapPostEntry[]> {
 
   const restPages = await Promise.all(
     Array.from({ length: totalPages - 1 }, (_, i) =>
-      wpFetch<SitemapPostEntry[]>('/posts', { ...baseParams, page: i + 2 })
+      wpFetch<SitemapPostEntry[]>(
+        '/posts',
+        { ...baseParams, page: i + 2 },
+        WP_REVALIDATE_ARCHIVO
+      )
     )
   )
 
@@ -506,15 +556,21 @@ export async function getAllPostsBuscador(): Promise<PostBuscador[]> {
 // API: TAGS
 // ============================================
 
-export async function getWPTags(): Promise<Tag[]> {
+export async function getWPTags(
+  revalidate: number = WP_REVALIDATE
+): Promise<Tag[]> {
   const cacheKey = 'wp-tags'
   const cached = getCached<Tag[]>(cacheKey)
   if (cached) return cached
 
-  const { data } = await wpFetch<WPTagType[]>('/tags', {
-    per_page: 100,
-    hide_empty: true,
-  })
+  const { data } = await wpFetch<WPTagType[]>(
+    '/tags',
+    {
+      per_page: 100,
+      hide_empty: true,
+    },
+    revalidate
+  )
 
   const tags: Tag[] = data.map((t) => ({
     id: String(t.id),
