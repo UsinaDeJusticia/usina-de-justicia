@@ -15,8 +15,31 @@ import {
   cleanWPContent,
   estimateReadTime,
   extractFirstImage,
+  WP_REVALIDATE_ARCHIVO,
 } from '@/lib/wordpress'
 import type { Articulo } from '@/types'
+
+// ============================================
+// Una nota publicada no cambia sola: 24h de ventana ISR en vez de los 5 min
+// que se heredaban antes. Las 842 notas son la superficie que un rastreador
+// barre de punta a punta, y con 5 min NUNCA encontraba caché válido: cada
+// visita disparaba un re-render completo. Eso fue lo que llevó la CPU activa
+// de Vercel al 100% de la cuota (2-sep-2026, ver el comentario largo en
+// src/lib/wordpress.ts).
+//
+// Las ediciones NO esperan estas 24h: el plugin de WordPress avisa por
+// webhook con la ruta puntual de la nota y se refresca al instante.
+//
+// Los fetches de esta ruta también van a 24h: el revalidate efectivo es el
+// MÍNIMO entre el del segmento y el de cada fetch, así que dejar uno corto
+// anularía todo esto.
+// ============================================
+
+// Literal a propósito: Next.js exige que este export sea un número que pueda
+// leer sin ejecutar el módulo, así que no acepta la constante importada
+// (`Unknown identifier at "revalidate"` en build). Tiene que seguir igual a
+// WP_REVALIDATE_ARCHIVO de src/lib/wordpress.ts — si cambia una, cambiar la otra.
+export const revalidate = 86400 // 24 h — igual a WP_REVALIDATE_ARCHIVO
 
 // ============================================
 // GENERACIÓN ESTÁTICA: los 100 más recientes se pre-renderizan (1 sola
@@ -25,7 +48,10 @@ import type { Articulo } from '@/types'
 
 export async function generateStaticParams() {
   try {
-    const { data: articulos } = await getArticulos({ perPage: 100 })
+    const { data: articulos } = await getArticulos(
+      { perPage: 100 },
+      WP_REVALIDATE_ARCHIVO
+    )
     return articulos.map((articulo) => ({ slug: articulo.slug }))
   } catch {
     return []
@@ -129,10 +155,13 @@ export default async function NoticiaArticlePage({ params }: SlugPageProps) {
   // Artículos relacionados (misma categoría, excluyendo el actual)
   let relacionados: Awaited<ReturnType<typeof getArticulos>>['data'] = []
   try {
-    const result = await getArticulos({
-      perPage: 3,
-      categories: [Number(articulo.categoria.id)],
-    })
+    const result = await getArticulos(
+      {
+        perPage: 3,
+        categories: [Number(articulo.categoria.id)],
+      },
+      WP_REVALIDATE_ARCHIVO
+    )
     relacionados = result.data.filter((a) => a.id !== articulo.id).slice(0, 3)
   } catch {
     // Si falla, seguimos sin relacionados

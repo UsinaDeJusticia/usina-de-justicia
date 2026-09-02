@@ -7,8 +7,20 @@
 
 import type { MetadataRoute } from 'next'
 import { siteConfig } from '@/lib/site-config'
-import { getWPTags, getAllPublishedPostSlugs } from '@/lib/wordpress'
+import {
+  getWPTags,
+  getAllPublishedPostSlugs,
+  WP_REVALIDATE_ARCHIVO,
+} from '@/lib/wordpress'
 import { SITE_SECTIONS } from '@/types/wordpress'
+
+// Cada regeneración de este archivo son ~10 llamadas a WordPress (los 842
+// slugs paginados de 100 en 100) más armar las 877 entradas. Antes heredaba
+// 5 minutos del fetch, así que se rearmaba constantemente mientras el
+// rastreador pasaba (verificado el 2-sep-2026: salía `cache=STALE`). Un
+// sitemap no necesita frescura de minutos: 6h alcanza de sobra, y las notas
+// nuevas igual se descubren por los listados, que van a 30 min.
+export const revalidate = 21600 // 6 h
 
 // Los 19 posts reasignados a "IVUJUS-301" en la Fase 2 (ver
 // docs/inventario/COLA-LARGA-decisiones.md sección IVUJUS y
@@ -82,7 +94,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Tags reales (con al menos un post), page 1 de cada uno.
   let tagRoutes: MetadataRoute.Sitemap = []
   try {
-    const tags = await getWPTags()
+    const tags = await getWPTags(WP_REVALIDATE_ARCHIVO)
     tagRoutes = tags.map((tag) => ({
       url: `${siteConfig.url}/noticias/tag/${tag.slug}`,
       lastModified: now,

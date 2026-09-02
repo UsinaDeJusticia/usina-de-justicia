@@ -4,7 +4,7 @@ import { getWPTags } from '@/lib/wordpress'
 import { getTagTotalPages } from '@/lib/pagination'
 import { TagListView } from '../../_components/TagListView'
 
-export const revalidate = 300
+export const revalidate = 1800
 
 // El máximo real hoy es 3 posts por tag (1 sola página) — no hay pagina/2+
 // que pre-renderizar. El mecanismo igual existe: dynamicParams (default true

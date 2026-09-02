@@ -58,16 +58,6 @@ export function BuscadorClient() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [urlQ])
 
-  // Calentamiento: llegar a /buscar sin query (desde el pie, el 404 o
-  // directo) avisa que alguien está por buscar — el ping hace que el
-  // servidor construya/refresque el índice mientras la persona tipea (el
-  // endpoint responde al instante y trabaja después). Con query inicial es
-  // redundante: la búsqueda real sale enseguida. Fire-and-forget.
-  useEffect(() => {
-    if (!q.trim()) fetch('/api/buscar?q=', { cache: 'no-store' }).catch(() => {})
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
-
   useEffect(() => {
     const query = q.trim()
 

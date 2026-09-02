@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 
 // Página estática (ISR): re-generada como máximo cada 5 minutos. Page 1 vive
 // acá; las páginas 2+ están en /noticias/pagina/[n].
-export const revalidate = 300
+export const revalidate = 1800
 
 export default async function NoticiasPage() {
   return <NoticiasListView page={1} />

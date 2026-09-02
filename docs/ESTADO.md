@@ -17,6 +17,62 @@
 
 **Gate G4 ✅ COMPLETO (15-jul):** optimización integral verificada — Lighthouse ≥96 en Performance y 100 en SEO en las 5 plantillas clave (ver sección Optimización).
 
+## Rama en curso: `fix/cpu-revalidate` (2-sep-2026, sin PR todavía — urgente, en producción)
+
+Vercel avisó que la CPU activa (Fluid Active CPU) saltó de 2-4 min/día a 13+
+min por intervalo, casi el 100% de la cuota del plan gratuito, con tráfico
+real bajísimo (~1.2k invocaciones/12h).
+
+Emanuel trajo un informe de otra sesión que apuntaba a Prisma/ORM (consultas
+sin paginación, N+1, índices). **Este proyecto no tiene base de datos**, así
+que ese frente no aplicaba. Diagnóstico real, verificado en los logs de
+runtime de producción: prácticamente todas las peticiones salían con
+`cache=STALE` (casi ningún `HIT`), y los timestamps mostraban un rastreador
+barriendo el catálogo (varias notas distintas en el mismo segundo) —
+Google reindexando las 842 notas tras la migración y el sitemap enviado.
+
+Causa: `/noticias/[slug]` no declaraba `revalidate`, así que heredaba los
+300 s fijos de `wpFetch`. Un rastreador vuelve a la misma URL cada horas o
+días — nunca dentro de esos 5 minutos, así que **cada visita encontraba el
+caché vencido y disparaba un re-render completo** (sanitize-html sobre el
+artículo entero + render). Para tráfico de crawlers el caché no servía de
+nada. ~1.200 invocaciones × ~0,5-0,7 s de CPU ≈ los 13 min reportados.
+
+Dato de Next.js que ordena todo el arreglo: **el revalidate efectivo de una
+ruta es el MÍNIMO entre el del segmento y el de CADA fetch que corre en
+ella.** Declarar 24 h en la página no alcanzaba; hubo que hacer el TTL
+configurable por llamada en `wpFetch` y encadenarlo por `getCategoriasMap`,
+`getArticulos`, `getArticuloBySlug`, `getWPTags` y `getAllPublishedPostSlugs`.
+
+Ventanas nuevas (confirmadas en la tabla del build, no supuestas):
+- Notas individuales: **1 día** (antes 5 min) — 842 URLs, la superficie que
+  el rastreador barre completa.
+- Listados (noticias, categorías, tags y sus paginaciones), home,
+  /observatorio y /acompanamiento: **30 min** (antes 5).
+- `sitemap.xml`: **6 h**.
+- Se quitó el calentamiento anticipado del buscador (`after()` en
+  `/api/buscar` + los dos pings del cliente): cada ping disparaba ~10
+  llamadas a WP más indexar 858 documentos con MiniSearch — CPU pura — y con
+  4 visitas a `/buscar` cada 12 h costaba más de lo que ahorraba.
+
+**Por qué no retrasa nada editorialmente**: el plugin de WordPress ya manda
+la ruta puntual de cada nota al webhook `/api/revalidate`
+(`wp-plugin/usina-headless/usina-headless.php:212` envía `'/'`, `'/noticias'`
+y `'/noticias/' . $post->post_name`), así que publicar o editar sigue
+reflejándose al instante. Lo único que se alarga por reloj es contenido que
+no cambia solo.
+
+Dos cosas que aparecieron al verificar y conviene recordar:
+1. `export const revalidate` **tiene que ser un literal**: Next.js no acepta
+   una constante importada (`Unknown identifier at "revalidate"` en build).
+2. El sitemap quedaba en 30 min pese a declarar 6 h, porque también llama a
+   `getWPTags()` y el mínimo lo arrastraba. Ese es exactamente el efecto de
+   la regla del mínimo, apareciendo donde no se lo esperaba.
+
+**Pendiente menor, no bloqueante**: `docs/inventario/posts.json` (722 KB) se
+importa estático en `/recursos` y se parsea en cada arranque en frío; se
+podría reducir en build a las ~88 entradas con PDF.
+
 ## Rama en curso: `fix/cuota-image-optimization` (31-ago-2026, sin PR todavía — urgente, en producción)
 
 Vercel avisó que el proyecto agotó la cuota mensual de Image Optimization

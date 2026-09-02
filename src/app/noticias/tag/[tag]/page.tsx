@@ -18,7 +18,7 @@ export async function generateStaticParams() {
 
 // Página estática (ISR): re-generada como máximo cada 5 minutos. Page 1 de
 // cada tag vive acá; las páginas 2+ están en /noticias/tag/[tag]/pagina/[n].
-export const revalidate = 300
+export const revalidate = 1800
 
 interface TagPageProps {
   params: Promise<{ tag: string }>
