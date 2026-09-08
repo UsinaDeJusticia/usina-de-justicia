@@ -129,11 +129,27 @@
   --radius-xs: 3px;
   --radius-pill: 999px;
 
-  /* ─── Motion — mínimo, sin bounces ─── */
+  /*
+   * ─── Motion — mínimo, sin bounces ───
+   *
+   * El prefijo `--transition-duration-*` NO es decorativo: es el espacio de
+   * nombres que Tailwind v4 reconoce para generar las clases `duration-*`.
+   * Estos tokens se llamaban `--duration-fast/base/slow`, y con ese nombre
+   * Tailwind no generaba NINGUNA clase — las 62 apariciones de
+   * `duration-base` y `duration-slow` en los componentes eran letra muerta y
+   * todas las transiciones del sitio corrían a los 150 ms por defecto de
+   * Tailwind en vez de a los valores de acá. No rompía nada, pero la perilla
+   * del design system no movía nada (verificado en el CSS compilado:
+   * `.duration-base` no existía; con este prefijo sí, y además setea
+   * `--tw-duration`, que es lo que compone bien con `transition-*`).
+   *
+   * `--ease-out` ya estaba en el namespace correcto (`--ease-*`) y siempre
+   * funcionó.
+   */
   --ease-out: cubic-bezier(0.2, 0.6, 0.2, 1);
-  --duration-fast: 120ms;
-  --duration-base: 200ms;
-  --duration-slow: 320ms;
+  --transition-duration-fast: 120ms;
+  --transition-duration-base: 200ms;
+  --transition-duration-slow: 320ms;
 
   /* ─── Compatibilidad de layout (Fase 2) ─── */
   --container-content: 1200px;
@@ -193,7 +209,7 @@
   a {
     color: var(--color-navy-600);
     text-decoration: none;
-    transition: color var(--duration-base) var(--ease-out);
+    transition: color var(--transition-duration-base) var(--ease-out);
   }
 
   a:hover {
@@ -226,7 +242,7 @@
   @apply ml-auto shrink-0 inline-flex items-center px-4 py-2 bg-navy-600 text-white text-body-sm font-bold rounded-xs no-underline;
   /* @apply no admite 'duration-base' (utilidad derivada de un token
      @theme) en este build de Tailwind v4 — mismo patrón que a:hover, arriba. */
-  transition: background-color var(--duration-base) var(--ease-out);
+  transition: background-color var(--transition-duration-base) var(--ease-out);
 }
 
 .wp-block-file__button:hover {
