@@ -20,6 +20,42 @@ export const alt = 'Usina de Justicia'
 export const size = OG_SIZE
 export const contentType = 'image/png'
 
+// ============================================
+// QUIÉN PAGA ESTA IMAGEN, Y QUÉ LA PROTEGE — medido, no supuesto
+//
+// Componer esta imagen es la operación más cara del sitio: pedirle la nota a
+// WordPress, descargar la foto destacada, convertirla con sharp y armar el
+// PNG con Satori. Medido contra el build de producción: **~0,40 s por
+// pedido**. Y sus clientes no son visitantes, son WhatsApp, Facebook y
+// LinkedIn yendo a buscar la vista previa cuando alguien comparte una nota.
+//
+// Lo que la protege NO es el `revalidate` de acá abajo. Next.js le pone a
+// esta respuesta `Cache-Control: public, immutable, max-age=31536000` porque
+// la URL lleva un hash de contenido, y el CDN la sirve desde el borde sin
+// volver a invocar la función. Comprobado: la cabecera sale igual con y sin
+// `revalidate`.
+//
+// Y lo que el `revalidate` NO hace, también comprobado: la ruta tiene un
+// segmento dinámico ([slug]) sin generateStaticParams, así que sigue marcada
+// como dinámica y **se recompone entera en cada pedido que llega al
+// origen**. Medido en el mismo build, cinco pedidos seguidos: 0,40 s sin
+// `revalidate` y 0,41 s con él. No lo cachea. Si algún día hace falta bajar
+// eso de verdad, el camino es pre-generar con generateStaticParams, no este
+// export — y hay que medir antes lo que cuesta el build de 842 imágenes.
+//
+// Entonces, ¿por qué queda? Por el `next: { revalidate }` del fetch de más
+// abajo, que sí sirve: cuando la ruta se recompone (cada deploy cambia el
+// hash de la URL y vacía el caché del CDN), la foto sale del Data Cache en
+// vez de volver a bajarla del WordPress de Hostinger, que es el servidor
+// flojo de la cadena. Este export acompaña esa ventana para que el segmento
+// no declare una más corta.
+//
+// Literal a propósito: Next.js no acepta una constante importada en este
+// export (`Unknown identifier at "revalidate"` en build), el mismo detalle
+// documentado en page.tsx de esta carpeta.
+// ============================================
+export const revalidate = 86400 // 24 h — igual a WP_REVALIDATE_ARCHIVO
+
 interface Props {
   params: Promise<{ slug: string }>
 }
@@ -32,7 +68,13 @@ function truncate(text: string, max: number): string {
  * falla la descarga/decodificación (la página cae al diseño de marca). */
 async function fetchImageAsPngDataUri(url: string): Promise<string | null> {
   try {
-    const res = await fetch(url)
+    // En Next 15 un fetch sin opciones NO se cachea: cada vez que esta ruta
+    // se recompone, esto volvía a bajar la foto entera del WordPress de
+    // Hostinger — que no tiene CDN y es el eslabón flojo. Con la ventana
+    // declarada sale del Data Cache, que además sobrevive a los deploys.
+    // Esta es la parte del arreglo que sí hace trabajo; ver el comentario de
+    // arriba para lo que el `revalidate` del segmento no hace.
+    const res = await fetch(url, { next: { revalidate: 86400 } })
     if (!res.ok) return null
     const buffer = Buffer.from(await res.arrayBuffer())
     const png = await sharp(buffer)

@@ -16,6 +16,16 @@ export const metadata: Metadata = {
 // migrado, ver docs/ESTADO.md). Fotos recibidas el 18-ago-2026 (retratos
 // profesionales, mismo fondo de estudio) y ubicadas en
 // public/images/equipo/ — sin bio todavía, no se inventa ninguna.
+//
+// Las fotos son .webp de 240x240 y no los PNG de ~2 MB que llegaron del
+// estudio. Se muestran en un círculo de 80x80 con `object-cover`, así que
+// 240 es 3x —cubre cualquier pantalla— y el recorte cuadrado centrado que
+// tienen los archivos es EXACTAMENTE el que hacía `object-cover` sobre el
+// original vertical (1122x1402): lo que se ve no cambió. Las seis juntas
+// pasaron de 12,2 MB a 36 KB. Con `unoptimized: true` en next.config.mjs el
+// navegador recibe el archivo tal cual, así que el peso del archivo ES el
+// peso que se descarga: por eso el tamaño se arregla en el archivo y no con
+// el optimizador (que además tiene la cuota agotada).
 const equipo: MiembroEquipo[] = [
   {
     id: '1',
@@ -24,10 +34,10 @@ const equipo: MiembroEquipo[] = [
     orden: 1,
     area: 'comision-directiva',
     foto: {
-      url: '/images/equipo/diana-cohen-agrest.png',
+      url: '/images/equipo/diana-cohen-agrest.webp',
       alt: 'Diana Cohen Agrest',
-      width: 1122,
-      height: 1402,
+      width: 240,
+      height: 240,
     },
   },
   {
@@ -37,10 +47,10 @@ const equipo: MiembroEquipo[] = [
     orden: 2,
     area: 'comision-directiva',
     foto: {
-      url: '/images/equipo/raquel-slotolow.png',
+      url: '/images/equipo/raquel-slotolow.webp',
       alt: 'Raquel Slotolow',
-      width: 1122,
-      height: 1402,
+      width: 240,
+      height: 240,
     },
   },
   {
@@ -50,10 +60,10 @@ const equipo: MiembroEquipo[] = [
     orden: 3,
     area: 'comision-directiva',
     foto: {
-      url: '/images/equipo/guillermo-bargna.png',
+      url: '/images/equipo/guillermo-bargna.webp',
       alt: 'Guillermo Bargna',
-      width: 1122,
-      height: 1402,
+      width: 240,
+      height: 240,
     },
   },
   {
@@ -63,10 +73,10 @@ const equipo: MiembroEquipo[] = [
     orden: 4,
     area: 'comision-directiva',
     foto: {
-      url: '/images/equipo/raquel-berthi.png',
+      url: '/images/equipo/raquel-berthi.webp',
       alt: 'Raquel Berthi',
-      width: 1122,
-      height: 1402,
+      width: 240,
+      height: 240,
     },
   },
   {
@@ -76,10 +86,10 @@ const equipo: MiembroEquipo[] = [
     orden: 5,
     area: 'comision-directiva',
     foto: {
-      url: '/images/equipo/roberto-picozzi.png',
+      url: '/images/equipo/roberto-picozzi.webp',
       alt: 'Roberto Picozzi',
-      width: 1122,
-      height: 1402,
+      width: 240,
+      height: 240,
     },
   },
   {
@@ -89,10 +99,10 @@ const equipo: MiembroEquipo[] = [
     orden: 6,
     area: 'comision-directiva',
     foto: {
-      url: '/images/equipo/mariana-romano.png',
+      url: '/images/equipo/mariana-romano.webp',
       alt: 'Mariana Romano',
-      width: 1122,
-      height: 1402,
+      width: 240,
+      height: 240,
     },
   },
 ]

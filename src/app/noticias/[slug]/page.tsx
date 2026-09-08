@@ -8,6 +8,9 @@ import { Calendar, User, Clock, ArrowLeft, Tag as TagIcon } from 'lucide-react'
 import { formatDate } from '@/lib/utils'
 import { Badge } from '@/components/ui/Badge'
 import { ArticleCard } from '@/components/noticias/ArticleCard'
+import { CompartirNota } from '@/components/noticias/CompartirNota'
+import { urlCanonicaNota } from '@/lib/compartir'
+import { urlParaAncho, ANCHO_HERO_NOTA } from '@/lib/imagenes'
 import { siteConfig } from '@/lib/site-config'
 import {
   getArticuloBySlug,
@@ -76,8 +79,6 @@ export async function generateMetadata({
     return { title: 'Artículo no encontrado' }
   }
 
-  const ogImage = articulo.imagenDestacada?.url || undefined
-
   return {
     title: articulo.seoTitle || articulo.titulo,
     description: articulo.seoDescription || articulo.extracto,
@@ -94,7 +95,19 @@ export async function generateMetadata({
       publishedTime: articulo.fechaPublicacion,
       modifiedTime: articulo.updatedAt,
       authors: [articulo.autor],
-      ...(ogImage && { images: [{ url: ogImage }] }),
+      // Sin `images`: la vista previa la pone opengraph-image.tsx de esta
+      // misma carpeta (la tarjeta de marca 1200x630 con el título sobre la
+      // foto), y Next.js le da prioridad a ese archivo por sobre lo que se
+      // declare acá. Hasta ahora había un `images: [imagenDestacada.url]`
+      // que nunca llegaba al HTML — verificado inspeccionando la nota
+      // renderizada: la etiqueta og:image que sale apunta a
+      // /noticias/:slug/opengraph-image.
+      //
+      // Y mejor así: la imagen destacada cruda es el archivo tal cual se
+      // subió a WordPress, y 440 de las 824 notas la tienen en PNG a
+      // resolución completa. Como og:image eso pesa de más para lo que
+      // aceptan las plataformas, y la vista previa puede terminar no
+      // apareciendo.
     },
   }
 }
@@ -148,9 +161,14 @@ export default async function NoticiaArticlePage({ params }: SlugPageProps) {
   const readTime = estimateReadTime(articulo.contenido)
   const cleanContent = cleanWPContent(articulo.contenido)
 
-  // Imagen: featured o la primera del contenido
+  // Imagen: featured o la primera del contenido. De la destacada se toma la
+  // variante de 1024 que WordPress ya tiene generada, no el archivo original
+  // —se muestra a 800 px de ancho— ver src/lib/imagenes.ts. La del contenido
+  // viene tal cual: es una URL suelta dentro del HTML del post, sin tamaños
+  // asociados.
   const heroImage =
-    articulo.imagenDestacada?.url || extractFirstImage(articulo.contenido)
+    urlParaAncho(articulo.imagenDestacada, ANCHO_HERO_NOTA) ||
+    extractFirstImage(articulo.contenido)
 
   // Artículos relacionados (misma categoría, excluyendo el actual)
   let relacionados: Awaited<ReturnType<typeof getArticulos>>['data'] = []
@@ -220,6 +238,15 @@ export default async function NoticiaArticlePage({ params }: SlugPageProps) {
                 {readTime} min de lectura
               </span>
             </div>
+
+            {/*
+              Compartir va acá arriba, cerrando la ficha de la nota (autor,
+              fecha, tiempo de lectura), que es donde lo ponen los medios y
+              donde la gente lo busca sin tener que bajar hasta el final.
+              Los enlaces se renderizan en el servidor (ver CompartirNota.tsx):
+              no agregan JavaScript ni consumo.
+            */}
+            <CompartirNota url={urlCanonicaNota(slug)} titulo={articulo.titulo} />
           </header>
 
           {/* Imagen principal */}

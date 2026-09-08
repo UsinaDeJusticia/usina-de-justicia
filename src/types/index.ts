@@ -9,11 +9,29 @@ export interface SEOFields {
   ogImage?: ImageAsset
 }
 
+/** Un tamaño concreto de una imagen, de los que WordPress ya tiene generados. */
+export interface ImageVariante {
+  url: string
+  width: number
+  height: number
+}
+
 export interface ImageAsset {
   url: string
   alt: string
   width: number
   height: number
+  /**
+   * Tamaños alternativos de esta misma imagen, de menor a mayor ancho. Los
+   * llena `wpPostToArticulo` a partir de `media_details.sizes`, que ya viene
+   * en la respuesta de WordPress. Cada superficie elige el que le sirve con
+   * los helpers de src/lib/imagenes.ts, en vez de bajar el original entero
+   * para mostrarlo a 400 px.
+   *
+   * Opcional: las imágenes que no vienen de WordPress (por ejemplo las
+   * portadas fijas de /galeria) no la tienen, y ahí el helper cae a `url`.
+   */
+  variantes?: ImageVariante[]
 }
 
 // --- Blog / Artículos ---
