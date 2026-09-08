@@ -1,6 +1,6 @@
 // ============================================
 // src/components/noticias/CompartirNota.tsx
-// Bloque "Compartir esta nota" al pie del artículo.
+// Bloque para compartir la nota, debajo de su ficha (autor, fecha, lectura).
 //
 // Es un componente de SERVIDOR: los cinco enlaces a redes salen renderizados
 // dentro del HTML que el ISR ya cachea, así que no cuestan JavaScript, ni una
@@ -93,17 +93,21 @@ const REDES: Array<{
 
 export function CompartirNota({ url, titulo }: CompartirNotaProps) {
   return (
+    // Va inmediatamente debajo de la ficha de la nota (autor, fecha, tiempo
+    // de lectura), separado por la misma línea fina que usa el resto del
+    // sitio: cierra los datos del artículo y abre las acciones.
+    //
+    // Sin encabezado visible: un <h2> acá quedaría entre el titular y el
+    // cuerpo, ensuciando el índice de la nota, y a esta altura de la página
+    // competiría con el título. El nombre del bloque lo lleva `aria-label`,
+    // que es lo que necesita un lector de pantalla, y la etiqueta
+    // "Compartir" alcanza para el resto.
     <section
-      aria-labelledby="compartir-esta-nota"
-      className="mt-10 pt-8 border-t border-grey-200"
+      aria-label="Compartir esta nota"
+      className="mt-5 pt-5 border-t border-grey-200"
     >
-      <div className="flex flex-wrap items-center gap-x-4 gap-y-3">
-        <h2
-          id="compartir-esta-nota"
-          className="font-display font-bold text-h4 text-ink m-0"
-        >
-          Compartir esta nota
-        </h2>
+      <div className="flex flex-wrap items-center gap-x-3 gap-y-3">
+        <span className="text-body-sm font-bold text-grey-700">Compartir</span>
 
         <div className="flex flex-wrap items-center gap-2">
           {REDES.map(({ red, etiqueta, Icono }) => (

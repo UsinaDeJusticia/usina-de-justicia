@@ -222,6 +222,15 @@ export default async function NoticiaArticlePage({ params }: SlugPageProps) {
                 {readTime} min de lectura
               </span>
             </div>
+
+            {/*
+              Compartir va acá arriba, cerrando la ficha de la nota (autor,
+              fecha, tiempo de lectura), que es donde lo ponen los medios y
+              donde la gente lo busca sin tener que bajar hasta el final.
+              Los enlaces se renderizan en el servidor (ver CompartirNota.tsx):
+              no agregan JavaScript ni consumo.
+            */}
+            <CompartirNota url={urlCanonicaNota(slug)} titulo={articulo.titulo} />
           </header>
 
           {/* Imagen principal */}
@@ -250,14 +259,6 @@ export default async function NoticiaArticlePage({ params }: SlugPageProps) {
               prose-hr:border-grey-200"
             dangerouslySetInnerHTML={{ __html: cleanContent }}
           />
-
-          {/*
-            Compartir va inmediatamente después del cuerpo de la nota, que es
-            donde alguien termina de leer y decide difundirla. Los enlaces se
-            renderizan en el servidor (ver CompartirNota.tsx): no agregan
-            JavaScript ni consumo.
-          */}
-          <CompartirNota url={urlCanonicaNota(slug)} titulo={articulo.titulo} />
 
           {/* Tags */}
           {articulo.tags.length > 0 && (
