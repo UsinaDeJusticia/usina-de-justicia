@@ -78,8 +78,6 @@ export async function generateMetadata({
     return { title: 'Artículo no encontrado' }
   }
 
-  const ogImage = articulo.imagenDestacada?.url || undefined
-
   return {
     title: articulo.seoTitle || articulo.titulo,
     description: articulo.seoDescription || articulo.extracto,
@@ -96,7 +94,19 @@ export async function generateMetadata({
       publishedTime: articulo.fechaPublicacion,
       modifiedTime: articulo.updatedAt,
       authors: [articulo.autor],
-      ...(ogImage && { images: [{ url: ogImage }] }),
+      // Sin `images`: la vista previa la pone opengraph-image.tsx de esta
+      // misma carpeta (la tarjeta de marca 1200x630 con el título sobre la
+      // foto), y Next.js le da prioridad a ese archivo por sobre lo que se
+      // declare acá. Hasta ahora había un `images: [imagenDestacada.url]`
+      // que nunca llegaba al HTML — verificado inspeccionando la nota
+      // renderizada: la etiqueta og:image que sale apunta a
+      // /noticias/:slug/opengraph-image.
+      //
+      // Y mejor así: la imagen destacada cruda es el archivo tal cual se
+      // subió a WordPress, y 440 de las 824 notas la tienen en PNG a
+      // resolución completa. Como og:image eso pesa de más para lo que
+      // aceptan las plataformas, y la vista previa puede terminar no
+      // apareciendo.
     },
   }
 }
