@@ -8,6 +8,8 @@ import { Calendar, User, Clock, ArrowLeft, Tag as TagIcon } from 'lucide-react'
 import { formatDate } from '@/lib/utils'
 import { Badge } from '@/components/ui/Badge'
 import { ArticleCard } from '@/components/noticias/ArticleCard'
+import { CompartirNota } from '@/components/noticias/CompartirNota'
+import { urlCanonicaNota } from '@/lib/compartir'
 import { siteConfig } from '@/lib/site-config'
 import {
   getArticuloBySlug,
@@ -248,6 +250,14 @@ export default async function NoticiaArticlePage({ params }: SlugPageProps) {
               prose-hr:border-grey-200"
             dangerouslySetInnerHTML={{ __html: cleanContent }}
           />
+
+          {/*
+            Compartir va inmediatamente después del cuerpo de la nota, que es
+            donde alguien termina de leer y decide difundirla. Los enlaces se
+            renderizan en el servidor (ver CompartirNota.tsx): no agregan
+            JavaScript ni consumo.
+          */}
+          <CompartirNota url={urlCanonicaNota(slug)} titulo={articulo.titulo} />
 
           {/* Tags */}
           {articulo.tags.length > 0 && (
