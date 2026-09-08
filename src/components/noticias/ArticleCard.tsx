@@ -2,6 +2,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { Calendar, ArrowRight } from 'lucide-react'
 import { formatDate } from '@/lib/utils'
+import { urlParaAncho, ANCHO_TARJETA } from '@/lib/imagenes'
 import { Badge } from '@/components/ui/Badge'
 import type { Articulo } from '@/types'
 
@@ -16,7 +17,11 @@ export function ArticleCard({ articulo }: ArticleCardProps) {
         <div className="aspect-video bg-navy-50 relative overflow-hidden">
           {articulo.imagenDestacada ? (
             <Image
-              src={articulo.imagenDestacada.url}
+              // El tamaño de WordPress que corresponde a una tarjeta, no el
+              // archivo original: con `unoptimized: true` el navegador se
+              // baja lo que diga este `src` tal cual, y `sizes` no interviene
+              // (sin srcset no hay nada que elegir). Ver src/lib/imagenes.ts.
+              src={urlParaAncho(articulo.imagenDestacada, ANCHO_TARJETA)!}
               alt={articulo.imagenDestacada.alt}
               fill
               sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"

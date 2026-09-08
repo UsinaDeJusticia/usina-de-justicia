@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import { Button } from '@/components/ui/Button'
+import { urlParaAncho, ANCHO_HERO_HOME } from '@/lib/imagenes'
 import type { Articulo } from '@/types'
 
 // Portado de design-system/home/HeroEditorial.jsx.
@@ -63,7 +64,10 @@ export function HeroEditorial({ latestArticle }: HeroEditorialProps) {
         <div className="relative aspect-[4/5] rounded-xs overflow-hidden shadow-md bg-navy-800">
           {latestArticle?.imagenDestacada ? (
             <Image
-              src={latestArticle.imagenDestacada.url}
+              // Variante de 1024 y no el original: es el LCP de la Home, así
+              // que acá se elige el tamaño más grande de los que se muestran
+              // en pantalla (ver ANCHO_HERO_HOME en src/lib/imagenes.ts).
+              src={urlParaAncho(latestArticle.imagenDestacada, ANCHO_HERO_HOME)!}
               alt={latestArticle.imagenDestacada.alt}
               fill
               // Tamaño renderizado real: columna completa en mobile (< lg),

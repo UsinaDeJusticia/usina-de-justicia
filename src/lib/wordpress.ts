@@ -4,6 +4,7 @@
 
 import sanitizeHtml from 'sanitize-html'
 import { fetchWithRetry } from './fetch-retry.ts'
+import { variantesDeMedia } from './imagenes.ts'
 import type { Articulo, Categoria, Tag, ImageAsset } from '@/types'
 import type {
   WPPost,
@@ -213,10 +214,19 @@ function wpPostToArticulo(
   let imagenDestacada: ImageAsset | undefined
   if (embeddedMedia?.source_url) {
     imagenDestacada = {
+      // `url` sigue siendo el original: es lo que quieren las superficies
+      // que necesitan la mejor resolución disponible (la tarjeta de
+      // compartir que arma opengraph-image.tsx, y la `image` del JSON-LD,
+      // donde Google prefiere una imagen grande).
       url: embeddedMedia.source_url,
       alt: embeddedMedia.alt_text || decodeHtml(wp.title.rendered),
       width: embeddedMedia.media_details?.width || 1200,
       height: embeddedMedia.media_details?.height || 630,
+      // Lo que se MUESTRA en pantalla elige de acá el tamaño que le
+      // corresponde (ver src/lib/imagenes.ts). Son archivos que WordPress ya
+      // generó al subir la foto y que ya venían en esta misma respuesta
+      // (`_embed`), así que no cuesta ni una request extra.
+      variantes: variantesDeMedia(embeddedMedia),
     }
   }
 

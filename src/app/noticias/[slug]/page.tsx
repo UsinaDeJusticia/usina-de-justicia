@@ -10,6 +10,7 @@ import { Badge } from '@/components/ui/Badge'
 import { ArticleCard } from '@/components/noticias/ArticleCard'
 import { CompartirNota } from '@/components/noticias/CompartirNota'
 import { urlCanonicaNota } from '@/lib/compartir'
+import { urlParaAncho, ANCHO_HERO_NOTA } from '@/lib/imagenes'
 import { siteConfig } from '@/lib/site-config'
 import {
   getArticuloBySlug,
@@ -160,9 +161,14 @@ export default async function NoticiaArticlePage({ params }: SlugPageProps) {
   const readTime = estimateReadTime(articulo.contenido)
   const cleanContent = cleanWPContent(articulo.contenido)
 
-  // Imagen: featured o la primera del contenido
+  // Imagen: featured o la primera del contenido. De la destacada se toma la
+  // variante de 1024 que WordPress ya tiene generada, no el archivo original
+  // —se muestra a 800 px de ancho— ver src/lib/imagenes.ts. La del contenido
+  // viene tal cual: es una URL suelta dentro del HTML del post, sin tamaños
+  // asociados.
   const heroImage =
-    articulo.imagenDestacada?.url || extractFirstImage(articulo.contenido)
+    urlParaAncho(articulo.imagenDestacada, ANCHO_HERO_NOTA) ||
+    extractFirstImage(articulo.contenido)
 
   // Artículos relacionados (misma categoría, excluyendo el actual)
   let relacionados: Awaited<ReturnType<typeof getArticulos>>['data'] = []
