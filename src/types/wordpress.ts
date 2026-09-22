@@ -228,7 +228,9 @@ export const SITE_SECTIONS: Record<string, {
   'en-los-medios': {
     title: 'En los medios',
     slug: 'en-los-medios',
-    description: 'Lo que otros medios publican sobre el trabajo de Usina de Justicia.',
+    // Sin punto final ni "Usina de Justicia": generateMetadata ya agrega
+    // " — Usina de Justicia" detrás (quedaba el nombre dos veces).
+    description: 'Lo que otros medios publican sobre nuestro trabajo',
     externa: true,
   },
 }
