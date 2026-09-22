@@ -10,6 +10,7 @@ import { siteConfig } from '@/lib/site-config'
 import {
   getWPTags,
   getAllPublishedPostSlugs,
+  getCategoryIdsBySection,
   WP_REVALIDATE_ARCHIVO,
 } from '@/lib/wordpress'
 import { SITE_SECTIONS } from '@/types/wordpress'
@@ -77,8 +78,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${siteConfig.url}/galeria`, lastModified: now, changeFrequency: 'monthly', priority: 0.4 },
   ]
 
-  // Las 6 secciones definitivas de noticias (SITE_SECTIONS) — page 1 de cada
-  // una, que es la única versión canónica (2+ vive en /pagina/N).
+  // Las secciones definitivas de noticias (SITE_SECTIONS) — page 1 de cada
+  // una, que es la única versión canónica (2+ vive en /pagina/N). Incluye
+  // "en-los-medios": aunque sus notas individuales van noindex, el listado
+  // sí se indexa (ver `externa` en SITE_SECTIONS y noticias/[slug]/page.tsx).
   const categoryRoutes: MetadataRoute.Sitemap = Object.keys(SITE_SECTIONS).map(
     (slug) => ({
       url: `${siteConfig.url}/noticias/categoria/${slug}`,
@@ -86,7 +89,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: 'daily',
       // "historias" es la única categoría con un pilar de contenido propio
       // fuera de /noticias (ver /acompanamiento y SeguiExplorando), así que
-      // queda una prioridad más alta que las otras 5.
+      // queda una prioridad más alta que el resto.
       priority: slug === 'historias' ? 0.7 : 0.6,
     })
   )
@@ -105,12 +108,27 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     // Si falla WP, el sitemap sigue sin los tags (mejor incompleto que roto).
   }
 
-  // Todos los posts publicados (menos los 19 de IVUJUS-301).
+  // Todos los posts publicados (menos los 19 de IVUJUS-301 y los de "En los
+  // medios": cobertura de terceros, noindex — ver `externa` en
+  // SITE_SECTIONS. Que un post falle acá no debe tumbar el resto del
+  // sitemap: si la resolución de categoría falla, se sigue sin excluir esos
+  // posts en vez de romper todo).
   let postRoutes: MetadataRoute.Sitemap = []
   try {
+    let enLosMediosIds: number[] = []
+    try {
+      enLosMediosIds = await getCategoryIdsBySection('en-los-medios')
+    } catch {
+      // Degradación aceptable: mejor un post de más en el sitemap que
+      // romperlo entero por un fallo puntual de WP.
+    }
+
     const posts = await getAllPublishedPostSlugs()
     postRoutes = posts
       .filter((post) => !IVUJUS_SLUGS.has(post.slug))
+      .filter(
+        (post) => !post.categories.some((id) => enLosMediosIds.includes(id))
+      )
       .map((post) => ({
         url: `${siteConfig.url}/noticias/${post.slug}`,
         lastModified: new Date(post.modified),

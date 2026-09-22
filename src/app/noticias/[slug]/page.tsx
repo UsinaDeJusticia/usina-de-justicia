@@ -20,7 +20,21 @@ import {
   extractFirstImage,
   WP_REVALIDATE_ARCHIVO,
 } from '@/lib/wordpress'
+import { SITE_SECTIONS } from '@/types/wordpress'
+import type { SiteSection } from '@/types/wordpress'
 import type { Articulo } from '@/types'
+
+/**
+ * true para una nota de "En los medios": cobertura de terceros, no nuestra
+ * (ver `externa` en SITE_SECTIONS). Se usa para dos cosas en esta página:
+ * `noindex` (evitar cientos de páginas de una línea en el índice de
+ * Google — la página de listado, esa sí, queda indexada) y no emitir el
+ * JSON-LD NewsArticle (sería atribuirnos autoría de una nota que en
+ * realidad es de otro medio).
+ */
+function esMencionExterna(articulo: Articulo): boolean {
+  return SITE_SECTIONS[articulo.categoria.slug as SiteSection]?.externa === true
+}
 
 // ============================================
 // Una nota publicada no cambia sola: 24h de ventana ISR en vez de los 5 min
@@ -85,6 +99,15 @@ export async function generateMetadata({
     alternates: {
       canonical: `https://www.usinadejusticia.org.ar/noticias/${slug}`,
     },
+    // "En los medios": noindex por nota individual — la cobertura real ya
+    // está indexada en el sitio del medio, y publicar acá cientos de
+    // páginas de una línea sería el mismo problema de contenido delgado
+    // que ya se auditó en esta rama. La página de listado
+    // (/noticias/categoria/en-los-medios) sí queda indexada: ahí es donde
+    // vale la pena que Google y los asistentes de IA encuentren esto.
+    ...(esMencionExterna(articulo) && {
+      robots: { index: false, follow: true },
+    }),
     openGraph: {
       title: articulo.titulo,
       // seoDescription primero: nunca queda vacío (cae al título cuando el
@@ -187,12 +210,14 @@ export default async function NoticiaArticlePage({ params }: SlugPageProps) {
 
   return (
     <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: jsonLdScript(buildNewsArticleJsonLd(articulo, slug)),
-        }}
-      />
+      {!esMencionExterna(articulo) && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: jsonLdScript(buildNewsArticleJsonLd(articulo, slug)),
+          }}
+        />
+      )}
 
       <div className="max-w-content mx-auto px-4 md:px-10">
         <Breadcrumbs

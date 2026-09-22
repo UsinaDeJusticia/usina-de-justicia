@@ -145,6 +145,7 @@ export const CATEGORY_MAP: Record<string, string | null> = {
   'prensa': 'prensa',
   'institucional': 'institucional',
   'observatorio': 'observatorio',
+  'en-los-medios': 'en-los-medios',
 }
 
 // Referencia histórica únicamente (Fase 1/2): el mapeo viejo de las 16
@@ -175,6 +176,21 @@ export const SITE_SECTIONS: Record<string, {
   title: string
   slug: string
   description: string
+  /**
+   * true: contenido de TERCEROS sobre Usina (lo que otros medios publican),
+   * no escrito por el equipo. Es el único section flag que cambia el
+   * comportamiento en varios lugares a la vez — buscarlo por acá evita
+   * repetir el string 'en-los-medios' suelto en cada archivo:
+   * - NoticiasListView.tsx: queda afuera de la grilla de "nuestras"
+   *   secciones y de "Artículos recientes"/hero de la home
+   *   (categoriesExclude en getArticulos).
+   * - CategoriaListView.tsx: lista compacta (MencionCard) en vez de la
+   *   grilla de ArticleCard.
+   * - noticias/[slug]/page.tsx: `noindex` y sin JSON-LD NewsArticle (no es
+   *   una nota nuestra, sería atribuirnos autoría de la cobertura ajena).
+   * - sitemap.ts: afuera del sitemap (consistente con el noindex).
+   */
+  externa?: boolean
 }> = {
   historias: {
     title: 'Historias',
@@ -194,7 +210,10 @@ export const SITE_SECTIONS: Record<string, {
   prensa: {
     title: 'Prensa',
     slug: 'prensa',
-    description: 'Medios y entrevistas a miembros de Usina de Justicia',
+    // Antes: "Medios y entrevistas a miembros de Usina de Justicia" — se
+    // afina para distinguirla de "En los medios" (23-sep-2026): acá va lo
+    // que ESCRIBE el equipo; la cobertura de terceros tiene sección propia.
+    description: 'Nuestras notas sobre apariciones y entrevistas en medios',
   },
   institucional: {
     title: 'Institucional',
@@ -205,6 +224,14 @@ export const SITE_SECTIONS: Record<string, {
     title: 'Observatorio',
     slug: 'observatorio',
     description: 'Informes, publicaciones y datos',
+  },
+  'en-los-medios': {
+    title: 'En los medios',
+    slug: 'en-los-medios',
+    // Sin punto final ni "Usina de Justicia": generateMetadata ya agrega
+    // " — Usina de Justicia" detrás (quedaba el nombre dos veces).
+    description: 'Lo que otros medios publican sobre nuestro trabajo',
+    externa: true,
   },
 }
 
