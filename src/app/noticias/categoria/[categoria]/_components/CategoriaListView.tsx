@@ -8,6 +8,7 @@ import { SITE_SECTIONS } from '@/types/wordpress'
 import type { SiteSection } from '@/types/wordpress'
 import { Badge } from '@/components/ui/Badge'
 import { ArticleCard } from '@/components/noticias/ArticleCard'
+import { MencionCard } from '@/components/noticias/MencionCard'
 import { Pagination } from '@/components/noticias/Pagination'
 import { siteConfig } from '@/lib/site-config'
 
@@ -49,12 +50,13 @@ export async function CategoriaListView({
       : `/noticias/categoria/${categoria}/pagina/${p}`
   }
 
-  // JSON-LD CollectionPage: genérico para las 6 secciones de SITE_SECTIONS
-  // (no solo "historias"), armado acá y no en page.tsx porque acá es donde
-  // ya se resuelven `articulos`/`total` — evita un segundo fetch. El
-  // ItemList solo referencia posición/slug/url de los artículos de ESTA
-  // página; nunca títulos (ya están en el HTML visible vía ArticleCard) para
-  // no exponer nombres propios de víctimas/familias en el JSON-LD.
+  // JSON-LD CollectionPage: genérico para todas las secciones de
+  // SITE_SECTIONS (no solo "historias"), armado acá y no en page.tsx porque
+  // acá es donde ya se resuelven `articulos`/`total` — evita un segundo
+  // fetch. El ItemList solo referencia posición/slug/url de los artículos
+  // de ESTA página; nunca títulos (ya están en el HTML visible vía
+  // ArticleCard) para no exponer nombres propios de víctimas/familias en
+  // el JSON-LD.
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'CollectionPage',
@@ -125,11 +127,21 @@ export async function CategoriaListView({
               </p>
             </div>
           ) : articulos.length > 0 ? (
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {articulos.map((articulo) => (
-                <ArticleCard key={articulo.id} articulo={articulo} />
-              ))}
-            </div>
+            section.externa ? (
+              // Lista compacta: cobertura de terceros, no nuestra (ver
+              // `externa` en SITE_SECTIONS y el comentario de MencionCard).
+              <div className="bg-white border border-grey-200 rounded-xs px-6 md:px-7">
+                {articulos.map((articulo) => (
+                  <MencionCard key={articulo.id} articulo={articulo} />
+                ))}
+              </div>
+            ) : (
+              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                {articulos.map((articulo) => (
+                  <ArticleCard key={articulo.id} articulo={articulo} />
+                ))}
+              </div>
+            )
           ) : (
             <div className="text-center py-20">
               <p className="text-body-lg text-grey-500">

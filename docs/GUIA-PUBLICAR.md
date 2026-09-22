@@ -16,7 +16,7 @@ cinco minutos. No hay que avisarle a nadie ni tocar nada más.
 
 ## La única regla nueva
 
-**Elegí siempre al menos una de estas seis categorías:**
+**Elegí siempre al menos una de estas siete categorías:**
 
 | Categoría | Dónde aparece el post |
 |---|---|
@@ -26,6 +26,26 @@ cinco minutos. No hay que avisarle a nadie ni tocar nada más.
 | **Prensa** | `/noticias/categoria/prensa` |
 | **Institucional** | `/noticias/categoria/institucional` |
 | **Observatorio** | `/noticias/categoria/observatorio` |
+| **En los medios** | `/noticias/categoria/en-los-medios` |
+
+### Prensa vs. En los medios — cómo elegir
+
+- **Prensa**: lo escribimos nosotros. Una entrevista a alguien del equipo, una
+  gacetilla, un comunicado propio.
+- **En los medios**: lo escribió OTRO medio sobre nosotros (Infobae, La Voz,
+  un canal de streaming, lo que sea). El post es corto: 2-3 líneas de contexto
+  propio más el link a la nota original, marcado para abrir en pestaña nueva.
+
+Para "En los medios" además:
+
+- **Agregá una etiqueta (tag) con el nombre del medio** — "Infobae", "La Voz",
+  etc. No es obligatorio, pero sin eso el nombre del medio no aparece
+  destacado en la lista, solo el título del post.
+- **Estas notas no se indexan en Google individualmente** (a propósito: la
+  cobertura real ya está indexada en el sitio del medio). Lo que sí se indexa
+  es la sección completa, `/noticias/categoria/en-los-medios`, que es donde
+  vale la pena que aparezca.
+- No hace falta imagen destacada: la sección se ve como una lista, sin fotos.
 
 > **Cuando dudes: la correcta es siempre la de nombre más corto.**
 >

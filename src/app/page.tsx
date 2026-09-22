@@ -1,5 +1,5 @@
 import { generatePageMetadata } from '@/lib/metadata'
-import { getArticulos } from '@/lib/wordpress'
+import { getArticulos, getCategoryIdsBySection } from '@/lib/wordpress'
 import { HeroRotator } from '@/components/home/HeroRotator'
 import { QueHacer } from '@/components/home/QueHacer'
 import { Pillars } from '@/components/home/Pillars'
@@ -26,9 +26,20 @@ export default async function Home() {
   // El panel editorial del hero muestra el artículo más reciente de
   // WordPress. Si la API falla, HeroEditorial cae a un contenido
   // institucional fijo (ver componente) — la home nunca se rompe por esto.
+  //
+  // "En los medios" queda afuera a propósito: es cobertura de terceros, no
+  // contenido nuestro, y no debería poder convertirse en la pieza
+  // destacada de la portada solo por ser lo último publicado.
   let latestArticle: Awaited<ReturnType<typeof getArticulos>>['data'][number] | null = null
   try {
-    const response = await getArticulos({ perPage: 1 })
+    let excludeIds: number[] = []
+    try {
+      excludeIds = await getCategoryIdsBySection('en-los-medios')
+    } catch {
+      // Si falla, seguimos sin excluir — peor caso: una mención externa
+      // protagoniza el hero una vez, hasta la próxima revalidación.
+    }
+    const response = await getArticulos({ perPage: 1, categoriesExclude: excludeIds })
     latestArticle = response.data[0] ?? null
   } catch {
     // Si falla la API, la home sigue funcionando sin la nota destacada.

@@ -17,6 +17,48 @@
 
 **Gate G4 ✅ COMPLETO (15-jul):** optimización integral verificada — Lighthouse ≥96 en Performance y 100 en SEO en las 5 plantillas clave (ver sección Optimización).
 
+## Rama en curso: `feature/en-los-medios` (22-sep-2026, sin PR todavía)
+
+Diana (presidenta) reenvió tres alertas de Google mostrando cobertura real de
+terceros (Infobae, La Voz, TN, MDZ Online, Radio Continental, etc.) sobre la
+denuncia de Usina contra la jueza Marta Pascual y su desenlace. Pidió una
+sección que muestre ese alcance mediático — algo que hoy no existe: "Prensa"
+es contenido escrito por el equipo (entrevistas propias), no cobertura ajena.
+
+**7ª sección: "En los medios"** (`SITE_SECTIONS['en-los-medios']`, categoría
+nueva en WP, `externa: true`). Verificado antes de implementar, con evidencia
+de código (no supuesto):
+
+- Sin exclusión, el hero de la home y "Artículos recientes" de `/noticias`
+  toman el post más nuevo de CUALQUIER categoría — una mención externa
+  podía terminar protagonizando la portada. Se agregó `categoriesExclude`
+  (ya existía tipado y soportado en `getArticulos`, no lo usaba nadie) en
+  `src/app/page.tsx` y `NoticiasListView.tsx`.
+- La grilla de "nuestras" secciones en `/noticias` es de 3 columnas × 6
+  tarjetas (dos filas limpias): con una 7ª mezclada quedaba una tarjeta
+  huérfana. "En los medios" sale de esa grilla (`SECCIONES_PROPIAS`) y entra
+  como franja aparte, con los nombres de los medios a la vista.
+- Contenido delgado a propósito, a escala: son notas de una línea + un link,
+  y a diferencia de los 292 posts de la auditoría de agosto, acá se generan
+  varias por semana. **Decisión: `noindex` en cada nota individual**
+  (`noticias/[slug]/page.tsx`), la página de listado
+  (`/noticias/categoria/en-los-medios`) sí indexada — ahí es donde vale la
+  prueba de impacto para SEO/GEO, no en cientos de páginas de una línea.
+  Misma nota individual: sin JSON-LD `NewsArticle` (no es autoría nuestra).
+  `sitemap.ts` las excluye para no contradecir el `noindex`.
+- Componente nuevo `MencionCard.tsx`: lista compacta sin imagen, distinta a
+  propósito de `ArticleCard`. Convención editorial (sin campo nuevo en WP):
+  la primera etiqueta (tag) del post es el nombre del medio — documentado en
+  `docs/GUIA-PUBLICAR.md`.
+- Mockup previo aprobado por Emanuel antes de escribir código:
+  https://claude.ai/artifact/VWuJeJF5BP1hn67PsXArvU
+
+Verificado: 128 tests, `tsc --noEmit` y lint limpios. `pnpm build` falla en
+`/observatorio` por bloqueo de red del sandbox a WordPress (`403` en
+`/categories`) — confirmado que el mismo fallo ocurre en `master` sin mis
+cambios (`git stash` + build), así que no es una regresión. Verificación
+real pendiente contra el preview de Vercel.
+
 ## Rama en curso: `fix/cpu-revalidate` (2-sep-2026, sin PR todavía — urgente, en producción)
 
 Vercel avisó que la CPU activa (Fluid Active CPU) saltó de 2-4 min/día a 13+

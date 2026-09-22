@@ -321,7 +321,7 @@ async function getCategoriasMap(
 // WP (historias/acompanamiento/incidencia/prensa/institucional/observatorio),
 // así que alcanza con matchear el slug de la sección directamente contra
 // las categorías reales — sin indirección.
-async function getCategoryIdsBySection(
+export async function getCategoryIdsBySection(
   section: SiteSection
 ): Promise<number[]> {
   const { data: wpCats } = await wpFetch<WPCategory[]>('/categories', {
@@ -435,12 +435,17 @@ export async function searchArticulos(
 export interface SitemapPostEntry {
   slug: string
   modified: string
+  // IDs de categoría de WP: sitemap.ts los usa para sacar del sitemap los
+  // posts de "En los medios" (cobertura de terceros, noindex — ver el
+  // comentario de `externa` en SITE_SECTIONS). No se resuelve a slug legible
+  // acá para no pagar una segunda llamada a WP por cada post del listado.
+  categories: number[]
 }
 
 /**
- * Todos los posts publicados con el payload mínimo (`slug` + `modified` vía
- * `_fields`) para src/app/sitemap.ts. La primera llamada revela
- * X-WP-TotalPages; el resto de las páginas se piden en paralelo con
+ * Todos los posts publicados con el payload mínimo (`slug` + `modified` +
+ * `categories` vía `_fields`) para src/app/sitemap.ts. La primera llamada
+ * revela X-WP-TotalPages; el resto de las páginas se piden en paralelo con
  * Promise.all (no secuencial) porque son ~9 llamadas con per_page=100 sobre
  * ~840 posts. No pasa por el caché en memoria de arriba (cache/getCached):
  * sitemap.ts se genera una sola vez por build/revalidate, así que no hace
@@ -451,7 +456,7 @@ export async function getAllPublishedPostSlugs(): Promise<SitemapPostEntry[]> {
   const baseParams = {
     per_page: perPage,
     status: 'publish',
-    _fields: 'slug,modified',
+    _fields: 'slug,modified,categories',
     orderby: 'date',
     order: 'desc',
   } as const
