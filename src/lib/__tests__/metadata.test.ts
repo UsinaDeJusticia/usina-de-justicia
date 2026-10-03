@@ -25,15 +25,11 @@ function articulo(image: ImageAsset | undefined = imagen): Articulo {
     tags: [], autor: siteConfig.name, fechaPublicacion: '2026-09-01T12:00:00', updatedAt: '2026-09-02T15:00:00', createdAt: '2026-09-01T12:00:00', publicado: true }
 }
 describe('metadata de noticias — archivos existentes', () => {
-  it('mantiene una tarjeta interna para Twitter y deja que opengraph-image genere og:image', () => {
+  it('deja que la misma tarjeta generada resuelva las imágenes OG y Twitter', () => {
     const note = articulo()
     const metadata = generateArticleMetadata(note, note.slug)
-    const twitterImages = metadata.twitter?.images as Array<{ url: string; alt: string }>
     assert.equal(metadata.openGraph?.images, undefined)
-    assert.deepEqual(twitterImages, [{
-      url: `${siteConfig.url}/noticias/una-nota/opengraph-image`,
-      alt: note.titulo,
-    }])
+    assert.equal(metadata.twitter?.images, undefined)
     assert.equal(metadata.alternates?.canonical, `${siteConfig.url}/noticias/una-nota`)
     assert.equal(metadata.description, 'Descripción SEO')
     assert.equal(metadata.title, 'Título de la nota')
@@ -42,8 +38,7 @@ describe('metadata de noticias — archivos existentes', () => {
   it('sin destacada conserva la ruta OG de marca y no inventa una foto en JSON-LD', () => {
     const note = articulo(); delete note.imagenDestacada
     const metadata = generateArticleMetadata(note, note.slug)
-    assert.equal((metadata.twitter?.images as Array<{ url: string }>)[0].url,
-      `${siteConfig.url}/noticias/una-nota/opengraph-image`)
+    assert.equal(metadata.twitter?.images, undefined)
     assert.equal('image' in buildNewsArticleJsonLd(note, note.slug), false)
   })
 
@@ -51,7 +46,7 @@ describe('metadata de noticias — archivos existentes', () => {
     const note = articulo()
     const json = buildNewsArticleJsonLd(note, note.slug)
     assert.deepEqual(json.image, [media.source_url])
-    assert.notEqual(json.image?.[0], (generateArticleMetadata(note, note.slug).twitter?.images as Array<{ url: string }>)[0].url)
+    assert.notEqual(json.image?.[0], `${siteConfig.url}/noticias/una-nota/opengraph-image`)
     assert.equal(json.datePublished, note.fechaPublicacion)
     assert.equal(json.dateModified, note.updatedAt)
     assert.deepEqual(json.author, { '@id': `${siteConfig.url}/#organization` })
