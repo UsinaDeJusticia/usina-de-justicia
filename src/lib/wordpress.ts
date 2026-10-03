@@ -215,13 +215,15 @@ function wpPostToArticulo(
   if (embeddedMedia?.source_url) {
     imagenDestacada = {
       // `url` sigue siendo el original: es lo que quieren las superficies
-      // que necesitan la mejor resolución disponible (la tarjeta de
-      // compartir que arma opengraph-image.tsx, y la `image` del JSON-LD,
-      // donde Google prefiere una imagen grande).
+      // que necesitan la mejor resolución disponible (la `image` del
+      // JSON-LD, donde Google prefiere una imagen grande). OG/Twitter
+      // eligen una variante existente con varianteParaCompartir.
       url: embeddedMedia.source_url,
       alt: embeddedMedia.alt_text || decodeHtml(wp.title.rendered),
       width: embeddedMedia.media_details?.width || 1200,
       height: embeddedMedia.media_details?.height || 630,
+      mimeType: embeddedMedia.mime_type,
+      bytes: embeddedMedia.media_details?.filesize,
       // Lo que se MUESTRA en pantalla elige de acá el tamaño que le
       // corresponde (ver src/lib/imagenes.ts). Son archivos que WordPress ya
       // generó al subir la foto y que ya venían en esta misma respuesta
@@ -396,8 +398,7 @@ export async function getArticulos(
 export async function getArticuloBySlug(
   slug: string,
   // Una nota publicada no cambia sola: 24h por defecto. Sus consumidores son
-  // la página de la nota y su opengraph-image, las dos superficies que el
-  // rastreador barre de punta a punta.
+  // la página de la nota y su metadata, revalidadas juntas por el webhook.
   revalidate: number = WP_REVALIDATE_ARCHIVO
 ): Promise<Articulo | null> {
   const result = await getArticulos({ slug, perPage: 1 }, revalidate)
