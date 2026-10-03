@@ -528,8 +528,12 @@ export async function getAllPostsBuscador(): Promise<PostBuscador[]> {
     per_page: 100,
     status: 'publish',
     _fields: 'id,title,excerpt,slug,date,categories',
-    orderby: 'date',
-    order: 'desc',
+    // Una publicación nueva al principio de un listado ordenado por fecha
+    // desplaza todas las páginas siguientes mientras se descargan. El ID es
+    // estable y ascendente: las altas nuevas quedan al final sin mover las
+    // ventanas que ya se leyeron.
+    orderby: 'id',
+    order: 'asc',
   } as const
 
   const [categorias, primera] = await Promise.all([
@@ -551,7 +555,16 @@ export async function getAllPostsBuscador(): Promise<PostBuscador[]> {
 
   const posts = [primera.data, ...resto.map((r) => r.data)].flat()
 
-  return posts.map((wp) => {
+  // Defensa adicional ante cambios de estado/contenido durante la
+  // paginación. MiniSearch rechaza IDs repetidos y dejaba /api/buscar en 503.
+  const idsVistos = new Set<number>()
+  const postsSinDuplicados = posts.filter((post) => {
+    if (idsVistos.has(post.id)) return false
+    idsVistos.add(post.id)
+    return true
+  })
+
+  return postsSinDuplicados.map((wp) => {
     // Misma regla que wpPostToArticulo: preferir la categoría nueva (una de
     // las 6 de SITE_SECTIONS) sobre la legacy — ver el comentario largo allá.
     const postCategorias = wp.categories
