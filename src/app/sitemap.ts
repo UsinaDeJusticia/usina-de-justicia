@@ -6,14 +6,14 @@
 // TODOS los posts publicados de WordPress.
 
 import type { MetadataRoute } from 'next'
-import { siteConfig } from '@/lib/site-config'
+import { siteConfig } from '../lib/site-config.ts'
 import {
   getWPTags,
   getAllPublishedPostSlugs,
   getCategoryIdsBySection,
   WP_REVALIDATE_ARCHIVO,
-} from '@/lib/wordpress'
-import { SITE_SECTIONS } from '@/types/wordpress'
+} from '../lib/wordpress.ts'
+import { SITE_SECTIONS } from '../types/wordpress.ts'
 
 // Cada regeneración de este archivo son ~10 llamadas a WordPress (los 842
 // slugs paginados de 100 en 100) más armar las 877 entradas. Antes heredaba
@@ -54,28 +54,29 @@ const IVUJUS_SLUGS = new Set<string>([
 ])
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const now = new Date()
+  // Sin una fecha real de edición, omitir lastModified. Regenerar el XML
+  // no significa que el contenido haya cambiado (Google Search Central).
 
   // Rutas estáticas del árbol nuevo. No incluye /noticias/pagina/N (ni las
   // variantes de categoría/tag): son duplicados de contenido ya indexado en
   // la página base, nunca la versión canónica.
   const staticRoutes: MetadataRoute.Sitemap = [
-    { url: `${siteConfig.url}/`, lastModified: now, changeFrequency: 'daily', priority: 1.0 },
-    { url: `${siteConfig.url}/necesito-ayuda`, lastModified: now, changeFrequency: 'monthly', priority: 0.9 },
-    { url: `${siteConfig.url}/noticias`, lastModified: now, changeFrequency: 'daily', priority: 0.8 },
-    { url: `${siteConfig.url}/nosotros`, lastModified: now, changeFrequency: 'monthly', priority: 0.7 },
-    { url: `${siteConfig.url}/nosotros/equipo`, lastModified: now, changeFrequency: 'monthly', priority: 0.6 },
-    { url: `${siteConfig.url}/nosotros/distinciones`, lastModified: now, changeFrequency: 'monthly', priority: 0.5 },
-    { url: `${siteConfig.url}/nosotros/transparencia`, lastModified: now, changeFrequency: 'monthly', priority: 0.5 },
-    { url: `${siteConfig.url}/acompanamiento`, lastModified: now, changeFrequency: 'monthly', priority: 0.8 },
-    { url: `${siteConfig.url}/observatorio`, lastModified: now, changeFrequency: 'weekly', priority: 0.7 },
-    { url: `${siteConfig.url}/recursos`, lastModified: now, changeFrequency: 'weekly', priority: 0.6 },
-    { url: `${siteConfig.url}/donar`, lastModified: now, changeFrequency: 'monthly', priority: 0.7 },
-    { url: `${siteConfig.url}/contacto`, lastModified: now, changeFrequency: 'yearly', priority: 0.6 },
-    { url: `${siteConfig.url}/legal/privacidad`, lastModified: now, changeFrequency: 'yearly', priority: 0.3 },
-    { url: `${siteConfig.url}/legal/terminos`, lastModified: now, changeFrequency: 'yearly', priority: 0.3 },
-    { url: `${siteConfig.url}/en`, lastModified: now, changeFrequency: 'yearly', priority: 0.5 },
-    { url: `${siteConfig.url}/galeria`, lastModified: now, changeFrequency: 'monthly', priority: 0.4 },
+    { url: `${siteConfig.url}/`, changeFrequency: 'daily', priority: 1.0 },
+    { url: `${siteConfig.url}/necesito-ayuda`, changeFrequency: 'monthly', priority: 0.9 },
+    { url: `${siteConfig.url}/noticias`, changeFrequency: 'daily', priority: 0.8 },
+    { url: `${siteConfig.url}/nosotros`, changeFrequency: 'monthly', priority: 0.7 },
+    { url: `${siteConfig.url}/nosotros/equipo`, changeFrequency: 'monthly', priority: 0.6 },
+    { url: `${siteConfig.url}/nosotros/distinciones`, changeFrequency: 'monthly', priority: 0.5 },
+    { url: `${siteConfig.url}/nosotros/transparencia`, changeFrequency: 'monthly', priority: 0.5 },
+    { url: `${siteConfig.url}/acompanamiento`, changeFrequency: 'monthly', priority: 0.8 },
+    { url: `${siteConfig.url}/observatorio`, changeFrequency: 'weekly', priority: 0.7 },
+    { url: `${siteConfig.url}/recursos`, changeFrequency: 'weekly', priority: 0.6 },
+    { url: `${siteConfig.url}/donar`, changeFrequency: 'monthly', priority: 0.7 },
+    { url: `${siteConfig.url}/contacto`, changeFrequency: 'yearly', priority: 0.6 },
+    { url: `${siteConfig.url}/legal/privacidad`, changeFrequency: 'yearly', priority: 0.3 },
+    { url: `${siteConfig.url}/legal/terminos`, changeFrequency: 'yearly', priority: 0.3 },
+    { url: `${siteConfig.url}/en`, changeFrequency: 'yearly', priority: 0.5 },
+    { url: `${siteConfig.url}/galeria`, changeFrequency: 'monthly', priority: 0.4 },
   ]
 
   // Las secciones definitivas de noticias (SITE_SECTIONS) — page 1 de cada
@@ -85,7 +86,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const categoryRoutes: MetadataRoute.Sitemap = Object.keys(SITE_SECTIONS).map(
     (slug) => ({
       url: `${siteConfig.url}/noticias/categoria/${slug}`,
-      lastModified: now,
       changeFrequency: 'daily',
       // "historias" es la única categoría con un pilar de contenido propio
       // fuera de /noticias (ver /acompanamiento y SeguiExplorando), así que
@@ -100,7 +100,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     const tags = await getWPTags(WP_REVALIDATE_ARCHIVO)
     tagRoutes = tags.map((tag) => ({
       url: `${siteConfig.url}/noticias/tag/${tag.slug}`,
-      lastModified: now,
       changeFrequency: 'weekly',
       priority: 0.4,
     }))

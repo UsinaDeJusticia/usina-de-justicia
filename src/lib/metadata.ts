@@ -4,7 +4,10 @@
 // ============================================
 
 import type { Metadata } from 'next'
-import { siteConfig } from './site-config'
+import { siteConfig } from './site-config.ts'
+import { varianteParaCompartir } from './imagenes.ts'
+import { SITE_SECTIONS, type SiteSection } from '../types/wordpress.ts'
+import type { Articulo } from '../types/index.ts'
 
 interface PageSEO {
   title: string
@@ -28,6 +31,72 @@ interface PageSEO {
    * Default: false (el caso normal, nested).
    */
   appendSiteName?: boolean
+}
+
+export function esMencionExterna(articulo: Articulo): boolean {
+  return SITE_SECTIONS[articulo.categoria.slug as SiteSection]?.externa === true
+}
+
+export function generateArticleMetadata(
+  articulo: Articulo, slug: string
+): Metadata {
+  const url = `${siteConfig.url}/noticias/${slug}`
+  const description = articulo.seoDescription || articulo.extracto
+  const variante = varianteParaCompartir(articulo.imagenDestacada)
+  const image = variante
+    ? {
+        url: variante.url, width: variante.width, height: variante.height,
+        alt: articulo.imagenDestacada?.alt || articulo.titulo,
+      }
+    : {
+        url: `${siteConfig.url}/images/og-default.png`,
+        width: 1200, height: 630, alt: siteConfig.name,
+      }
+
+  return {
+    title: articulo.seoTitle || articulo.titulo,
+    description,
+    alternates: { canonical: url },
+    ...(esMencionExterna(articulo) && { robots: { index: false, follow: true } }),
+    openGraph: {
+      title: articulo.titulo,
+      description,
+      url,
+      type: 'article',
+      publishedTime: articulo.fechaPublicacion,
+      modifiedTime: articulo.updatedAt,
+      authors: [articulo.autor],
+      images: [image],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: articulo.titulo,
+      description,
+      images: [image],
+    },
+  }
+}
+
+/** NewsArticle usa la fotografía original; el fallback de marca es sólo social. */
+export function buildNewsArticleJsonLd(articulo: Articulo, slug: string) {
+  const url = `${siteConfig.url}/noticias/${slug}`
+  const esOrganizacion = articulo.autor === siteConfig.name
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'NewsArticle',
+    headline: articulo.titulo,
+    description: articulo.seoDescription || articulo.extracto,
+    datePublished: articulo.fechaPublicacion,
+    dateModified: articulo.updatedAt,
+    articleSection: articulo.categoria.nombre,
+    author: esOrganizacion
+      ? { '@id': `${siteConfig.url}/#organization` }
+      : { '@type': 'Person', name: articulo.autor },
+    publisher: { '@id': `${siteConfig.url}/#organization` },
+    ...(articulo.imagenDestacada && { image: [articulo.imagenDestacada.url] }),
+    mainEntityOfPage: { '@type': 'WebPage', '@id': url },
+    isAccessibleForFree: true,
+  }
 }
 
 export function generatePageMetadata({

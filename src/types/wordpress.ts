@@ -73,9 +73,11 @@ export interface WPMedia {
   id: number
   source_url: string
   alt_text: string
+  mime_type?: string
   media_details: {
     width: number
     height: number
+    filesize?: number
     sizes: {
       thumbnail?: WPMediaSize
       medium?: WPMediaSize
@@ -92,6 +94,7 @@ export interface WPMediaSize {
   width: number
   height: number
   mime_type: string
+  filesize?: number
 }
 
 export interface WPTerm {

@@ -50,3 +50,36 @@ Si esa constante existe, el plugin la usa automáticamente y el campo de la pant
 1. Botón "Probar conexión" en Ajustes → Usina Headless → debería mostrar "Conexión OK".
 2. Publicar o editar cualquier post real → revisar en el log de errores de PHP del hosting que NO aparezca ninguna línea `[usina-headless] ...` (si aparece una, dice el motivo exacto del fallo, sin exponer el secreto).
 3. Confirmar en el sitio (`usinadejusticia.org.ar`) que el cambio aparece casi al instante, en vez de tardar hasta 5 minutos.
+
+## v0.5.0: imágenes sociales existentes y guardado REST
+
+WebP/AVIF no cubren los formatos de previews documentados por LinkedIn.
+Al guardar metadata de un adjunto, el editor nativo de WordPress prepara
+un JPEG `usina-social` (máximo 1200 por lado, sin recorte ni ampliación).
+Se guarda en uploads y se expone en `_embed` como un tamaño normal. Su URL
+lleva un hash del contenido; una edición de la foto produce una URL nueva.
+No hay generación en GET, ni en una Function de Vercel. JPEG/PNG/GIF usan
+sus tamaños existentes. NewsArticle conserva la imagen original.
+
+El aviso de Gutenberg/REST sale en `rest_after_insert_post`, después de
+guardar la destacada. El editor clásico conserva `save_post_post`.
+
+**Prerequisito antes del merge del cambio Next:** instalar esta versión del
+plugin y preparar las destacadas WebP/AVIF históricas en WordPress:
+
+```sh
+wp usina-headless social-images           # inventario, sin cambios
+wp usina-headless social-images --execute
+```
+
+La preparación procesa sólo destacadas únicas de posts publicados y debe
+terminar con **0 pendientes**. No genera imágenes por artículo ni assets en
+el repositorio. Verificar por HTTP al menos un JPEG y su entrada
+`media_details.sizes.usina-social` en `_embed`. Si WordPress no puede
+decodificar AVIF/WebP o escribir uploads, el comando falla: no mergear hasta
+resolverlo. Luego cambiar una destacada desde Gutenberg y confirmar que el
+HTML y OG/Twitter reflejan la nueva URL. Las redes conservan su propia caché
+de previews; el webhook invalida la página de Next, no esa caché externa.
+
+Pruebas locales sin WordPress ni red:
+`php wp-plugin/usina-headless/tests/social-images.test.php`.

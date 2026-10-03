@@ -2,7 +2,7 @@
 /**
  * Plugin Name:       Usina Headless
  * Description:       Soporte headless para usinadejusticia.org.ar: re-habilita Application Passwords, arregla el pasaje del header Authorization a PHP (.htaccess), deshabilita XML-RPC, y avisa al sitio Next.js cuando se publica/edita un post para que se actualice en segundos (revalidación instantánea) en vez de esperar hasta 5 minutos. Parte del rebuild 2026.
- * Version:           0.4.0
+ * Version:           0.5.0
  * Requires at least: 5.6
  * Requires PHP:      7.4
  * Author:            Usina de Justicia
@@ -122,7 +122,7 @@ add_action( 'rest_api_init', function () {
 			$wp_user    = $login ? get_user_by( 'login', $login ) : null;
 			return array(
 				'plugin'                  => 'usina-headless',
-				'version'                 => '0.4.0',
+				'version'                 => '0.5.0',
 				'app_passwords_available' => wp_is_application_passwords_available(),
 				'auth_header_received'    => ! empty( $_SERVER['HTTP_AUTHORIZATION'] ) || ! empty( $_SERVER['REDIRECT_HTTP_AUTHORIZATION'] ),
 				'php_auth_user_set'       => ! empty( $_SERVER['PHP_AUTH_USER'] ),
@@ -197,8 +197,17 @@ function usina_headless_revalidate_secret_from_constant() {
  * filtrar el tipo a mano.
  */
 add_action( 'save_post_post', 'usina_headless_on_save_post', 20, 3 );
+// Gutenberg/REST guarda featured_media DESPUÉS de save_post_post.
+add_action( 'rest_after_insert_post', 'usina_headless_on_rest_save_post', 20, 3 );
 
-function usina_headless_on_save_post( $post_id, $post, $update ) {
+function usina_headless_on_rest_save_post( $post, $request, $creating ) {
+	usina_headless_on_save_post( $post->ID, $post, ! $creating, true );
+}
+
+function usina_headless_on_save_post( $post_id, $post, $update, $rest_complete = false ) {
+	if ( defined( 'REST_REQUEST' ) && REST_REQUEST && ! $rest_complete ) {
+		return;
+	}
 	// Autosaves, revisiones y guardados en papelera/borrador no deben
 	// disparar un aviso: solo importa cuando el contenido que ve el
 	// público realmente cambió.
@@ -208,10 +217,96 @@ function usina_headless_on_save_post( $post_id, $post, $update ) {
 	if ( 'publish' !== $post->post_status ) {
 		return;
 	}
+	// Preparar el archivo antes de invalidar el HTML y su metadata en Next.
+	$media_id = get_post_thumbnail_id( $post_id );
+	if ( $media_id ) {
+		wp_update_attachment_metadata( $media_id, wp_get_attachment_metadata( $media_id ) );
+	}
 
 	$paths = array( '/', '/noticias', '/noticias/' . $post->post_name );
 
 	usina_headless_send_revalidate( $paths );
+}
+
+/**
+ * Sólo al escribir metadata de un adjunto: nunca en un GET del sitio/API.
+ * WordPress publica el JPEG como un tamaño normal en media_details.sizes,
+ * consumido por variantesDeMedia. JPEG/PNG/GIF ya existentes se conservan.
+ */
+add_filter( 'wp_update_attachment_metadata', 'usina_headless_social_variant', 10, 2 );
+
+function usina_headless_social_variant( $metadata, $attachment_id ) {
+	if ( ! is_array( $metadata ) || ! in_array( get_post_mime_type( $attachment_id ), array( 'image/webp', 'image/avif' ), true ) ) {
+		return $metadata;
+	}
+	$file = get_attached_file( $attachment_id );
+	if ( ! $file || ! is_readable( $file ) ) {
+		return $metadata;
+	}
+	$hash = hash_file( 'sha256', $file );
+	$previous = $metadata['sizes']['usina-social'] ?? array();
+	if ( ( $previous['usina_source_hash'] ?? '' ) === $hash && ! empty( $previous['file'] ) && is_file( dirname( $file ) . '/' . $previous['file'] ) ) {
+		return $metadata;
+	}
+	$editor = wp_get_image_editor( $file );
+	if ( is_wp_error( $editor ) ) {
+		error_log( '[usina-headless] no se pudo abrir la imagen social del adjunto ' . $attachment_id );
+		return $metadata;
+	}
+	$editor->set_quality( 82 );
+	$size = $editor->get_size();
+	if ( $size['width'] > 1200 || $size['height'] > 1200 ) {
+		$resized = $editor->resize( 1200, 1200, false ); // Sin recorte ni ampliación.
+		if ( is_wp_error( $resized ) ) {
+			return $metadata;
+		}
+	}
+	// Hash del contenido: cambiar la foto cambia la URL, también en redes.
+	$destination = dirname( $file ) . '/' . pathinfo( $file, PATHINFO_FILENAME ) . '-usina-social-' . substr( $hash, 0, 12 ) . '.jpg';
+	$saved = $editor->save( $destination, 'image/jpeg' );
+	if ( is_wp_error( $saved ) ) {
+		error_log( '[usina-headless] no se pudo guardar el JPEG social del adjunto ' . $attachment_id );
+		return $metadata;
+	}
+	$metadata['sizes']['usina-social'] = array(
+		'file'              => wp_basename( $saved['path'] ),
+		'width'             => $saved['width'],
+		'height'            => $saved['height'],
+		'mime-type'         => 'image/jpeg',
+		'filesize'          => filesize( $saved['path'] ),
+		'usina_source_hash' => $hash,
+	);
+	return $metadata;
+}
+
+// Preparación puntual de destacadas publicadas; por defecto sólo inventaría.
+// No descarga imágenes ni toca posts; --execute usa el editor nativo de WP.
+if ( defined( 'WP_CLI' ) && WP_CLI ) {
+	WP_CLI::add_command( 'usina-headless social-images', function ( $args, $assoc_args ) {
+		global $wpdb;
+		$ids = $wpdb->get_col( "SELECT DISTINCT pm.meta_value FROM {$wpdb->postmeta} pm JOIN {$wpdb->posts} p ON p.ID = pm.post_id WHERE pm.meta_key = '_thumbnail_id' AND p.post_type = 'post' AND p.post_status = 'publish'" );
+		$pending = 0;
+		foreach ( $ids as $id ) {
+			if ( ! in_array( get_post_mime_type( $id ), array( 'image/webp', 'image/avif' ), true ) ) {
+				continue;
+			}
+			$metadata = wp_get_attachment_metadata( $id );
+			if ( isset( $assoc_args['execute'] ) ) {
+				wp_update_attachment_metadata( $id, $metadata );
+				$metadata = wp_get_attachment_metadata( $id );
+			}
+			$social = $metadata['sizes']['usina-social'] ?? array();
+			$file = get_attached_file( $id );
+			if ( ! $file || ! is_readable( $file ) || empty( $social['file'] ) || ! is_file( dirname( $file ) . '/' . $social['file'] ) || ( $social['usina_source_hash'] ?? '' ) !== hash_file( 'sha256', $file ) ) {
+				$pending++;
+				WP_CLI::log( 'Sin JPEG social: ' . $id );
+			}
+		}
+		if ( $pending && isset( $assoc_args['execute'] ) ) {
+			WP_CLI::error( $pending . ' destacadas siguen sin JPEG social; no publicar el cambio de Next.' );
+		}
+		WP_CLI::success( count( $ids ) . ' destacadas únicas revisadas; ' . $pending . ' pendientes.' );
+	} );
 }
 
 /**

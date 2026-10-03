@@ -14,6 +14,8 @@ export interface ImageVariante {
   url: string
   width: number
   height: number
+  mimeType?: string
+  bytes?: number
 }
 
 export interface ImageAsset {
@@ -21,6 +23,8 @@ export interface ImageAsset {
   alt: string
   width: number
   height: number
+  mimeType?: string
+  bytes?: number
   /**
    * Tamaños alternativos de esta misma imagen, de menor a mayor ancho. Los
    * llena `wpPostToArticulo` a partir de `media_details.sizes`, que ya viene
