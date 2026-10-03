@@ -183,8 +183,8 @@ describe('urlParaAncho — lo que consumen los componentes', () => {
   })
 
   it('las superficies que quieren el original lo siguen teniendo en `url`', () => {
-    // opengraph-image.tsx y la `image` del JSON-LD leen `imagen.url` directo:
-    // ahí conviene la mejor resolución disponible.
+    // La tarjeta social elige una variante compatible; JSON-LD conserva el
+    // original en `image`, donde conviene la mejor resolución disponible.
     assert.equal(asset().url, 'https://wp.test/foto.png')
   })
 

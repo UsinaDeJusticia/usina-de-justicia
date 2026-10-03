@@ -165,15 +165,9 @@ export function urlParaAncho(
   return varianteParaAncho(imagen, anchoMinimo)?.url ?? imagen?.url
 }
 
-/**
- * Imagen social ya existente, sin descargas ni transformaciones. La muestra
- * real de WP tiene variantes de 1536 sin recorte y tamaños de 1024 recortados;
- * 1200 elige la primera suficientemente grande conservando la proporción.
- * LinkedIn documenta JPEG/PNG/GIF; WebP/AVIF usan el JPEG `usina-social` que
- * prepara el plugin en WordPress. Los límites compartidos con X son 5 MB,
- * 4096 px por lado y al menos 300x157. Nunca se amplía una imagen pequeña.
- */
-export function varianteParaCompartir(
+/** Selecciona una variante ya existente que Satori pueda renderizar y que las
+ * redes acepten: JPEG/PNG, 300–4096 px, menos de 5 MiB, nunca ampliada. */
+export function varianteParaTarjetaOG(
   imagen: ImageAsset | undefined
 ): ImageVariante | undefined {
   if (!imagen) return undefined
@@ -187,11 +181,11 @@ export function varianteParaCompartir(
     }
     if (!['http:', 'https:'].includes(url.protocol)) return false
     const formatoCompatible = v.mimeType
-      ? ['image/jpeg', 'image/png', 'image/gif'].includes(v.mimeType)
-      : /\.(jpe?g|png|gif)$/i.test(url.pathname)
+      ? ['image/jpeg', 'image/png'].includes(v.mimeType.toLowerCase())
+      : /\.(jpe?g|png)$/i.test(url.pathname)
     return formatoCompatible && v.width >= 300 && v.height >= 157 &&
       v.width <= 4096 && v.height <= 4096 &&
-      (!v.bytes || v.bytes < 5 * 1024 * 1024)
+      (v.bytes === undefined || (v.bytes > 0 && v.bytes < 5 * 1024 * 1024))
   }).sort((a, b) => a.width - b.width)
   if (!compatibles.length) return undefined
   return varianteParaAncho({ ...imagen, variantes: compatibles }, 1200)

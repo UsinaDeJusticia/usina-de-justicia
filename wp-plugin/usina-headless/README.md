@@ -58,8 +58,14 @@ Al guardar metadata de un adjunto, el editor nativo de WordPress prepara
 un JPEG `usina-social` (máximo 1200 por lado, sin recorte ni ampliación).
 Se guarda en uploads y se expone en `_embed` como un tamaño normal. Su URL
 lleva un hash del contenido; una edición de la foto produce una URL nueva.
-No hay generación en GET, ni en una Function de Vercel. JPEG/PNG/GIF usan
-sus tamaños existentes. NewsArticle conserva la imagen original.
+La tarjeta social mantiene la foto, el panel azul y el título: Next.js usa
+ese JPEG/PNG existente como fondo y lo compone con `ImageResponse`, sin
+descargar el original ni transcodificarlo con `sharp`. JPEG y PNG usan
+variantes existentes cuando son compatibles; si no hay una, se muestra el
+fallback de marca. La ruta de la tarjeta continúa ejecutándose en Vercel
+cuando un crawler la solicita; este cambio
+reduce el trabajo y los bytes descargados, pero no elimina esas invocaciones.
+NewsArticle conserva la imagen original.
 
 El aviso de Gutenberg/REST sale en `rest_after_insert_post`, después de
 guardar la destacada. El editor clásico conserva `save_post_post`.

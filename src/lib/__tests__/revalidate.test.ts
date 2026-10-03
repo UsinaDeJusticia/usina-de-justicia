@@ -23,13 +23,19 @@ it('webhook invalida la página y metadata de la nota sólo con el secreto corre
     process.env.REVALIDATE_SECRET = 'local-test-secret'
     const { POST } = await import('../../app/api/revalidate/route.ts')
     const request = (secret: string) => new Request('https://next.test/api/revalidate', {
-      method: 'POST', body: JSON.stringify({ secret, paths: ['/', '/noticias', '/noticias/una-nota'] }),
+      method: 'POST', body: JSON.stringify({
+        secret,
+        paths: ['/', '/noticias', '/noticias/una-nota', '/noticias/categoria/prensa'],
+      }),
     })
     assert.equal((await POST(request('incorrecto'))).status, 401)
     assert.deepEqual(paths, [])
     const response = await POST(request('local-test-secret'))
     assert.equal(response.status, 200)
-    assert.deepEqual(paths, ['/', '/noticias', '/noticias/una-nota'])
+    assert.deepEqual(paths, [
+      '/', '/noticias', '/noticias/una-nota', '/noticias/categoria/prensa',
+      '/noticias/una-nota/opengraph-image',
+    ])
     assert.deepEqual(await response.json(), { revalidated: true, paths })
   } finally {
     hooks.deregister()
