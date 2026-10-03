@@ -68,7 +68,10 @@ reduce el trabajo y los bytes descargados, pero no elimina esas invocaciones.
 NewsArticle conserva la imagen original.
 
 El aviso de Gutenberg/REST sale en `rest_after_insert_post`, después de
-guardar la destacada. El editor clásico conserva `save_post_post`.
+guardar la destacada. En el editor clásico, `save_post_post` deja el post en
+cola y el plugin lee la miniatura final durante `shutdown`, cuando WordPress
+ya guardó `_thumbnail_id`; prepara entonces el JPEG y recién después solicita
+la revalidación de Next.js.
 
 **Prerequisito antes del merge del cambio Next:** instalar esta versión del
 plugin y preparar las destacadas WebP/AVIF históricas en WordPress:
