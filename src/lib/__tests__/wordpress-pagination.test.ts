@@ -21,7 +21,7 @@ describe('getAllPostsBuscador — paginación estable', () => {
     }
     const consultas: URL[] = []
 
-    t.mock.method(globalThis, 'fetch', async (input) => {
+    t.mock.method(globalThis, 'fetch', async (input: Parameters<typeof fetch>[0]) => {
       const url = new URL(input instanceof Request ? input.url : input.toString())
       if (url.pathname.endsWith('/categories')) {
         return new Response('[]', { headers: { 'content-type': 'application/json' } })
