@@ -54,11 +54,20 @@ export async function POST(request: Request) {
   const pathsToRevalidate =
     requestedPaths.length > 0 ? requestedPaths : DEFAULT_PATHS
 
+  // The branded image is a separate metadata route with its own ISR cache.
+  // WordPress sends the article page path; invalidate the matching card too.
+  const pathsWithSocialCards = new Set(pathsToRevalidate)
   for (const path of pathsToRevalidate) {
+    if (/^\/noticias\/[^/]+$/.test(path)) {
+      pathsWithSocialCards.add(`${path}/opengraph-image`)
+    }
+  }
+
+  for (const path of pathsWithSocialCards) {
     revalidatePath(path)
   }
 
-  return NextResponse.json({ revalidated: true, paths: pathsToRevalidate })
+  return NextResponse.json({ revalidated: true, paths: [...pathsWithSocialCards] })
 }
 
 export async function GET() {

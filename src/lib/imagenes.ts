@@ -86,7 +86,9 @@ export function variantesDeMedia(media: WPMedia): ImageVariante[] {
   const vistas = new Set<string>()
   const variantes: ImageVariante[] = []
 
-  const sumar = (url: string, w: number, h: number) => {
+  const sumar = (
+    url: string, w: number, h: number, mimeType?: string, bytes?: number
+  ) => {
     if (!url || !w || !h || vistas.has(url)) return
     // Sólo variantes del mismo origen que el original. WordPress las genera
     // al lado del archivo, así que en condiciones normales esto siempre se
@@ -105,15 +107,22 @@ export function variantesDeMedia(media: WPMedia): ImageVariante[] {
       return
     }
     vistas.add(url)
-    variantes.push({ url, width: w, height: h })
+    variantes.push({
+      url, width: w, height: h,
+      ...(mimeType ? { mimeType } : {}),
+      ...(bytes ? { bytes } : {}),
+    })
   }
 
   for (const tamano of Object.values(media.media_details?.sizes ?? {})) {
-    if (tamano) sumar(tamano.source_url, tamano.width, tamano.height)
+    if (tamano) sumar(
+      tamano.source_url, tamano.width, tamano.height, tamano.mime_type,
+      tamano.filesize ?? (tamano.source_url === media.source_url ? media.media_details?.filesize : undefined)
+    )
   }
   // El original puede no aparecer en `sizes` (WordPress no siempre agrega la
   // entrada `full`), y es el que hace de último recurso.
-  if (ancho && alto) sumar(media.source_url, ancho, alto)
+  if (ancho && alto) sumar(media.source_url, ancho, alto, media.mime_type, media.media_details?.filesize)
 
   return variantes.sort((a, b) => a.width - b.width)
 }
@@ -135,7 +144,11 @@ export function varianteParaAncho(
 
   const variantes = imagen.variantes
   if (!variantes || variantes.length === 0) {
-    return { url: imagen.url, width: imagen.width, height: imagen.height }
+    return {
+      url: imagen.url, width: imagen.width, height: imagen.height,
+      ...(imagen.mimeType ? { mimeType: imagen.mimeType } : {}),
+      ...(imagen.bytes ? { bytes: imagen.bytes } : {}),
+    }
   }
 
   return variantes.find((v) => v.width >= anchoMinimo) ?? variantes[variantes.length - 1]
@@ -150,4 +163,30 @@ export function urlParaAncho(
   anchoMinimo: number
 ): string | undefined {
   return varianteParaAncho(imagen, anchoMinimo)?.url ?? imagen?.url
+}
+
+/** Selecciona una variante ya existente que Satori pueda renderizar y que las
+ * redes acepten: JPEG/PNG, 300–4096 px, menos de 5 MiB, nunca ampliada. */
+export function varianteParaTarjetaOG(
+  imagen: ImageAsset | undefined
+): ImageVariante | undefined {
+  if (!imagen) return undefined
+  const original = varianteParaAncho({ ...imagen, variantes: [] }, 1200)!
+  const compatibles = [...(imagen.variantes ?? []), original].filter((v) => {
+    let url: URL
+    try {
+      url = new URL(v.url)
+    } catch {
+      return false
+    }
+    if (!['http:', 'https:'].includes(url.protocol)) return false
+    const formatoCompatible = v.mimeType
+      ? ['image/jpeg', 'image/png'].includes(v.mimeType.toLowerCase())
+      : /\.(jpe?g|png)$/i.test(url.pathname)
+    return formatoCompatible && v.width >= 300 && v.height >= 157 &&
+      v.width <= 4096 && v.height <= 4096 &&
+      (v.bytes === undefined || (v.bytes > 0 && v.bytes < 5 * 1024 * 1024))
+  }).sort((a, b) => a.width - b.width)
+  if (!compatibles.length) return undefined
+  return varianteParaAncho({ ...imagen, variantes: compatibles }, 1200)
 }

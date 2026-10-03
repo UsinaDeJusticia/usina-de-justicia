@@ -11,7 +11,11 @@ import { ArticleCard } from '@/components/noticias/ArticleCard'
 import { CompartirNota } from '@/components/noticias/CompartirNota'
 import { urlCanonicaNota } from '@/lib/compartir'
 import { urlParaAncho, ANCHO_HERO_NOTA } from '@/lib/imagenes'
-import { siteConfig } from '@/lib/site-config'
+import {
+  generateArticleMetadata,
+  buildNewsArticleJsonLd,
+  esMencionExterna,
+} from '@/lib/metadata'
 import {
   getArticuloBySlug,
   getArticulos,
@@ -20,21 +24,6 @@ import {
   extractFirstImage,
   WP_REVALIDATE_ARCHIVO,
 } from '@/lib/wordpress'
-import { SITE_SECTIONS } from '@/types/wordpress'
-import type { SiteSection } from '@/types/wordpress'
-import type { Articulo } from '@/types'
-
-/**
- * true para una nota de "En los medios": cobertura de terceros, no nuestra
- * (ver `externa` en SITE_SECTIONS). Se usa para dos cosas en esta página:
- * `noindex` (evitar cientos de páginas de una línea en el índice de
- * Google — la página de listado, esa sí, queda indexada) y no emitir el
- * JSON-LD NewsArticle (sería atribuirnos autoría de una nota que en
- * realidad es de otro medio).
- */
-function esMencionExterna(articulo: Articulo): boolean {
-  return SITE_SECTIONS[articulo.categoria.slug as SiteSection]?.externa === true
-}
 
 // ============================================
 // Una nota publicada no cambia sola: 24h de ventana ISR en vez de los 5 min
@@ -93,80 +82,7 @@ export async function generateMetadata({
     return { title: 'Artículo no encontrado' }
   }
 
-  return {
-    title: articulo.seoTitle || articulo.titulo,
-    description: articulo.seoDescription || articulo.extracto,
-    alternates: {
-      canonical: `https://www.usinadejusticia.org.ar/noticias/${slug}`,
-    },
-    // "En los medios": noindex por nota individual — la cobertura real ya
-    // está indexada en el sitio del medio, y publicar acá cientos de
-    // páginas de una línea sería el mismo problema de contenido delgado
-    // que ya se auditó en esta rama. La página de listado
-    // (/noticias/categoria/en-los-medios) sí queda indexada: ahí es donde
-    // vale la pena que Google y los asistentes de IA encuentren esto.
-    ...(esMencionExterna(articulo) && {
-      robots: { index: false, follow: true },
-    }),
-    openGraph: {
-      title: articulo.titulo,
-      // seoDescription primero: nunca queda vacío (cae al título cuando el
-      // post no tiene excerpt — ver comentario en wpPostToArticulo). Auditoría
-      // de contenido delgado, 26-ago-2026, ver docs/ESTADO.md.
-      description: articulo.seoDescription || articulo.extracto,
-      type: 'article',
-      publishedTime: articulo.fechaPublicacion,
-      modifiedTime: articulo.updatedAt,
-      authors: [articulo.autor],
-      // Sin `images`: la vista previa la pone opengraph-image.tsx de esta
-      // misma carpeta (la tarjeta de marca 1200x630 con el título sobre la
-      // foto), y Next.js le da prioridad a ese archivo por sobre lo que se
-      // declare acá. Hasta ahora había un `images: [imagenDestacada.url]`
-      // que nunca llegaba al HTML — verificado inspeccionando la nota
-      // renderizada: la etiqueta og:image que sale apunta a
-      // /noticias/:slug/opengraph-image.
-      //
-      // Y mejor así: la imagen destacada cruda es el archivo tal cual se
-      // subió a WordPress, y 440 de las 824 notas la tienen en PNG a
-      // resolución completa. Como og:image eso pesa de más para lo que
-      // aceptan las plataformas, y la vista previa puede terminar no
-      // apareciendo.
-    },
-  }
-}
-
-// ============================================
-// JSON-LD: NewsArticle
-// ============================================
-
-// El autor por defecto de wordpress.ts (wpPostToArticulo) cuando WP no trae
-// un autor embebido es exactamente el nombre de la organización — se usa
-// ese mismo valor como heurística para decidir Person vs Organization, sin
-// necesitar un campo nuevo en el tipo Articulo.
-function buildNewsArticleJsonLd(articulo: Articulo, slug: string) {
-  const url = `${siteConfig.url}/noticias/${slug}`
-  const esOrganizacion = articulo.autor === siteConfig.name
-
-  return {
-    '@context': 'https://schema.org',
-    '@type': 'NewsArticle',
-    headline: articulo.titulo,
-    // Mismo fallback que generateMetadata arriba: seoDescription nunca
-    // queda vacío.
-    description: articulo.seoDescription || articulo.extracto,
-    datePublished: articulo.fechaPublicacion,
-    dateModified: articulo.updatedAt,
-    articleSection: articulo.categoria.nombre,
-    author: esOrganizacion
-      ? { '@id': `${siteConfig.url}/#organization` }
-      : { '@type': 'Person', name: articulo.autor },
-    publisher: { '@id': `${siteConfig.url}/#organization` },
-    ...(articulo.imagenDestacada && {
-      image: [articulo.imagenDestacada.url],
-    }),
-    mainEntityOfPage: { '@type': 'WebPage', '@id': url },
-    isAccessibleForFree: true,
-  }
+  return generateArticleMetadata(articulo, slug)
 }
 
 // ============================================

@@ -1,7 +1,7 @@
 // src/lib/og.tsx
 // Elemento de marca compartido entre el opengraph-image estático de la raíz
-// (src/app/opengraph-image.tsx) y el fallback sin imagen destacada del
-// opengraph-image dinámico de /noticias/[slug].
+// (src/app/opengraph-image.tsx) y el fallback del opengraph-image dinámico
+// de /noticias/[slug].
 //
 // No se embebe el logo real (logo_uj.png / logo_uj_white_bg.jpg): ambos
 // archivos traen el isotipo y el wordmark en navy sobre fondo transparente
