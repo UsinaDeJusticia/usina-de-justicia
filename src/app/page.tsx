@@ -48,8 +48,8 @@ export default async function Home() {
   return (
     <>
       <HeroRotator latestArticle={latestArticle} />
-      <QueHacer />
       <Pillars />
+      <QueHacer />
       <Observatorio />
       <Testimonios />
       <Trayectoria />

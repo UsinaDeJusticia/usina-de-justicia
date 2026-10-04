@@ -1,7 +1,6 @@
 import type { ReactNode } from 'react'
 import { HeroEditorial } from './HeroEditorial'
 import { HeroAccompany } from './HeroAccompany'
-import { HeroData } from './HeroData'
 import type { Articulo } from '@/types'
 
 export interface HeroSlide {
@@ -11,19 +10,16 @@ export interface HeroSlide {
   render: () => ReactNode
 }
 
-// Fuente única de las 3 variantes del hero (design-system/home:
-// HeroEditorial, HeroAccompany, HeroData), compartida entre:
+// Fuente única de las 2 variantes del hero (Editorial y Acompañamiento),
+// compartida entre:
 // - HeroRotator.tsx: placeholder estático que se sirve mientras el chunk
-//   del rotador interactivo no cargó (SSR, no-JS, o los primeros ~segundos
-//   de vida de la página).
-// - HeroRotatorEnhanced.tsx: rotador interactivo (autoplay + tablist),
-//   cargado diferido vía next/dynamic(ssr:false).
+//   del rotador interactivo no cargó (SSR, no-JS o los primeros segundos).
+// - HeroRotatorEnhanced.tsx: rotador interactivo (autoavance + controles),
+//   cargado diferido tras la primera interacción o en idle.
 //
-// Las dos vistas deben producir EXACTAMENTE la misma estructura/alto para
-// la variante Editorial (grid con las 3 variantes apiladas, sólo la
-// primera visible): si el marcado difiere, el swap de una a otra genera un
-// layout shift al montar el rotador (esto pasó y se corrigió: ver el
-// comentario en HeroRotator.tsx).
+// Ambas vistas montan sólo la variante activa y reservan el mismo espacio
+// para sus controles; así el cambio del placeholder al rotador no provoca
+// un salto de layout.
 export function getHeroSlides(latestArticle?: Articulo | null): HeroSlide[] {
   return [
     {
@@ -37,12 +33,6 @@ export function getHeroSlides(latestArticle?: Articulo | null): HeroSlide[] {
       label: 'Acompañamiento',
       bgClassName: 'bg-navy-50',
       render: () => <HeroAccompany />,
-    },
-    {
-      key: 'data',
-      label: 'Observatorio',
-      bgClassName: 'bg-navy-900',
-      render: () => <HeroData />,
     },
   ]
 }

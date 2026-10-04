@@ -51,11 +51,11 @@ export function HeroEditorial({ latestArticle }: HeroEditorialProps) {
           proceso penal.
         </p>
         <div className="flex flex-wrap gap-3 mt-7">
-          <Button href="/#quehacer" variant="primary" size="lg">
-            Si perdiste a un ser querido →
+          <Button href="/necesito-ayuda" variant="primary" size="lg">
+            Necesito ayuda →
           </Button>
-          <Button href="/#observatorio" variant="ghost" size="lg" className="underline underline-offset-4">
-            Ver el observatorio
+          <Button href="/#pilares" variant="ghost" size="lg" className="underline underline-offset-4">
+            Conocer nuestros pilares
           </Button>
         </div>
       </div>
