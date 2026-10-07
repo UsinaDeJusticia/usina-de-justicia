@@ -4,12 +4,11 @@ import { useCallback, useEffect, useState } from 'react'
 import { getHeroSlides } from './heroSlides'
 import type { Articulo } from '@/types'
 
-// Rotador completo de las 3 variantes de hero (design-system/home:
-// HeroEditorial, HeroAccompany, HeroData). Separado de HeroRotator.tsx a
+// Rotador completo de las 2 variantes del hero. Separado de HeroRotator.tsx a
 // propósito: este componente sólo se carga y se monta en el cliente, vía
-// next/dynamic(ssr:false), después de que HeroRotator decide que el hilo
+// importación diferida, después de que HeroRotator decide que el hilo
 // principal está libre (ver ese archivo) — así su costo de hidratación
-// (matchMedia + setInterval + tablist) no compite con el LCP/TBT inicial.
+// (media query, temporizador y controles) no compite con el LCP/TBT inicial.
 //
 // Como este árbol nunca se hidrata (nunca hay HTML de servidor equivalente:
 // Next lo monta directo con ReactDOM en el cliente), puede leer
@@ -18,14 +17,13 @@ import type { Articulo } from '@/types'
 // vivía en un client component SSR-eado y necesitaba un estado
 // "detectedMotionPref" para evitar un flash de la variante rotativa.
 //
-// - Auto-avance cada 9s, se detiene con hover/foco/interacción manual.
+// - Auto-avance cada 9s, con pausas por interacción y un control visible.
 // - Fade-in al cambiar de variante, con los tokens de motion de marca
 //   (--duration-slow=320ms, --ease-out) — sin slide/bounce/parallax.
 // - `prefers-reduced-motion: reduce` desactiva la rotación por completo:
 //   se muestra fija la primera variante (Editorial) sin controles, porque
 //   no hay nada que "navegar" si no rota.
-// - Cada slide tiene su propio fondo sólido (nunca gradiente): ivory,
-//   navy-50 y navy-900 respectivamente.
+// - Cada slide tiene su propio fondo sólido (nunca gradiente).
 //
 // OJO CLS: acá sólo se monta la variante ACTIVA (nunca las 3 al mismo
 // tiempo). Una versión anterior apilaba las 3 con CSS grid
@@ -52,6 +50,7 @@ export function HeroRotatorEnhanced({ latestArticle }: HeroRotatorEnhancedProps)
   const [reducedMotion, setReducedMotion] = useState(prefersReducedMotion)
   const [active, setActive] = useState(0)
   const [paused, setPaused] = useState(false)
+  const [manuallyPaused, setManuallyPaused] = useState(false)
   // Arranca en `false` para que, al montar (o al cambiar de variante), el
   // fade-in se dispare desde opacity-0 en vez de aparecer ya visible.
   const [visible, setVisible] = useState(false)
@@ -64,13 +63,13 @@ export function HeroRotatorEnhanced({ latestArticle }: HeroRotatorEnhancedProps)
   }, [])
 
   useEffect(() => {
-    if (reducedMotion || paused) return
+    if (reducedMotion || paused || manuallyPaused) return
     const id = setInterval(() => {
       setActive((i) => (i + 1) % slides.length)
     }, AUTOPLAY_MS)
     return () => clearInterval(id)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [reducedMotion, paused, active, slides.length])
+  }, [reducedMotion, paused, manuallyPaused, active, slides.length])
 
   useEffect(() => {
     setVisible(false)
@@ -94,10 +93,14 @@ export function HeroRotatorEnhanced({ latestArticle }: HeroRotatorEnhancedProps)
 
   return (
     <section
+      aria-label="Contenido destacado de la portada"
       className="relative isolate"
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
-      onFocus={() => setPaused(true)}
+      onFocus={(event) => {
+        if (event.target instanceof HTMLButtonElement && event.target.dataset.carouselToggle !== undefined) return
+        setPaused(true)
+      }}
       onBlur={(e) => {
         if (!e.currentTarget.contains(e.relatedTarget as Node)) setPaused(false)
       }}
@@ -105,10 +108,6 @@ export function HeroRotatorEnhanced({ latestArticle }: HeroRotatorEnhancedProps)
       <div className="grid">
         <div
           key={activeSlide.key}
-          id={`hero-panel-${activeSlide.key}`}
-          role="tabpanel"
-          aria-roledescription="slide"
-          aria-label={`${active + 1} de ${slides.length}: ${activeSlide.label}`}
           className={
             activeSlide.bgClassName +
             ' col-start-1 row-start-1 py-16 md:py-20 transition-opacity duration-slow ease-out ' +
@@ -119,47 +118,38 @@ export function HeroRotatorEnhanced({ latestArticle }: HeroRotatorEnhancedProps)
         </div>
       </div>
 
-      {/* Indicadores accesibles: navegables por teclado (Tab + flechas) */}
+      {/* Botones nativos: selección de variante y pausa accesibles por teclado. */}
       <div
-        role="tablist"
+        role="group"
         aria-label="Variantes destacadas de la portada"
         className={
           'relative z-20 flex items-center justify-center gap-2.5 pb-6 -mt-1 ' +
-          (slides[active].key === 'data' ? 'bg-navy-900' : slides[active].bgClassName)
+          slides[active].bgClassName
         }
-        onKeyDown={(e) => {
-          if (e.key === 'ArrowRight') {
-            e.preventDefault()
-            goTo((active + 1) % slides.length)
-          } else if (e.key === 'ArrowLeft') {
-            e.preventDefault()
-            goTo((active - 1 + slides.length) % slides.length)
-          }
-        }}
       >
         {slides.map((slide, i) => (
           <button
             key={slide.key}
             type="button"
-            role="tab"
-            id={`hero-tab-${slide.key}`}
-            aria-selected={i === active}
-            aria-controls={`hero-panel-${slide.key}`}
+            aria-pressed={i === active}
             aria-label={`Mostrar variante ${i + 1} de ${slides.length}: ${slide.label}`}
-            tabIndex={i === active ? 0 : -1}
             onClick={() => goTo(i)}
             className={
               'w-2.5 h-2.5 rounded-full transition-colors duration-base ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-navy-600 focus-visible:ring-offset-2 ' +
-              (i === active
-                ? slides[active].key === 'data'
-                  ? 'bg-white'
-                  : 'bg-navy-600'
-                : slides[active].key === 'data'
-                  ? 'bg-white/30 hover:bg-white/50'
-                  : 'bg-navy-200 hover:bg-navy-400')
+              (i === active ? 'bg-navy-600' : 'bg-navy-200 hover:bg-navy-400')
             }
           />
         ))}
+        <button
+          type="button"
+          data-carousel-toggle
+          aria-pressed={manuallyPaused}
+          aria-label={manuallyPaused ? 'Reanudar el carrusel' : 'Pausar el carrusel'}
+          onClick={() => setManuallyPaused((value) => !value)}
+          className="absolute right-4 md:right-10 px-2 py-1 text-body-sm font-semibold text-navy-800 underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-navy-600 focus-visible:ring-offset-2"
+        >
+          {manuallyPaused ? 'Reanudar' : 'Pausar'}
+        </button>
       </div>
     </section>
   )

@@ -10,8 +10,8 @@ import type { Articulo } from '@/types'
 // placeholder estático de acá abajo: la variante Editorial visible, con
 // exactamente el mismo contenido que el primer slide del rotador completo
 // (incluido el párrafo de definición institucional, ver Ola D / GEO). El
-// rotador completo (variantes Acompañamiento + Observatorio + matchMedia +
-// setInterval + tablist, ~1.6s de hidratación medidos por Lighthouse) vive
+// rotador completo (variante Acompañamiento + matchMedia +
+// temporizador + controles, ~1.6s de hidratación medidos por Lighthouse) vive
 // en HeroRotatorEnhanced.tsx y se descarga + monta recién cuando el hilo
 // principal queda libre (`requestIdleCallback`, con fallback `setTimeout` a
 // los 2s) o en la primera interacción del visitante — lo que ocurra
@@ -78,7 +78,8 @@ export function HeroRotator({ latestArticle }: HeroRotatorProps) {
     return <Enhanced latestArticle={latestArticle} />
   }
 
-  const editorial = getHeroSlides(latestArticle)[0]
+  const slides = getHeroSlides(latestArticle)
+  const editorial = slides[0]
 
   return (
     <section className="relative isolate">
@@ -88,19 +89,22 @@ export function HeroRotator({ latestArticle }: HeroRotatorProps) {
         </div>
       </div>
 
-      {/* Renglón reservado del tamaño del tablist real (ver
+      {/* Renglón reservado del tamaño de los controles reales (ver
           HeroRotatorEnhanced), invisible y afuera del árbol de
           accesibilidad: todavía no hay JS para hacerlo funcionar, así que
-          no se exponen botones sin acción a lectores de pantalla. Sólo
-          existe para que el alto no cambie cuando el tablist real
-          aparezca al montar el rotador. */}
+          no se exponen controles sin acción a lectores de pantalla. Sólo
+          existe para que el alto no cambie cuando los controles reales
+          aparezcan al montar el rotador. */}
       <div
         aria-hidden="true"
         className={'invisible relative z-20 flex items-center justify-center gap-2.5 pb-6 -mt-1 ' + editorial.bgClassName}
       >
-        <span className="w-2.5 h-2.5 rounded-full bg-navy-600" />
-        <span className="w-2.5 h-2.5 rounded-full bg-navy-600" />
-        <span className="w-2.5 h-2.5 rounded-full bg-navy-600" />
+        {slides.map((slide) => (
+          <span key={slide.key} className="w-2.5 h-2.5 rounded-full bg-navy-600" />
+        ))}
+        <span className="absolute right-4 md:right-10 px-2 py-1 text-body-sm font-semibold">
+          Pausar
+        </span>
       </div>
     </section>
   )

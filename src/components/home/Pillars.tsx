@@ -31,14 +31,10 @@ const pillars = [
   {
     Icon: BookOpen,
     title: 'Capacitación e investigación',
-    // Mismo criterio que arriba: se suma "investigar para entender, capacitar
-    // para transformar" —la frase de la Comisión— pero se conserva "el único
-    // curso de Victimología Penal del país", que es una afirmación concreta y
-    // verificable. Lo que se descartó de su propuesta fue "impacto social
-    // real, sostenible y medible": no dice nada que se pueda comprobar ni
-    // buscar.
+    // La oferta y el alcance de los cursos pueden cambiar; evitamos un
+    // superlativo difícil de mantener actualizado.
     description:
-      'Investigar para entender, capacitar para transformar. A través de IVUJUS, el único curso de Victimología Penal del país y formación a magistrados.',
+      'Investigar para entender, capacitar para transformar. A través de IVUJUS, desarrollamos formación e investigación sobre victimología.',
     label: 'Ir a IVUJUS',
     href: siteConfig.externalLinks.ivujus,
   },
@@ -46,7 +42,7 @@ const pillars = [
 
 export function Pillars() {
   return (
-    <section className="py-20 md:py-24 bg-navy-50 border-t border-b border-grey-200">
+    <section id="pilares" className="py-20 md:py-24 bg-navy-50 border-t border-b border-grey-200 scroll-mt-16">
       <div className="max-w-content mx-auto px-4 md:px-10">
         <div className="mb-11 flex flex-wrap items-end justify-between gap-10">
           <div className="max-w-[600px]">
