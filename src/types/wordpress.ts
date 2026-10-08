@@ -224,9 +224,9 @@ export const SITE_SECTIONS: Record<string, {
     description: 'Distinciones, premios y comunicados institucionales',
   },
   observatorio: {
-    title: 'Observatorio',
+    title: 'Archivo de publicaciones',
     slug: 'observatorio',
-    description: 'Informes, publicaciones y datos',
+    description: 'Publicaciones de archivo sobre derechos de las víctimas, justicia penal e incidencia pública',
   },
   'en-los-medios': {
     title: 'En los medios',
