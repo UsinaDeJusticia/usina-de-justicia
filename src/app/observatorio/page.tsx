@@ -1,76 +1,17 @@
-import { jsonLdScript } from '@/lib/json-ld'
 import Link from 'next/link'
 import { Breadcrumbs } from '@/components/layout/Breadcrumbs'
-import { Button } from '@/components/ui/Button'
 import { ArticleCard } from '@/components/noticias/ArticleCard'
 import { getArticulosBySection } from '@/lib/wordpress'
-import { siteConfig } from '@/lib/site-config'
 import { generatePageMetadata } from '@/lib/metadata'
-import { Map, ArrowUpRight, ChevronRight } from 'lucide-react'
 
-// /observatorio — sección nueva sin página WP de origen (decisión D del plan,
-// docs/plan-maestro-usina-web.md §3.1). No hay contenido institucional viejo
-// para migrar acá: el copy de "qué es el observatorio" sale de
-// src/components/home/Observatorio.tsx (ya aprobado en la Home) y el listado
-// de publicaciones sale en vivo de la categoría WP "observatorio" (id 256,
-// ver docs/MAPA-MIGRACION.md §1) vía getArticulosBySection.
-//
-// Nota editorial: el bloque de barras "Homicidios dolosos por jurisdicción"
-// de Observatorio.tsx (Home) trae valores de ejemplo sin fuente verificable
-// para este commit ("Fuente: relevamiento propio UJ + Ministerio de
-// Seguridad" sin dataset citable) — no se replica acá para no publicar una
-// estadística no verificada como si fuera un dato real. Ver también la regla
-// del brief: "NUNCA inventes estadísticas, informes o datos que no estén en
-// estas fuentes".
 const description =
-  'El observatorio de Usina de Justicia releva, analiza y publica información sobre homicidios, femicidios y el funcionamiento del sistema penal en las 24 jurisdicciones del país.'
+  'Archivo de publicaciones históricas de Usina de Justicia sobre los derechos de las víctimas, la justicia penal y la incidencia pública.'
 
-// generatePageMetadata siempre setea `images` — evita la trampa de herencia
-// de Next (una ruta con openGraph propio sin `images` no hereda el
-// opengraph-image del layout raíz). `path` nested (no Home) => sin
-// appendSiteName: el título queda plano y el template del layout raíz
-// agrega el sufijo " — Usina de Justicia" una sola vez.
 export const metadata = generatePageMetadata({
-  title: 'Observatorio',
+  title: 'Archivo de publicaciones',
   description,
   path: '/observatorio',
 })
-
-// Proyecto hermano de Usina de Justicia, deployado en Vercel, sin dominio
-// propio todavía — se linkea tal cual, con nota de que está en desarrollo.
-const MAPA_DELITO_URL = 'https://mapa-delito-usina.vercel.app'
-
-// Dataset. Dos campos con historia (aviso de Search Console, 28-ago-2026):
-// - `creator` era solo una referencia @id al NGO del layout raíz; válida en
-//   el estándar, pero el validador de Google no sigue referencias entre
-//   bloques <script> y la marcaba como "tipo no válido". Ahora el tipo, el
-//   nombre y la URL van inline, conservando el @id para quien sí resuelve
-//   el grafo.
-// - `license` faltaba. Apunta a los términos del sitio (decisión de Emanuel,
-//   28-ago: la opción conservadora; si la Comisión algún día aprueba una
-//   licencia abierta tipo CC BY, se cambia esta línea y nada más).
-// `isBasedOn` apunta a la fuente oficial de estadísticas criminales (SNIC,
-// Ministerio de Seguridad de la Nación) que alimenta el trabajo del
-// observatorio; `distribution` es el Mapa del Delito ya linkeado más abajo.
-const jsonLd = {
-  '@context': 'https://schema.org',
-  '@type': 'Dataset',
-  name: 'Observatorio de Usina de Justicia',
-  description,
-  creator: {
-    '@type': 'NGO',
-    '@id': `${siteConfig.url}/#organization`,
-    name: siteConfig.name,
-    url: siteConfig.url,
-  },
-  license: `${siteConfig.url}/legal/terminos`,
-  isBasedOn: 'https://www.argentina.gob.ar/seguridad/estadisticascriminales',
-  distribution: {
-    '@type': 'DataDownload',
-    encodingFormat: 'text/html',
-    contentUrl: MAPA_DELITO_URL,
-  },
-}
 
 export default async function ObservatorioPage() {
   const { data: articulos, total } = await getArticulosBySection('observatorio', {
@@ -79,82 +20,41 @@ export default async function ObservatorioPage() {
 
   return (
     <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: jsonLdScript(jsonLd) }}
-      />
-
       <div className="max-w-content mx-auto px-4 md:px-10">
-        <Breadcrumbs items={[{ label: 'Observatorio', href: '/observatorio' }]} />
+        <Breadcrumbs items={[{ label: 'Archivo de publicaciones', href: '/observatorio' }]} />
       </div>
 
-      {/* Hero */}
       <section className="pb-16 md:pb-20 pt-2 md:pt-4">
         <div className="max-w-content mx-auto px-4 md:px-10">
           <p className="text-[12px] font-bold tracking-[0.14em] uppercase text-navy-600 mb-2.5">
-            Observatorio de víctimas
+            Archivo de publicaciones
           </p>
           <h1 className="font-display font-extrabold text-ink text-[clamp(2rem,4vw,2.75rem)] leading-tight mb-4">
-            Sin datos no hay política pública.
+            Publicaciones sobre los derechos de las víctimas
           </h1>
           <p className="text-body-lg text-grey-700 max-w-narrow leading-relaxed">
-            {/* La oración "Lo hacemos junto a las cámaras de Diputados de
-                Santa Fe y la Ciudad de Buenos Aires" se quitó acá igual que
-                en la portada (punto 7 de la Comisión, corrección factual):
-                afirmaba de menos — el trabajo incluye también al Ministerio
-                de Seguridad de la Nación. */}
-            Relevamos, analizamos y publicamos información sobre homicidios, femicidios y
-            el funcionamiento del sistema penal en las 24 jurisdicciones. Este trabajo
-            alimenta, a su vez, la incidencia en políticas públicas y la capacitación de
-            operadores del sistema de justicia.
+            Este archivo conserva publicaciones históricas de Usina de Justicia sobre los
+            derechos de las víctimas, la justicia penal y la incidencia pública. Para conocer
+            la actividad actual de la asociación, visitá{' '}
+            <Link href="/nosotros" className="underline underline-offset-2">
+              Nosotros
+            </Link>
+            .
           </p>
         </div>
       </section>
 
-      {/* Mapa del Delito */}
-      <section className="py-16 md:py-20 bg-navy-50 border-t border-b border-grey-200">
-        <div className="max-w-content mx-auto px-4 md:px-10">
-          <div className="grid lg:grid-cols-[1fr_auto] gap-8 items-center bg-white border border-grey-200 rounded-xs p-8 md:p-10">
-            <div>
-              <div className="flex items-center gap-3 mb-4">
-                <div className="w-10 h-10 rounded-xs bg-navy-50 flex items-center justify-center shrink-0">
-                  <Map className="w-5 h-5 text-navy-600" aria-hidden="true" />
-                </div>
-                <h2 className="font-display font-bold text-h2 text-ink">Mapa del Delito</h2>
-              </div>
-              <p className="text-body text-grey-700 leading-relaxed max-w-[620px]">
-                Un proyecto hermano de Usina de Justicia que visualiza datos de delitos en
-                el país. Todavía está en desarrollo y vive en su propio sitio, fuera de
-                este dominio.
-              </p>
-            </div>
-            <Button
-              href={MAPA_DELITO_URL}
-              variant="primary"
-              size="lg"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="shrink-0"
-            >
-              Ver el Mapa del Delito
-              <ArrowUpRight className="w-4 h-4" aria-hidden="true" />
-            </Button>
-          </div>
-        </div>
-      </section>
-
-      {/* Publicaciones del observatorio */}
-      <section className="py-16 md:py-20">
+      <section className="py-16 md:py-20 border-t border-grey-200">
         <div className="max-w-content mx-auto px-4 md:px-10">
           <div className="max-w-[720px] mb-11">
             <p className="text-[12px] font-bold tracking-[0.14em] uppercase text-navy-600">
-              Publicaciones
+              Archivo
             </p>
             <h2 className="font-display font-extrabold text-ink text-[clamp(1.875rem,3.2vw,2.75rem)] leading-tight mt-2.5 mb-3.5">
-              Informes y publicaciones
+              Publicaciones
             </h2>
             <p className="text-body-lg text-grey-700">
-              {total} {total === 1 ? 'publicación' : 'publicaciones'} del observatorio.
+              {total} {total === 1 ? 'publicación' : 'publicaciones'} disponibles.
             </p>
           </div>
 
@@ -166,7 +66,7 @@ export default async function ObservatorioPage() {
             </div>
           ) : (
             <p className="text-body-lg text-grey-500 py-10">
-              No hay publicaciones del observatorio disponibles todavía.
+              No hay publicaciones disponibles en este archivo.
             </p>
           )}
 
@@ -175,8 +75,7 @@ export default async function ObservatorioPage() {
               href="/noticias/categoria/observatorio"
               className="inline-flex items-center gap-1 text-body-sm font-bold text-navy-600 no-underline hover:underline"
             >
-              Ver todas las publicaciones del observatorio
-              <ChevronRight className="w-4 h-4" aria-hidden="true" />
+              Ver todas las publicaciones relacionadas
             </Link>
           </div>
         </div>

@@ -18,7 +18,7 @@ function HeaderUJ({ variant }) {
           <img src="assets/logo_uj.png" alt="Usina de Justicia" style={{ height: 42 }} />
         </a>
         <nav style={{ display: 'flex', gap: 28, fontSize: 14, fontWeight: 600 }}>
-          {['Nosotros','Programas','Observatorio','Noticias','IVUJUS','Contacto'].map(l => (
+          {['Nosotros','Acompañamiento','Incidencia','Noticias','Recursos','IVUJUS','Contacto'].map(l => (
             <a key={l} href="#" style={{ color: 'var(--fg-1)', textDecoration: 'none' }}
                onMouseEnter={e => e.currentTarget.style.color = 'var(--uj-navy-600)'}
                onMouseLeave={e => e.currentTarget.style.color = 'var(--fg-1)'}>{l}</a>

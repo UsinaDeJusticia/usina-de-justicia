@@ -35,17 +35,12 @@ export const siteConfig = {
     ivujus: 'https://ivujus.org.ar/',
   },
 
-  // Nav principal portada del design system (design-system/home/Header.jsx).
-  // `/programas` (placeholder hardcodeado, sin contenido real — ver
-  // docs/MAPA-MIGRACION.md §4) se retira del árbol: "Acompañamiento" pasa a
-  // apuntar a la sección propia /acompanamiento y "Observatorio" a su ruta
-  // dedicada /observatorio. "Incidencia" vive como categoría de noticias
-  // (no tiene página propia), así que apunta a /noticias/categoria/incidencia.
+  // Las publicaciones históricas del Observatorio quedan accesibles desde el pie,
+  // sin presentarlas como una sección institucional activa que se confunda con IVUJUS.
   mainNav: [
     { label: 'Nosotros', href: '/nosotros' },
     { label: 'Acompañamiento', href: '/acompanamiento' },
     { label: 'Incidencia', href: '/noticias/categoria/incidencia' },
-    { label: 'Observatorio', href: '/observatorio' },
     { label: 'Noticias', href: '/noticias' },
     { label: 'Recursos', href: '/recursos' },
     { label: 'IVUJUS', href: 'https://ivujus.org.ar/', external: true },
@@ -76,8 +71,8 @@ export const siteConfig = {
       { label: 'Incidencia', href: '/noticias/categoria/incidencia' },
       { label: 'IVUJUS', href: 'https://ivujus.org.ar/', external: true },
     ],
-    observatorio: [
-      { label: 'Publicaciones', href: '/observatorio' },
+    publicaciones: [
+      { label: 'Archivo de publicaciones', href: '/observatorio' },
       { label: 'Informes', href: '/recursos' },
       { label: 'Amicus curiae', href: '/noticias/categoria/incidencia' },
       // "Noticias" se agregó en ago-2026, al revisar la sugerencia de la

@@ -2,7 +2,7 @@ function FooterUJ() {
   const cols = [
     { t:'Institución', l:['Nosotros','Equipo','Transparencia institucional','Memoria y balance'] },
     { t:'Programas',   l:['Acompañamiento','Incidencia','Capacitación','IVUJUS'] },
-    { t:'Observatorio',l:['Informes','Amicus curiae','Base de sentencias','Prensa'] },
+    { t:'Publicaciones',l:['Archivo de publicaciones','Informes','Amicus curiae','Prensa'] },
     { t:'Contacto',    l:['Escribinos','Sumate como voluntario','Convenios','Prensa'] },
   ];
   return (

@@ -41,11 +41,9 @@
 <script type="text/babel" src="home/Header.jsx"></script>
 <script type="text/babel" src="home/HeroEditorial.jsx"></script>
 <script type="text/babel" src="home/HeroAccompany.jsx"></script>
-<script type="text/babel" src="home/HeroData.jsx"></script>
 <script type="text/babel" src="home/Pillars.jsx"></script>
 <script type="text/babel" src="home/QueHacer.jsx"></script>
 <script type="text/babel" src="home/Testimonios.jsx"></script>
-<script type="text/babel" src="home/Observatorio.jsx"></script>
 <script type="text/babel" src="home/Trayectoria.jsx"></script>
 <script type="text/babel" src="home/Donar.jsx"></script>
 <script type="text/babel" src="home/Footer.jsx"></script>
@@ -100,9 +98,7 @@ function App() {
     return () => io.disconnect();
   }, [tweaks.variant]);
 
-  const Hero = tweaks.variant === 'acompany' ? HeroAccompany
-             : tweaks.variant === 'data' ? HeroData
-             : HeroEditorialUJ;
+  const Hero = tweaks.variant === 'acompany' ? HeroAccompany : HeroEditorialUJ;
 
   return (
     <>
@@ -111,7 +107,6 @@ function App() {
         <Hero tweaks={tweaks} />
         <QueHacer tweaks={tweaks} />
         <Pillars tweaks={tweaks} />
-        <Observatorio tweaks={tweaks} />
         {tweaks.portraits && <Testimonios tweaks={tweaks} />}
         <Trayectoria tweaks={tweaks} />
         <Donar tweaks={tweaks} />

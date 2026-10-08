@@ -3,12 +3,12 @@
 **Usina de Justicia** is a non-partisan Argentine civil association (Asociación Civil), founded on November 12, 2014 by philosopher Diana Cohen Agrest after the homicide of her son Ezequiel in 2011. It accompanies indirect victims (family members) of homicide and femicide committed in contexts of urban insecurity, advocates for victims' rights in the criminal process, and works to influence public policy and combat impunity.
 
 Usina de Justicia operates several programs and sub-brands:
-- **Usina de Justicia (UJ)** — the parent association. Website: `usinadejusticia.org.ar`.
-- **IVUJUS — Instituto de Victimología de Usina de Justicia** — the research/training institute. Website: `ivujus.org.ar`. Runs the country's only Criminal Victimology course.
-- **Observatorio de Víctimas** — a collaborative observatory monitoring victims' rights, participating with Cámara de Diputados de Santa Fe and CABA.
+- **Usina de Justicia (UJ)** — the parent association. Website: usinadejusticia.org.ar.
+- **IVUJUS — Instituto de Victimología de Usina de Justicia** — a separate research and training institute with its own site at ivujus.org.ar.
+- **Observatorio (archive)** — historical publications remain available in the Usina archive at /observatorio; the public site does not present it as an active statistical product.
 - **10 años transformando la Justicia** — anniversary/campaign lockup used in 2024.
 
-The product this design system primarily supports is the **Plataforma web para gestión de base de datos y observatorio de víctimas** — a web platform for case-file management and a victims observatory (data dashboards, case records, public policy reporting).
+This design system supports the public institutional website for Usina de Justicia. The platform UI kit later in this document is a separate design proposal, not a feature or data product currently offered by the public site.
 
 ## Source materials provided
 
