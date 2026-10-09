@@ -197,8 +197,13 @@ function usina_headless_revalidate_secret_from_constant() {
  * filtrar el tipo a mano.
  */
 add_action( 'save_post_post', 'usina_headless_on_save_post', 20, 3 );
+// El editor clásico guarda _thumbnail_id después de save_post_post. Diferimos
+// su revalidación a shutdown para preparar la miniatura que quedó seleccionada.
+add_action( 'shutdown', 'usina_headless_flush_pending_posts', 20 );
 // Gutenberg/REST guarda featured_media DESPUÉS de save_post_post.
 add_action( 'rest_after_insert_post', 'usina_headless_on_rest_save_post', 20, 3 );
+
+$GLOBALS['usina_headless_pending_revalidate_posts'] = array();
 
 function usina_headless_on_rest_save_post( $post, $request, $creating ) {
 	usina_headless_on_save_post( $post->ID, $post, ! $creating, true );
@@ -215,6 +220,28 @@ function usina_headless_on_save_post( $post_id, $post, $update, $rest_complete =
 		return;
 	}
 	if ( 'publish' !== $post->post_status ) {
+		return;
+	}
+	if ( ! $rest_complete ) {
+		$GLOBALS['usina_headless_pending_revalidate_posts'][ $post_id ] = true;
+		return;
+	}
+	usina_headless_process_published_post( $post_id, $post );
+}
+
+function usina_headless_flush_pending_posts() {
+	$pending = $GLOBALS['usina_headless_pending_revalidate_posts'] ?? array();
+	$GLOBALS['usina_headless_pending_revalidate_posts'] = array();
+	foreach ( array_keys( $pending ) as $post_id ) {
+		$post = get_post( $post_id );
+		if ( $post ) {
+			usina_headless_process_published_post( $post_id, $post );
+		}
+	}
+}
+
+function usina_headless_process_published_post( $post_id, $post ) {
+	if ( wp_is_post_autosave( $post_id ) || wp_is_post_revision( $post_id ) || 'publish' !== $post->post_status ) {
 		return;
 	}
 	// Preparar el archivo antes de invalidar el HTML y su metadata en Next.
