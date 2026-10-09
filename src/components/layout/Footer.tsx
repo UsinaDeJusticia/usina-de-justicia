@@ -22,7 +22,7 @@ const socialLinks: Array<{
 const footerColumns = [
   { title: 'Institución', links: siteConfig.footerNav.institucion },
   { title: 'Acompañamiento', links: siteConfig.footerNav.acompanamiento },
-  { title: 'Observatorio', links: siteConfig.footerNav.observatorio },
+  { title: 'Publicaciones', links: siteConfig.footerNav.publicaciones },
   { title: 'Contacto', links: siteConfig.footerNav.contacto },
 ]
 

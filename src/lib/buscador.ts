@@ -68,9 +68,9 @@ export const PAGINAS_ESTATICAS: DocBuscador[] = [
   // src/app/acompanamiento/page.tsx
   { id: 'pagina:/acompanamiento', tipo: 'pagina', titulo: 'Acompañamiento', href: '/acompanamiento', categoria: 'Página', extracto: 'Usina de Justicia brinda asesoramiento legal, contención emocional y difusión de los casos en forma gratuita a los familiares de víctimas de homicidio y femicidio, desde el primer contacto hasta la ejecución de la pena.' },
   // src/app/observatorio/page.tsx
-  { id: 'pagina:/observatorio', tipo: 'pagina', titulo: 'Observatorio', href: '/observatorio', categoria: 'Página', extracto: 'El observatorio de Usina de Justicia releva, analiza y publica información sobre homicidios, femicidios y el funcionamiento del sistema penal en las 24 jurisdicciones del país.' },
+  { id: 'pagina:/observatorio', tipo: 'pagina', titulo: 'Archivo de publicaciones', href: '/observatorio', categoria: 'Publicaciones', extracto: 'Archivo de publicaciones históricas de Usina de Justicia sobre los derechos de las víctimas, la justicia penal y la incidencia pública.' },
   // src/app/noticias/page.tsx
-  { id: 'pagina:/noticias', tipo: 'pagina', titulo: 'Noticias', href: '/noticias', categoria: 'Página', extracto: 'Historias, acompañamiento, incidencia, prensa, institucional y observatorio: todas las noticias de Usina de Justicia sobre los derechos de las víctimas del delito en Argentina.' },
+  { id: 'pagina:/noticias', tipo: 'pagina', titulo: 'Noticias', href: '/noticias', categoria: 'Página', extracto: 'Noticias e historias de Usina de Justicia sobre los derechos de las víctimas, el acompañamiento a familias, la incidencia pública y la actividad institucional en Argentina.' },
   // src/app/recursos/page.tsx
   { id: 'pagina:/recursos', tipo: 'pagina', titulo: 'Recursos y publicaciones', href: '/recursos', categoria: 'Página', extracto: 'Descargá informes, guías y publicaciones de Usina de Justicia sobre derechos de las víctimas del delito.' },
   // src/app/nosotros/page.tsx

@@ -4,7 +4,7 @@
 693 palabras, última edición 27-ago-2026), más el audio de Diana Cohen Agrest
 del mismo día.
 
-**Estado:** análisis terminado, sin implementar. Cada punto espera decisión.
+**Estado:** análisis original terminado. Las decisiones posteriores y su alcance implementado se registran al final de este documento.
 
 ---
 
@@ -386,3 +386,22 @@ vamos a poder decidir con números en vez de con opiniones.
 
 **No se implementa:** el punto 10, salvo que decidan asumir el costo después
 de leer el motivo.
+
+
+---
+
+## Decisión posterior: separar el archivo histórico de IVUJUS (2026-10-07)
+
+Se retira el bloque del Observatorio de la portada y el enlace Observatorio del menú
+principal. La portada no debe mostrar barras, cifras, cantidades de informes ni
+atribuciones de fuente sin un conjunto de datos verificable.
+
+Se conserva la ruta pública /observatorio para no romper enlaces ni perder el archivo
+histórico. La página queda presentada como archivo de publicaciones de Usina de Justicia;
+se quitan el mapa en desarrollo, afirmaciones no respaldadas sobre cobertura de datos y
+el marcado Dataset, que no describía un conjunto de datos disponible en esa página. El
+acceso al archivo queda en el pie bajo “Publicaciones”, y la URL permanece en el sitemap.
+No se crean redirecciones ni se borran notas.
+
+Esta decisión mantiene separadas la identidad y la actividad de Usina y las de IVUJUS,
+evitando presentar un observatorio estadístico como producto institucional activo.

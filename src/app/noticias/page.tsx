@@ -4,7 +4,7 @@ import { NoticiasListView } from './_components/NoticiasListView'
 export const metadata: Metadata = {
   title: 'Noticias',
   description:
-    'Historias, acompañamiento, incidencia, prensa, institucional y observatorio: todas las noticias de Usina de Justicia sobre los derechos de las víctimas del delito en Argentina.',
+    'Noticias e historias de Usina de Justicia sobre los derechos de las víctimas, el acompañamiento a familias, la incidencia pública y la actividad institucional en Argentina.',
   alternates: { canonical: 'https://www.usinadejusticia.org.ar/noticias' },
 }
 

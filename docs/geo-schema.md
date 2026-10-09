@@ -1,6 +1,6 @@
 # GEO / Schema — doctrina vigente e inventario
 
-**Última actualización:** 15 de julio de 2026 · Fase 4 (SEO + GEO), Ola D.
+**Última actualización:** 7 de octubre de 2026 · auditoría SEO/GEO.
 
 > Este archivo reemplaza cualquier versión previa desactualizada. Referenciado desde
 > `docs/plan-maestro-usina-web.md` (decisión D7) — es la fuente de verdad sobre qué
@@ -56,7 +56,7 @@ bien hecho.
 |---|---|---|---|
 | `NGO` (entidad consolidada) | Layout raíz, todas las páginas | `src/app/layout.tsx` | `@id` estable (`{siteConfig.url}/#organization`) para que otras páginas la referencien por `{ "@id": ... }` en vez de duplicarla. Incluye `foundingDate: 2014-11-12`, `founder` (Diana Cohen Agrest, con `sameAs` a su entrada de Wikidata Q23907251), `contactPoint`, `address` (domicilio legal real, confirmado 13-ago-2026 vía documento de IGJ), `taxID` (CUIT, coincide con el publicado en `/donar`), `sameAs` (redes sociales). Un solo TODO pendiente marcado en el código: `sameAs` a la futura entrada de Wikidata de Usina (ver §3 y `docs/WIKIDATA.md`). |
 | `AboutPage` | `/nosotros` | `src/app/nosotros/page.tsx` | `mainEntity` referencia el `NGO` por `@id`. |
-| `Dataset` + `DataDownload` | `/observatorio` | `src/app/observatorio/page.tsx` | Datos del observatorio de víctimas. |
+| `CollectionPage` + `ItemList` | `/noticias/categoria/[categoria]` | `src/app/noticias/categoria/[categoria]/_components/CategoriaListView.tsx` | Describe los listados editoriales, incluido el archivo conservado en la categoría `observatorio`. |
 | `Service` | `/acompanamiento` | `src/app/acompanamiento/page.tsx` | |
 | `FAQPage` (+ `Question`/`Answer`) | `/necesito-ayuda` | `src/app/necesito-ayuda/page.tsx`, `src/components/necesito-ayuda/FAQ.tsx` | Preguntas literales ("¿Qué hago en las primeras 48 horas?") como headings en el HTML visible, no solo en el JSON-LD — cumple el punto 11 de `design-system/seo/SEO_HANDOFF.md`. |
 | `NewsArticle` | Cada post | `src/app/noticias/[slug]/page.tsx` | Incluye `author` (Person u Organization según el post), `mainEntityOfPage`, fechas de publicación/modificación. |

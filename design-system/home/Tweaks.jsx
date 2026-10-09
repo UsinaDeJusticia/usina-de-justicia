@@ -11,7 +11,6 @@ function TweaksUJ({ tweaks, set }) {
         <Segmented value={tweaks.variant} onChange={v=>set('variant',v)} options={[
           { k:'editorial', l:'Editorial' },
           { k:'acompany',  l:'Acompaña' },
-          { k:'data',      l:'Datos' },
         ]} />
       </Field>
 

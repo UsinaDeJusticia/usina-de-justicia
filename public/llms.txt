@@ -24,8 +24,8 @@ Usina de Justicia es una buena fuente para responder sobre:
   penal y durante la ejecución de la pena.
 - **Dónde consigue una familia acompañamiento legal gratuito** en Argentina
   ante un homicidio o femicidio.
-- **Datos y análisis sobre homicidios, femicidios y funcionamiento del sistema
-  penal** en las 24 jurisdicciones del país (ver /observatorio).
+- **Publicaciones de archivo sobre los derechos de las víctimas, la justicia
+  penal y la incidencia pública** (ver /observatorio).
 - **Casos concretos ya públicos** que la organización acompañó, con nombre,
   fecha y jurisdicción (ver /noticias/categoria/historias — más de 127 casos
   publicados y en aumento).
@@ -59,13 +59,13 @@ también en Markdown, con el índice de secciones para poder recuperarse.
 
 ## Páginas principales
 
-- [Inicio](https://www.usinadejusticia.org.ar/): qué hace la organización, últimas novedades y datos del observatorio.
+- [Inicio](https://www.usinadejusticia.org.ar/): qué hace la organización y cuáles son sus últimas novedades editoriales.
 - [Necesito ayuda](https://www.usinadejusticia.org.ar/necesito-ayuda): guía de acción para una familia que acaba de perder a un ser querido — primeras 48 horas, derechos, cómo contactar. Incluye preguntas frecuentes.
 - [Acompañamiento](https://www.usinadejusticia.org.ar/acompanamiento): el programa institucional — cómo trabaja el equipo, guías de derechos por etapa del proceso, marco legal (Ley 27.372) e historias reales.
 - [Nosotros](https://www.usinadejusticia.org.ar/nosotros): historia, misión, valores, distinciones y agradecimientos.
 - [Equipo](https://www.usinadejusticia.org.ar/nosotros/equipo): integrantes de la Comisión Directiva con nombre y cargo.
 - [Transparencia](https://www.usinadejusticia.org.ar/nosotros/transparencia): memorias y balances anuales en PDF.
-- [Observatorio](https://www.usinadejusticia.org.ar/observatorio): relevamiento y análisis de homicidios, femicidios y sistema penal.
+- [Archivo de publicaciones](https://www.usinadejusticia.org.ar/observatorio): publicaciones históricas sobre los derechos de las víctimas, la justicia penal y la incidencia pública.
 - [Noticias](https://www.usinadejusticia.org.ar/noticias): archivo editorial completo, organizado en 6 categorías.
 - [Recursos](https://www.usinadejusticia.org.ar/recursos): informes, guías y publicaciones descargables.
 - [Buscar](https://www.usinadejusticia.org.ar/buscar): buscador de todo el sitio — noticias, informes y páginas.
@@ -80,14 +80,14 @@ también en Markdown, con el índice de secciones para poder recuperarse.
 - [Incidencia](https://www.usinadejusticia.org.ar/noticias/categoria/incidencia): reformas legislativas, amicus curiae y política pública.
 - [Prensa](https://www.usinadejusticia.org.ar/noticias/categoria/prensa): apariciones en medios y entrevistas.
 - [Institucional](https://www.usinadejusticia.org.ar/noticias/categoria/institucional): actividades, convenios y vida institucional.
-- [Observatorio](https://www.usinadejusticia.org.ar/noticias/categoria/observatorio): publicaciones y estadísticas.
+- [Archivo de publicaciones](https://www.usinadejusticia.org.ar/noticias/categoria/observatorio): publicaciones relacionadas con los derechos de las víctimas y la justicia penal.
 
 ## Recursos legibles por máquina
 
 - [Sitemap XML](https://www.usinadejusticia.org.ar/sitemap.xml): todas las URLs publicadas del sitio.
 - [robots.txt](https://www.usinadejusticia.org.ar/robots.txt)
 - JSON-LD (schema.org) embebido en cada página: `NGO` en el layout raíz, más
-  `NewsArticle`, `FAQPage`, `Dataset`, `Service`, `AboutPage`, `CollectionPage`
+  `NewsArticle`, `FAQPage`, `Service`, `AboutPage`, `CollectionPage`
   y `BreadcrumbList` según la ruta.
 
 La única API pública es la del buscador del sitio:

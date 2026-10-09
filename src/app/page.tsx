@@ -3,7 +3,6 @@ import { getArticulos, getCategoryIdsBySection } from '@/lib/wordpress'
 import { HeroRotator } from '@/components/home/HeroRotator'
 import { QueHacer } from '@/components/home/QueHacer'
 import { Pillars } from '@/components/home/Pillars'
-import { Observatorio } from '@/components/home/Observatorio'
 import { Testimonios } from '@/components/home/Testimonios'
 import { Trayectoria } from '@/components/home/Trayectoria'
 import { DonarCTA } from '@/components/home/DonarCTA'
@@ -50,7 +49,6 @@ export default async function Home() {
       <HeroRotator latestArticle={latestArticle} />
       <Pillars />
       <QueHacer />
-      <Observatorio />
       <Testimonios />
       <Trayectoria />
       <DonarCTA />
