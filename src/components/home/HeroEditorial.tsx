@@ -1,7 +1,7 @@
 import Link from 'next/link'
-import Image from 'next/image'
 import { Button } from '@/components/ui/Button'
-import { urlParaAncho, ANCHO_HERO_HOME } from '@/lib/imagenes'
+import { HeroArticleImage } from '@/components/home/HeroArticleImage'
+import { urlsParaHero } from '@/lib/imagenes'
 import type { Articulo } from '@/types'
 
 // Portado de design-system/home/HeroEditorial.jsx.
@@ -15,6 +15,8 @@ interface HeroEditorialProps {
 }
 
 export function HeroEditorial({ latestArticle }: HeroEditorialProps) {
+  const heroImageSources = urlsParaHero(latestArticle?.imagenDestacada)
+
   return (
     <div className="grid lg:grid-cols-[1.3fr_1fr] gap-10 lg:gap-16 items-center">
       <div>
@@ -62,26 +64,11 @@ export function HeroEditorial({ latestArticle }: HeroEditorialProps) {
 
       <div className="relative">
         <div className="relative aspect-[4/5] rounded-xs overflow-hidden shadow-md bg-navy-800">
-          {latestArticle?.imagenDestacada ? (
-            <Image
-              // Variante de 1024 y no el original: es el LCP de la Home, así
-              // que acá se elige el tamaño más grande de los que se muestran
-              // en pantalla (ver ANCHO_HERO_HOME en src/lib/imagenes.ts).
-              src={urlParaAncho(latestArticle.imagenDestacada, ANCHO_HERO_HOME)!}
-              alt={latestArticle.imagenDestacada.alt}
-              fill
-              // Tamaño renderizado real: columna completa en mobile (< lg),
-              // ~460px en desktop (columna 1fr de 1.3fr/1fr dentro de
-              // max-w-content 1200px, con gap-16 y padding lg:px-10).
-              sizes="(max-width: 1024px) 100vw, 460px"
-              className="object-cover"
-              // Esta imagen es el LCP de la Home: `priority` agrega el
-              // <link rel=preload> pero NO fija fetchpriority=high por sí
-              // solo (ver get-img-props de next/image) — hace falta pasarlo
-              // explícito para que el navegador la priorice de verdad sobre
-              // el resto de los recursos iniciales.
-              priority
-              fetchPriority="high"
+          {heroImageSources.length > 0 ? (
+            <HeroArticleImage
+              key={heroImageSources.join('|')}
+              sources={heroImageSources}
+              alt={latestArticle?.imagenDestacada?.alt ?? ''}
             />
           ) : null}
           {/* Bloque semitransparente navy para legibilidad del texto, nunca gradiente decorativo */}
