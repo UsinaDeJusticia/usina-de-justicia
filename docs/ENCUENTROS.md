@@ -76,8 +76,8 @@ Si cambia la convocatoria, se pide recargar; nunca se inscribe a otra reunión.
 
 Solo se admiten reuniones programadas no recurrentes (tipo 2), con fecha explícita.
 Si faltan aprobación automática, ID automático o correo de confirmación, el encuentro
-se muestra con la inscripción desactivada. Si Zoom no responde, el sitio muestra
-indisponibilidad temporal y no utiliza indefinidamente datos viejos.
+se muestra con la inscripción desactivada. Si la caché supera dos minutos, el sitio consulta Zoom en vivo antes de responder.
+Si Zoom no responde, muestra indisponibilidad temporal y no utiliza indefinidamente datos viejos.
 
 La lista de inscriptos se administra en Zoom → reunión → Inscripción → Ver/Exportar.
 El anfitrión no se inscribe como participante: Zoom devuelve el código 3027.

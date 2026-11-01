@@ -28,9 +28,15 @@ export async function obtenerEncuentroVigente(fresco = false) {
       }
     }
     const resultado = await leerZoom(host)
-    // Next puede conservar un valor viejo cuando falla una revalidación. No aceptar
-    // indefinidamente una convocatoria obsoleta: mostrar indisponibilidad temporal.
-    if (Date.now() - resultado.actualizado > 120_000) return { encuentro: null, disponible: false }
+    // Next puede conservar datos viejos mientras revalida en segundo plano. Tras
+    // una pausa de visitas, consultar en vivo: no mostrar errores por una caché
+    // vencida si Zoom está disponible, ni servir indefinidamente datos obsoletos.
+    if (Date.now() - resultado.actualizado > 120_000) {
+      return {
+        encuentro: await descubrirEncuentro(crearClienteZoom(credenciales), host),
+        disponible: true,
+      }
+    }
     return { encuentro: resultado.encuentro, disponible: true }
   } catch {
     console.error('[encuentros] no se pudo consultar la agenda de Zoom')
