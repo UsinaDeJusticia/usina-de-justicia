@@ -23,15 +23,15 @@ import type { Encuentro } from '../lib/encuentros.ts'
 
 export const encuentroActual: Encuentro | null = {
   // Identificador estable y único por convocatoria (aaaa-mm-apellido).
-  id: '2026-11-pagliere',
-  expositor: 'Carlos Pagliere',
+  id: '2026-11-prueba-interna',
+  expositor: 'Equipo de Usina de Justicia',
   // null = se muestra «A confirmar».
-  tema: null,
-  descripcion: null,
+  tema: 'Prueba interna – Inscripciones UJ',
+  descripcion: 'Prueba interna del formulario y del correo de confirmación. Sin convocatoria pública.',
   // Fecha y hora SIEMPRE con zona horaria explícita (-03:00 = Argentina).
   // Ejemplo: '2026-11-26T19:00:00-03:00'. null = «A confirmar».
-  inicio: null,
-  duracionMinutos: 90,
+  inicio: '2026-11-02T17:00:00-03:00',
+  duracionMinutos: 60,
   // Opcional. Si es null, la inscripción cierra al terminar el encuentro.
   cierreInscripcion: null,
   // 'abiertas' | 'cerradas' | 'proximamente'. Aunque diga 'abiertas', el
@@ -39,5 +39,5 @@ export const encuentroActual: Encuentro | null = {
   estado: 'abiertas',
   // ID numérico de la reunión de Zoom (sin espacios), con inscripción
   // obligatoria y aprobación automática. null mientras no exista.
-  zoomMeetingId: null,
+  zoomMeetingId: '82562740389',
 }
