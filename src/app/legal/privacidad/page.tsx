@@ -1,5 +1,7 @@
 import type { Metadata } from 'next'
+import Link from 'next/link'
 import { Breadcrumbs } from '@/components/layout/Breadcrumbs'
+import { CONSERVACION_MESES } from '@/lib/encuentros'
 
 export const metadata: Metadata = {
   title: 'Política de Privacidad',
@@ -23,7 +25,7 @@ export default function PrivacidadPage() {
         <div className="max-w-narrow mx-auto px-4 md:px-10">
           <h1 className="font-display font-extrabold text-ink text-h1 mb-8">Política de Privacidad</h1>
           <p className="text-body-sm text-grey-500 mb-8">
-            Última actualización: marzo 2026
+            Última actualización: octubre 2026
           </p>
 
           <div className="prose prose-lg max-w-none text-grey-700 prose-headings:font-display prose-headings:text-ink prose-h2:text-h3 prose-h2:mt-10 prose-h2:mb-4 prose-a:text-navy-600 hover:prose-a:text-navy-700">
@@ -46,6 +48,36 @@ export default function PrivacidadPage() {
               Los datos recopilados se utilizan exclusivamente para responder a
               consultas, brindar asistencia y enviar información institucional
               cuando sea solicitada.
+            </p>
+
+            <h2>Inscripción a encuentros abiertos</h2>
+            <p>
+              Cuando te inscribís en un encuentro desde la página{' '}
+              <Link href="/encuentros">Encuentros abiertos</Link> te pedimos nombre, apellido,
+              correo electrónico, teléfono de contacto, profesión u ocupación y,
+              si querés, la institución a la que pertenecés. No te pedimos número
+              de documento ni información sobre experiencias personales.
+            </p>
+            <p>
+              Usamos esos datos solo para gestionar tu participación en el
+              encuentro: registrarte, enviarte tu enlace individual de acceso y
+              avisarte de cambios en esa actividad. No los usamos para campañas,
+              boletines ni otras comunicaciones sin tu autorización expresa e
+              independiente.
+            </p>
+            <p>
+              Los encuentros se realizan en Zoom. Al inscribirte, tus datos se
+              registran en la reunión de Zoom de Usina de Justicia y Zoom Video
+              Communications, Inc. los procesa como proveedor para enviarte la
+              confirmación y el enlace de acceso; ese tratamiento puede implicar
+              transferencia a servidores fuera de la Argentina. Nuestro sitio no
+              guarda una copia propia de tu inscripción.
+            </p>
+            <p>
+              Conservamos los datos de inscripción hasta {CONSERVACION_MESES} meses
+              después de realizado el encuentro y luego los eliminamos de Zoom.
+              Podés pedir antes su eliminación escribiendo a la dirección indicada
+              más abajo.
             </p>
 
             <h2>Tus derechos</h2>
