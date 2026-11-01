@@ -69,6 +69,10 @@ export const siteConfig = {
     acompanamiento: [
       { label: 'Acompañamiento', href: '/acompanamiento' },
       { label: 'Incidencia', href: '/noticias/categoria/incidencia' },
+      // Página permanente de inscripción a los encuentros mensuales por
+      // Zoom (docs/ENCUENTROS.md). Va en el pie y no en el menú superior,
+      // que ya tiene siete ítems.
+      { label: 'Encuentros abiertos', href: '/encuentros' },
       { label: 'IVUJUS', href: 'https://ivujus.org.ar/', external: true },
     ],
     publicaciones: [

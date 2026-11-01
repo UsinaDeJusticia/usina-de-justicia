@@ -69,6 +69,7 @@ también en Markdown, con el índice de secciones para poder recuperarse.
 - [Noticias](https://www.usinadejusticia.org.ar/noticias): archivo editorial completo, organizado en 6 categorías.
 - [Recursos](https://www.usinadejusticia.org.ar/recursos): informes, guías y publicaciones descargables.
 - [Buscar](https://www.usinadejusticia.org.ar/buscar): buscador de todo el sitio — noticias, informes y páginas.
+- [Encuentros abiertos](https://www.usinadejusticia.org.ar/encuentros): encuentros virtuales mensuales y gratuitos con especialistas, con inscripción previa.
 - [Doná](https://www.usinadejusticia.org.ar/donar): cómo sostener el trabajo de la organización.
 - [Contacto](https://www.usinadejusticia.org.ar/contacto): formulario, teléfono, email y redes.
 - [About (English)](https://www.usinadejusticia.org.ar/en): resumen institucional en inglés.

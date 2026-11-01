@@ -17,6 +17,15 @@
 
 **Gate G4 ✅ COMPLETO (15-jul):** optimización integral verificada — Lighthouse ≥96 en Performance y 100 en SEO en las 5 plantillas clave (ver sección Optimización).
 
+## Rama en curso: `claude/jolly-dirac-175g7y` — Encuentros abiertos (1-nov-2026)
+
+Página `/encuentros` con inscripción propia que registra a cada persona en la
+reunión de Zoom vía API (Server-to-Server OAuth) para que Zoom le envíe su
+enlace individual. Sin base de datos, sin WordPress, sin DNI. Todo el detalle
+—configuración mensual, variables, scopes, privacidad y pendientes del
+administrador de Zoom— en `docs/ENCUENTROS.md`. Probado con Zoom simulado;
+**falta la prueba real de punta a punta** con credenciales y una reunión real.
+
 ## Rama en curso: `feature/en-los-medios` (22-sep-2026, sin PR todavía)
 
 Diana (presidenta) reenvió tres alertas de Google mostrando cobertura real de
