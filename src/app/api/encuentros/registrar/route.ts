@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { encuentroActual } from '@/data/encuentro-actual'
+import { obtenerEncuentroVigente } from '@/lib/encuentro-vigente'
 import { crearLimitador, procesarInscripcion } from '@/lib/encuentros-registro'
 import { crearClienteZoom, credencialesDesdeEntorno } from '@/lib/zoom'
 
@@ -71,6 +71,11 @@ export async function POST(request: Request) {
     return responder(400, { ok: false, codigo: 'invalido', error: 'Solicitud inválida.' })
   }
 
+  const { encuentro: encuentroActual, disponible } = await obtenerEncuentroVigente(true)
+  if (!disponible) return responder(503, {
+    ok: false, codigo: 'servicio',
+    error: 'No pudimos verificar el encuentro. Tus datos siguen en el formulario: volvé a intentarlo en unos minutos.',
+  })
   const credenciales = credencialesDesdeEntorno()
   const resultado = await procesarInscripcion(cuerpo, {
     encuentro: encuentroActual,

@@ -63,7 +63,7 @@ const CAMPOS_VISIBLES: Array<{
 
 const MENSAJE_ESTADO: Record<Exclude<EstadoInscripcion, 'abiertas'>, string> = {
   proximamente:
-    'La inscripción se habilitará cuando confirmemos la fecha y el horario del encuentro.',
+    'La inscripción para este encuentro todavía no está habilitada. Volvé a consultar próximamente.',
   cerradas: 'La inscripción para este encuentro está cerrada.',
   sin_encuentro: 'No hay un encuentro con inscripción abierta en este momento.',
 }
