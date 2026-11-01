@@ -72,6 +72,41 @@ export interface ClienteZoom {
   agregarRegistrante(meetingId: string, datos: DatosInscripcion): Promise<void>
 }
 
+/** Solo los campos necesarios: nunca conservar start_url, password ni join_url. */
+export interface ReunionZoom {
+  id: string
+  topic: string
+  type: number
+  start_time: string
+  duration: number
+  agenda?: string
+  settings?: {
+    approval_type?: number
+    use_pmi?: boolean
+    registrants_confirmation_email?: boolean
+    registrants_email_notification?: boolean
+  }
+}
+
+export interface ClienteZoomAgenda extends ClienteZoom {
+  listarReuniones(host: string): Promise<ReunionZoom[]>
+  obtenerReunion(id: string): Promise<ReunionZoom | null>
+}
+
+function reunionSegura(r: ReunionZoom): ReunionZoom {
+  return {
+    id: String(r.id), topic: r.topic, type: r.type,
+    start_time: r.start_time, duration: r.duration,
+    agenda: r.agenda,
+    settings: r.settings ? {
+      approval_type: r.settings.approval_type,
+      use_pmi: r.settings.use_pmi,
+      registrants_confirmation_email: r.settings.registrants_confirmation_email,
+      registrants_email_notification: r.settings.registrants_email_notification,
+    } : undefined,
+  }
+}
+
 /** Cuerpo del registrante según el mapeo acordado. El DNI no se envía. */
 export function cuerpoRegistrante(datos: DatosInscripcion): Record<string, string> {
   const cuerpo: Record<string, string> = {
@@ -112,7 +147,7 @@ async function leerCodigo(respuesta: Response): Promise<number | undefined> {
 export function crearClienteZoom(
   credenciales: CredencialesZoom,
   opciones: { fetch?: typeof fetch; ahora?: () => number } = {}
-): ClienteZoom {
+): ClienteZoomAgenda {
   const f = opciones.fetch ?? fetch
   const ahora = opciones.ahora ?? Date.now
 
@@ -174,6 +209,33 @@ export function crearClienteZoom(
   }
 
   return {
+    async listarReuniones(host) {
+      if (!host.trim() || host === 'me') {
+        throw new ZoomError('sin_configurar', 'falta anfitrión de encuentros')
+      }
+      const reuniones: ReunionZoom[] = []
+      let pagina = ''
+      for (let i = 0; i < MAX_PAGINAS; i++) {
+        const query = new URLSearchParams({ type: 'scheduled', page_size: '100' })
+        if (pagina) query.set('next_page_token', pagina)
+        const respuesta = await api(`/users/${encodeURIComponent(host)}/meetings?${query}`, { method: 'GET' }, 'meetings:list')
+        if (!respuesta.ok) throw errorPorStatus(respuesta.status, await leerCodigo(respuesta), 'meetings:list')
+        const cuerpo = await respuesta.json() as { meetings?: ReunionZoom[]; next_page_token?: string }
+        if (!Array.isArray(cuerpo.meetings)) throw new ZoomError('no_disponible', 'meetings:list: respuesta inválida')
+        reuniones.push(...cuerpo.meetings.map(reunionSegura))
+        pagina = cuerpo.next_page_token ?? ''
+        if (!pagina) return reuniones
+      }
+      throw new ZoomError('no_disponible', 'meetings:list: listado incompleto')
+    },
+
+    async obtenerReunion(meetingId) {
+      const respuesta = await api(`/meetings/${idSeguro(meetingId)}`, { method: 'GET' }, 'meetings:get')
+      if (respuesta.status === 404) return null
+      if (!respuesta.ok) throw errorPorStatus(respuesta.status, await leerCodigo(respuesta), 'meetings:get')
+      return reunionSegura(await respuesta.json() as ReunionZoom)
+    },
+
     async existeRegistrante(meetingId, email) {
       const id = idSeguro(meetingId)
       const buscado = email.toLowerCase()

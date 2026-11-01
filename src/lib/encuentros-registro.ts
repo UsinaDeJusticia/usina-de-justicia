@@ -74,7 +74,7 @@ export async function procesarInscripcion(
   // El id del encuentro que vio la persona tiene que ser el vigente: si el
   // sitio cambió de convocatoria mientras tenía la página abierta, no la
   // inscribimos en otra reunión sin que lo sepa.
-  if (typeof crudo.encuentroId === 'string' && crudo.encuentroId !== deps.encuentro.id) {
+  if (crudo.encuentroId !== deps.encuentro.id) {
     return {
       status: 409,
       cuerpo: {

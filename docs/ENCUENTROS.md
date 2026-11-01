@@ -24,7 +24,7 @@ Navegador ──POST──▶ /api/encuentros/registrar ──▶ Zoom API
 
 | Archivo | Qué hace |
 |---|---|
-| `src/data/encuentro-actual.ts` | **Configuración mensual** (lo único que se edita cada mes) |
+| `src/data/encuentro-actual.ts` | Configuración manual anterior (solo si la sincronización está desactivada) |
 | `src/app/encuentros/page.tsx` | Página pública |
 | `src/components/encuentros/` | Detalle del encuentro y formulario |
 | `src/app/api/encuentros/registrar/route.ts` | Endpoint: origen, tamaño, límite por IP, sin caché |
@@ -42,65 +42,91 @@ Navegador ──POST──▶ /api/encuentros/registrar ──▶ Zoom API
 | Cerrada | `estado: 'cerradas'`, o pasó `cierreInscripcion` (o el fin del encuentro) | Información y formulario desactivado |
 | Sin encuentro | `encuentroActual = null` | Mensaje institucional, sin formulario |
 
-La página se regenera cada 5 minutos (ISR, sin llamadas externas), así que el
-cierre por fecha se refleja solo. El endpoint valida el cierre al minuto exacto.
+La página usa la agenda de Zoom con caché breve una vez activada la sincronización.
+El endpoint verifica la reunión en vivo antes de inscribir.
 
-## 2. Guía mensual (responsable técnico)
+## 2. Gestión mensual: todo desde Zoom
 
-1. **En Zoom** (cuenta de UJ, anfitrión con licencia), crear una reunión **nueva
-   y no recurrente** para la convocatoria, con:
-   - *Inscripción*: **obligatoria**.
-   - *Aprobación*: **automática**.
-   - *Notificaciones/correo de confirmación a inscriptos*: **activado**.
-   - Preguntas del formulario de Zoom: dejar habilitados *Teléfono*,
-     *Cargo* (job title) y *Organización* como opcionales (la web ya los valida).
-2. Copiar el **ID de la reunión** (solo números, sin espacios).
-3. Editar `src/data/encuentro-actual.ts`:
-   ```ts
-   export const encuentroActual: Encuentro | null = {
-     id: '2026-12-apellido',              // nuevo id por convocatoria
-     expositor: 'Nombre Apellido',
-     tema: 'Título del encuentro',         // o null = «A confirmar»
-     descripcion: null,                    // o un párrafo breve
-     inicio: '2026-12-10T19:00:00-03:00',  // SIEMPRE con -03:00
-     duracionMinutos: 90,
-     cierreInscripcion: null,              // o '2026-12-10T12:00:00-03:00'
-     estado: 'abiertas',
-     zoomMeetingId: '81234567890',
-   }
+Una vez activada la sincronización, no se edita código ni se despliega por encuentro.
+
+1. En la cuenta de Diana, crear una reunión **nueva y no recurrente**, con ID
+   automático, fecha, hora y duración correctas. Activar inscripción obligatoria,
+   aprobación automática y correo de confirmación a inscriptos.
+2. Usar un título como **`[UJ] Derechos de las víctimas`**. `[UJ]` al comienzo
+   significa **publicar en la web**; las reuniones sin esa marca son internas.
+3. En la descripción se puede escribir:
+   ```text
+   Expositor: Carlos Pagliere
+   Una conversación sobre los derechos de las víctimas.
    ```
-4. Abrir un PR, revisar la vista previa de Vercel y mergear. Sin encuentro a la
-   vista: `export const encuentroActual: Encuentro | null = null`.
-5. Para cerrar antes de tiempo: `estado: 'cerradas'`.
+   La línea de expositor es opcional; sin ella se muestra «Usina de Justicia».
+   El resto de la descripción se publica como texto. No incluir información privada.
+4. Guardar. La web muestra la convocatoria marcada más próxima que aún no terminó.
+   Si hay varias, se muestra una por vez, ordenada por fecha.
+5. Editar fecha, hora, tema, descripción y duración directamente en Zoom.
+   Para retirar una convocatoria, quitar `[UJ]` del título o eliminar la reunión.
+   Para cancelarla no alcanza con escribir «cancelado» en la descripción: retirar la marca.
 
-## 3. Variables de entorno (Vercel → Settings → Environment Variables)
+La agenda se consulta cuando se visita `/encuentros`, con caché de 60 segundos.
+Los cambios pueden tardar alrededor de **1–2 minutos y una recarga**. Una pestaña
+ya abierta no se actualiza sola. No hay cron, webhooks ni base de datos adicional.
+Antes de cada inscripción se verifica Zoom en vivo: una reunión retirada o con
+opciones cambiadas no admite inscripciones aunque alguien conserve la página anterior.
+Si cambia la convocatoria, se pide recargar; nunca se inscribe a otra reunión.
 
-| Variable | Origen | Entornos |
+Solo se admiten reuniones programadas no recurrentes (tipo 2), con fecha explícita.
+Si faltan aprobación automática, ID automático o correo de confirmación, el encuentro
+se muestra con la inscripción desactivada. Si Zoom no responde, el sitio muestra
+indisponibilidad temporal y no utiliza indefinidamente datos viejos.
+
+La lista de inscriptos se administra en Zoom → reunión → Inscripción → Ver/Exportar.
+El anfitrión no se inscribe como participante: Zoom devuelve el código 3027.
+
+## 3. Configuración técnica de una sola vez
+
+| Variable | Contenido | Entornos |
 |---|---|---|
-| `ZOOM_ACCOUNT_ID` | App Server-to-Server OAuth → *App Credentials* | Production (y Preview solo para pruebas con una reunión de prueba) |
-| `ZOOM_CLIENT_ID` | ídem | ídem |
-| `ZOOM_CLIENT_SECRET` | ídem | ídem — marcar como *Sensitive* |
+| `ZOOM_ACCOUNT_ID` | App → App Credentials | Production y Preview autorizado |
+| `ZOOM_CLIENT_ID` | App → App Credentials | ídem |
+| `ZOOM_CLIENT_SECRET` | App → App Credentials, Secret/Sensitive | ídem |
+| `ZOOM_HOST_EMAIL` | Correo o ID del anfitrión de los encuentros | Production y Preview autorizado |
+| `ZOOM_SYNC_ENABLED` | `true` para usar Zoom como origen | Activar después de agregar los permisos |
 
-Nunca se escriben en el repositorio ni se comparten por chat. Si faltan, el
-endpoint responde 503 con un mensaje honesto (no simula la inscripción).
+Las credenciales no se escriben en el repositorio ni se comparten por chat.
+No usar variables `NEXT_PUBLIC_*`. No es necesario leer/desencriptar los secretos.
+El código lista solo las reuniones del anfitrión configurado, no las de toda la cuenta.
 
-## 4. App de Zoom: permisos mínimos
+Desactivando `ZOOM_SYNC_ENABLED` se conserva temporalmente la configuración
+manual anterior en `src/data/encuentro-actual.ts` para permitir un despliegue gradual.
+Esa configuración deja de intervenir cuando la sincronización está activada.
 
-Quien administra la cuenta de Zoom de UJ crea en
-`marketplace.zoom.us → Develop → Build App` una app **Server-to-Server OAuth**
-(interna, no publicada) y le asigna **solo** estos scopes:
-
-| Scope (granular) | Para qué |
+| Archivo | Responsabilidad |
 |---|---|
-| `meeting:write:registrant:admin` | Agregar inscriptos a la reunión |
-| `meeting:read:list_registrants:admin` | Detectar inscripciones repetidas por email |
+| `src/lib/zoom.ts` | Cliente API: token, listado paginado y detalles seguros |
+| `src/lib/encuentros-zoom.ts` | Marca, orden, mapeo público y versión de convocatoria |
+| `src/lib/encuentro-vigente.ts` | Origen, caché breve, errores y verificación en vivo |
+| `src/lib/__tests__/encuentros-zoom.test.ts` | Privacidad, selección, cambios, cancelaciones y API |
 
-(Si la cuenta usa scopes clásicos: `meeting:write:admin` y `meeting:read:admin`.)
-No requiere la contraseña de Diana, Noelia ni de ningún anfitrión.
+## 4. App de Zoom: cuatro permisos mínimos
 
-> Los nombres de scopes se tomaron de la documentación de Zoom conocida al
-> momento de escribir esto; `developers.zoom.us` no fue accesible desde el
-> entorno de desarrollo. **Verificarlos en el Marketplace al crear la app.**
+La app interna Server-to-Server OAuth utiliza estos scopes granulares:
+
+| Scope | Uso |
+|---|---|
+| `meeting:write:registrant:admin` | Agregar inscriptos (existente) |
+| `meeting:read:list_registrants:admin` | Detectar duplicados (existente) |
+| `meeting:read:list_meetings:admin` | Descubrir convocatorias (nuevo) |
+| `meeting:read:meeting:admin` | Leer descripción completa y opciones (nuevo) |
+
+No necesita crear, editar ni eliminar reuniones. La ampliación de permisos requiere
+confirmación del propietario y que la app quede activa con los cuatro scopes.
+La primera configuración solo tenía dos permisos: sin los dos nuevos no activar
+`ZOOM_SYNC_ENABLED` en producción. No regenerar las credenciales por agregar scopes.
+
+Referencias oficiales verificadas el 1 de noviembre de 2026:
+- https://developers.zoom.us/docs/api/meetings/ — `GET /users/{userId}/meetings`,
+  `GET /meetings/{meetingId}`. La descripción del listado se trunca: se leen detalles.
+- https://developers.zoom.us/docs/internal-apps/oauth-scopes-granular/
 
 ## 5. Protección contra abuso y duplicados
 
@@ -159,7 +185,7 @@ Para incorporarlo más adelante hace falta, antes de tocar código:
   disponible en cuentas gratuitas). La API no tiene costo adicional; la
   categoría de límites de `POST registrants` es baja, suficiente para este volumen.
 - Vercel: una invocación de función por inscripción (más ≤ 2–3 llamadas a Zoom
-  dentro de esa misma invocación). La página es ISR estática. Consumo despreciable.
+  dentro de esa misma invocación). La página se sirve dinámicamente y la agenda se cachea por 60 segundos; hay lecturas de Zoom adicionales al inscribir.
 - Firewall de Vercel: el rate limiting se factura por solicitudes evaluadas
   (centavos por millón).
 
@@ -167,7 +193,7 @@ Para incorporarlo más adelante hace falta, antes de tocar código:
 
 - [ ] Confirmar plan de Zoom y que el anfitrión tenga licencia.
 - [ ] Confirmar quién administra la cuenta.
-- [ ] Crear la app Server-to-Server OAuth con los dos scopes de la § 4 y activarla.
+- [ ] Crear la app Server-to-Server OAuth con los cuatro scopes de la § 4 y activarla.
 - [ ] Cargar `ZOOM_ACCOUNT_ID`, `ZOOM_CLIENT_ID`, `ZOOM_CLIENT_SECRET` en Vercel.
 - [ ] Crear la reunión del encuentro con inscripción obligatoria, aprobación
       automática y correo de confirmación activado; pasar el ID.

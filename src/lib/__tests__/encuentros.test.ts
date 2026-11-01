@@ -38,6 +38,7 @@ const BASE: Encuentro = {
 const ANTES = new Date('2026-11-20T12:00:00-03:00')
 
 const VALIDO = {
+  encuentroId: BASE.id,
   nombre: '  Ana ',
   apellido: 'Pérez',
   email: 'Ana.Perez@Example.com',
