@@ -5,6 +5,8 @@
 
 export interface SEOFields {
   seoTitle?: string
+  /** true si seoTitle viene de Yoast: ya es el título completo, sin sufijo. */
+  seoTitleCompleto?: boolean
   seoDescription?: string
   ogImage?: ImageAsset
 }

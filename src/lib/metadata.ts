@@ -51,7 +51,10 @@ export function generateArticleMetadata(
 ): Metadata {
   const url = `${siteConfig.url}/noticias/${slug}`
   const description = articulo.seoDescription || articulo.extracto
-  const title = articulo.seoTitle || articulo.titulo
+  // El título de Yoast ya es completo: `absolute` evita el sufijo del template.
+  const title = articulo.seoTitleCompleto && articulo.seoTitle
+    ? { absolute: articulo.seoTitle }
+    : articulo.seoTitle || articulo.titulo
 
   return {
     title,

@@ -292,12 +292,13 @@ function wpPostToArticulo(
  */
 export function seoFieldsDesdeWP(
   wp: Pick<WPPost, 'title' | 'excerpt' | 'yoast_head_json'>
-): { seoTitle: string; seoDescription: string } {
+): { seoTitle: string; seoTitleCompleto: boolean; seoDescription: string } {
   const titulo = decodeHtml(wp.title.rendered)
   const yoastTitle = decodeHtml(wp.yoast_head_json?.title ?? '')
   const yoastDescription = decodeHtml(wp.yoast_head_json?.description ?? '')
   return {
     seoTitle: yoastTitle || titulo,
+    seoTitleCompleto: yoastTitle !== '',
     seoDescription:
       yoastDescription || excerptOrTitleFallback(wp.excerpt.rendered, titulo, 160),
   }
