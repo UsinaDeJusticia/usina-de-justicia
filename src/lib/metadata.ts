@@ -7,6 +7,7 @@ import type { Metadata } from 'next'
 import { siteConfig } from './site-config.ts'
 import { SITE_SECTIONS, type SiteSection } from '../types/wordpress.ts'
 import type { Articulo } from '../types/index.ts'
+import { varianteParaTarjetaOG } from './imagenes.ts'
 
 interface PageSEO {
   title: string
@@ -51,6 +52,14 @@ export function generateArticleMetadata(
 ): Metadata {
   const url = `${siteConfig.url}/noticias/${slug}`
   const description = articulo.seoDescription || articulo.extracto
+  // og:image = foto destacada de WordPress tal cual (sin ImageResponse por
+  // nota: ahorra CPU en Vercel). Sin foto compatible, cae a la tarjeta de
+  // marca de la raíz (/opengraph-image), estática y generada en el build.
+  const variante = varianteParaTarjetaOG(articulo.imagenDestacada)
+  const images = variante
+    ? [{ url: variante.url, width: variante.width, height: variante.height,
+        alt: articulo.imagenDestacada?.alt || articulo.titulo }]
+    : [{ url: `${siteConfig.url}${siteConfig.ogImage}`, width: 1200, height: 630, alt: siteConfig.name }]
   // El título de Yoast ya es completo: `absolute` evita el sufijo del template.
   const title = articulo.seoTitleCompleto && articulo.seoTitle
     ? { absolute: articulo.seoTitle }
@@ -69,11 +78,13 @@ export function generateArticleMetadata(
       publishedTime: conZonaHoraria(articulo.fechaPublicacion),
       modifiedTime: conZonaHoraria(articulo.updatedAt),
       authors: [articulo.autor],
+      images,
     },
     twitter: {
       card: 'summary_large_image',
       title,
       description,
+      images,
     },
   }
 }

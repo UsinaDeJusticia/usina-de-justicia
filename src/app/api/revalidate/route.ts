@@ -10,6 +10,15 @@ import { NextResponse } from 'next/server'
 
 const DEFAULT_PATHS = ['/', '/noticias']
 
+/** Listados dinámicos que pueden mostrar una nota publicada o editada. */
+const LISTING_ROUTES = [
+  '/noticias/pagina/[n]',
+  '/noticias/categoria/[categoria]',
+  '/noticias/categoria/[categoria]/pagina/[n]',
+  '/noticias/tag/[tag]',
+  '/noticias/tag/[tag]/pagina/[n]',
+]
+
 interface RevalidateBody {
   secret?: string
   paths?: string[]
@@ -54,20 +63,21 @@ export async function POST(request: Request) {
   const pathsToRevalidate =
     requestedPaths.length > 0 ? requestedPaths : DEFAULT_PATHS
 
-  // The branded image is a separate metadata route with its own ISR cache.
-  // WordPress sends the article page path; invalidate the matching card too.
-  const pathsWithSocialCards = new Set(pathsToRevalidate)
-  for (const path of pathsToRevalidate) {
-    if (/^\/noticias\/[^/]+$/.test(path)) {
-      pathsWithSocialCards.add(`${path}/opengraph-image`)
-    }
-  }
+  // Con notas a 30 días y listados a 6 h, el webhook es la vía real de
+  // frescura. WordPress manda '/', '/noticias' y '/noticias/<slug>'; si la
+  // nota cambió, también pueden cambiar su categoría, sus tags, la
+  // paginación y el sitemap, así que se invalidan esas rutas dinámicas
+  // enteras (type 'page' = todas las instancias del segmento).
+  const tocaNota = pathsToRevalidate.some((p) => /^\/noticias\/[^/]+$/.test(p))
+  for (const path of pathsToRevalidate) revalidatePath(path)
+  const listados = tocaNota ? LISTING_ROUTES : []
+  for (const route of listados) revalidatePath(route, 'page')
+  if (tocaNota) revalidatePath('/sitemap.xml')
 
-  for (const path of pathsWithSocialCards) {
-    revalidatePath(path)
-  }
-
-  return NextResponse.json({ revalidated: true, paths: [...pathsWithSocialCards] })
+  return NextResponse.json({
+    revalidated: true,
+    paths: [...pathsToRevalidate, ...listados, ...(tocaNota ? ['/sitemap.xml'] : [])],
+  })
 }
 
 export async function GET() {

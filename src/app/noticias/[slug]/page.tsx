@@ -45,7 +45,10 @@ import {
 // leer sin ejecutar el módulo, así que no acepta la constante importada
 // (`Unknown identifier at "revalidate"` en build). Tiene que seguir igual a
 // WP_REVALIDATE_ARCHIVO de src/lib/wordpress.ts — si cambia una, cambiar la otra.
-export const revalidate = 86400 // 24 h — igual a WP_REVALIDATE_ARCHIVO
+// 30 días (perf/bajar-cpu, nov-2026): en una hora 314 de 345 ejecuciones
+// eran notas rearmadas por ISR vencido. Las ediciones llegan igual al
+// instante por el webhook de WordPress (/api/revalidate).
+export const revalidate = 2592000 // 30 días — igual a WP_REVALIDATE_ARCHIVO
 
 // ============================================
 // GENERACIÓN ESTÁTICA: los 100 más recientes se pre-renderizan (1 sola

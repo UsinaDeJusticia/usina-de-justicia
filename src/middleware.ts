@@ -18,6 +18,7 @@
 
 import { NextResponse, type NextRequest } from 'next/server'
 import { prefersMarkdown, MARKDOWN_PATH_HEADER } from '@/lib/agent-negotiation'
+import { isBlockedUserAgent } from '@/lib/bots'
 
 /**
  * Rutas que ya son legibles por máquina y se sirven tal cual: convertirlas
@@ -33,6 +34,13 @@ const PASSTHROUGH_PATHS = new Set([
 
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
+
+  // Bots bloqueados (src/lib/bots.ts): 403 en el Edge, antes de que se
+  // arme ninguna página. robots.txt queda accesible para que lean la regla.
+  // Googlebot y demás permitidos nunca entran acá.
+  if (pathname !== '/robots.txt' && isBlockedUserAgent(request.headers.get('user-agent'))) {
+    return new NextResponse('Forbidden', { status: 403, headers: { 'Cache-Control': 'no-store' } })
+  }
 
   const isPassthrough =
     PASSTHROUGH_PATHS.has(pathname) ||
