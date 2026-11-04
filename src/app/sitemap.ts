@@ -140,5 +140,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     // (mejor incompleto que roto).
   }
 
-  return [...staticRoutes, ...categoryRoutes, ...tagRoutes, ...postRoutes]
+  // SEO oct-2026: las etiquetas van noindex,follow, así que no se publican
+  // en el sitemap (un sitemap sólo debe listar URLs indexables).
+  void tagRoutes
+  return [...staticRoutes, ...categoryRoutes, ...postRoutes]
 }

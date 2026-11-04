@@ -32,6 +32,9 @@ export async function generateMetadata({
   return {
     title: `${tagData.nombre} — Noticias — Página ${n}`,
     description: `Artículos etiquetados con "${tagData.nombre}" — Usina de Justicia`,
+    // SEO oct-2026: las etiquetas son listados finos/duplicados (ej. infoveloz:
+    // 2.946 impresiones, 1 clic). Fuera del índice, pero Google sigue los links.
+    robots: { index: false, follow: true },
     alternates: {
       canonical: `https://www.usinadejusticia.org.ar/noticias/tag/${tag}/pagina/${n}`,
     },

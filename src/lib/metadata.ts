@@ -32,6 +32,16 @@ interface PageSEO {
   appendSiteName?: boolean
 }
 
+/**
+ * WordPress entrega `date`/`modified` en hora local sin zona ("2026-10-01T22:49:25").
+ * Google pide fechas ISO 8601 con zona horaria; Argentina es UTC-3 fijo (sin
+ * horario de verano desde 2009). Si ya trae zona, se deja igual.
+ */
+export function conZonaHoraria(fecha: string | undefined): string | undefined {
+  if (!fecha) return fecha
+  return /(Z|[+-]\d{2}:?\d{2})$/.test(fecha) ? fecha : `${fecha}-03:00`
+}
+
 export function esMencionExterna(articulo: Articulo): boolean {
   return SITE_SECTIONS[articulo.categoria.slug as SiteSection]?.externa === true
 }
@@ -41,24 +51,28 @@ export function generateArticleMetadata(
 ): Metadata {
   const url = `${siteConfig.url}/noticias/${slug}`
   const description = articulo.seoDescription || articulo.extracto
+  // El título de Yoast ya es completo: `absolute` evita el sufijo del template.
+  const title = articulo.seoTitleCompleto && articulo.seoTitle
+    ? { absolute: articulo.seoTitle }
+    : articulo.seoTitle || articulo.titulo
 
   return {
-    title: articulo.seoTitle || articulo.titulo,
+    title,
     description,
     alternates: { canonical: url },
     ...(esMencionExterna(articulo) && { robots: { index: false, follow: true } }),
     openGraph: {
-      title: articulo.titulo,
+      title,
       description,
       url,
       type: 'article',
-      publishedTime: articulo.fechaPublicacion,
-      modifiedTime: articulo.updatedAt,
+      publishedTime: conZonaHoraria(articulo.fechaPublicacion),
+      modifiedTime: conZonaHoraria(articulo.updatedAt),
       authors: [articulo.autor],
     },
     twitter: {
       card: 'summary_large_image',
-      title: articulo.titulo,
+      title,
       description,
     },
   }
@@ -73,8 +87,8 @@ export function buildNewsArticleJsonLd(articulo: Articulo, slug: string) {
     '@type': 'NewsArticle',
     headline: articulo.titulo,
     description: articulo.seoDescription || articulo.extracto,
-    datePublished: articulo.fechaPublicacion,
-    dateModified: articulo.updatedAt,
+    datePublished: conZonaHoraria(articulo.fechaPublicacion),
+    dateModified: conZonaHoraria(articulo.updatedAt),
     articleSection: articulo.categoria.nombre,
     author: esOrganizacion
       ? { '@id': `${siteConfig.url}/#organization` }
