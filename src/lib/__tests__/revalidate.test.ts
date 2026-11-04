@@ -34,7 +34,12 @@ it('webhook invalida la página y metadata de la nota sólo con el secreto corre
     assert.equal(response.status, 200)
     assert.deepEqual(paths, [
       '/', '/noticias', '/noticias/una-nota', '/noticias/categoria/prensa',
-      '/noticias/una-nota/opengraph-image',
+      '/noticias/pagina/[n]',
+      '/noticias/categoria/[categoria]',
+      '/noticias/categoria/[categoria]/pagina/[n]',
+      '/noticias/tag/[tag]',
+      '/noticias/tag/[tag]/pagina/[n]',
+      '/sitemap.xml',
     ])
     assert.deepEqual(await response.json(), { revalidated: true, paths })
   } finally {

@@ -61,10 +61,10 @@ const FETCH_TIMEOUT = 15000
 // ============================================
 
 /** Listados, home y buscador: contenido que rota. */
-export const WP_REVALIDATE = 1800 // 30 min
+export const WP_REVALIDATE = 21600 // 6 h; el webhook invalida al publicar/editar
 
 /** Notas individuales: contenido histórico que no cambia solo. */
-export const WP_REVALIDATE_ARCHIVO = 86400 // 24 h
+export const WP_REVALIDATE_ARCHIVO = 2592000 // 30 días (on-demand por webhook cubre ediciones)
 
 // Cache en memoria para categorías y autores (cambian poco)
 const cache = new Map<string, { data: unknown; timestamp: number }>()

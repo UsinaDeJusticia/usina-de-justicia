@@ -18,7 +18,7 @@ export async function generateStaticParams() {
 // Página estática (ISR): re-generada como máximo cada 5 minutos. Page 1 de
 // cada categoría vive acá; las páginas 2+ están en
 // /noticias/categoria/[categoria]/pagina/[n].
-export const revalidate = 1800
+export const revalidate = 21600 // 6 h; publicaciones/ediciones invalidan por webhook
 
 interface CategoriaPageProps {
   params: Promise<{ categoria: string }>

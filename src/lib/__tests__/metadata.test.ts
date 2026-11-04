@@ -25,11 +25,12 @@ function articulo(image: ImageAsset | undefined = imagen): Articulo {
     tags: [], autor: siteConfig.name, fechaPublicacion: '2026-09-01T12:00:00', updatedAt: '2026-09-02T15:00:00', createdAt: '2026-09-01T12:00:00', publicado: true }
 }
 describe('metadata de noticias — archivos existentes', () => {
-  it('deja que la misma tarjeta generada resuelva las imágenes OG y Twitter', () => {
+  it('usa la foto destacada de WordPress directo en og:image y twitter:image', () => {
     const note = articulo()
     const metadata = generateArticleMetadata(note, note.slug)
-    assert.equal(metadata.openGraph?.images, undefined)
-    assert.equal(metadata.twitter?.images, undefined)
+    const og = metadata.openGraph?.images as Array<{ url: string }>
+    assert.equal(og[0].url, varianteParaTarjetaOG(imagen)!.url)
+    assert.deepEqual(metadata.twitter?.images, og)
     assert.equal(metadata.alternates?.canonical, `${siteConfig.url}/noticias/una-nota`)
     assert.equal(metadata.description, 'Descripción SEO')
     assert.equal(metadata.title, 'Título de la nota')
@@ -38,7 +39,8 @@ describe('metadata de noticias — archivos existentes', () => {
   it('sin destacada conserva la ruta OG de marca y no inventa una foto en JSON-LD', () => {
     const note = articulo(); delete note.imagenDestacada
     const metadata = generateArticleMetadata(note, note.slug)
-    assert.equal(metadata.twitter?.images, undefined)
+    const og = metadata.openGraph?.images as Array<{ url: string }>
+    assert.equal(og[0].url, `${siteConfig.url}/opengraph-image`)
     assert.equal('image' in buildNewsArticleJsonLd(note, note.slug), false)
   })
 
@@ -66,13 +68,13 @@ describe('metadata de noticias — archivos existentes', () => {
     assert.deepEqual(generateArticleMetadata(note, note.slug).robots, { index: false, follow: true })
   })
 
-  it('conserva la ruta OG dinámica de la tarjeta de noticias', () => {
+  it('no hay ImageResponse por nota: la ruta OG dinámica de noticias no existe', () => {
     const dir = fileURLToPath(new URL('../../app/noticias/', import.meta.url))
     const dynamicImages = readdirSync(dir, { recursive: true })
       .filter((name) => /(?:opengraph|twitter)-image\.(tsx?|jsx?)$/.test(String(name)))
       .map((name) => String(name).replaceAll('\\', '/'))
-    assert.deepEqual(dynamicImages, ['[slug]/opengraph-image.tsx'])
-    assert.equal(existsSync(`${dir}/[slug]/opengraph-image.tsx`), true)
+    assert.deepEqual(dynamicImages, [])
+    assert.equal(existsSync(`${dir}/[slug]/opengraph-image.tsx`), false)
   })
 })
 

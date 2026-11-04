@@ -3,7 +3,7 @@ import { notFound, redirect } from 'next/navigation'
 import { NoticiasListView } from '../../_components/NoticiasListView'
 import { getGeneralTotalPages, pageRangeParams } from '@/lib/pagination'
 
-export const revalidate = 1800
+export const revalidate = 21600 // 6 h; publicaciones/ediciones invalidan por webhook
 
 // ============================================
 // GENERACIÓN ESTÁTICA: pre-generar todas las páginas 2..totalPages
