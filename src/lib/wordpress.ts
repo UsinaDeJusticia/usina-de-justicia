@@ -157,6 +157,8 @@ function decodeHtml(html: string): string {
     .replace(/&lt;/g, '<')
     .replace(/&gt;/g, '>')
     .replace(/&quot;/g, '"')
+    .replace(/&#0?39;|&apos;/g, "'")
+    .replace(/&nbsp;|&#160;/g, ' ')
     .replace(/<[^>]*>/g, '')
     .trim()
 }
@@ -278,9 +280,26 @@ function wpPostToArticulo(
     publicado: wp.status === 'publish',
     createdAt: wp.date,
     updatedAt: wp.modified,
-    // SEOFields — valores por defecto, se pueden mejorar después
-    seoTitle: decodeHtml(wp.title.rendered),
-    seoDescription: excerptOrTitleFallback(wp.excerpt.rendered, decodeHtml(wp.title.rendered), 160),
+    // SEOFields: lo que carga Yoast SEO, o título/extracto si viene vacío.
+    ...seoFieldsDesdeWP(wp),
+  }
+}
+
+/**
+ * Título y descripción SEO de una nota. Usa lo que carga Yoast
+ * (`yoast_head_json`, que la REST API incluye cuando no hay `_fields`) y,
+ * si falta o viene vacío, el título del post y el extracto como antes.
+ */
+export function seoFieldsDesdeWP(
+  wp: Pick<WPPost, 'title' | 'excerpt' | 'yoast_head_json'>
+): { seoTitle: string; seoDescription: string } {
+  const titulo = decodeHtml(wp.title.rendered)
+  const yoastTitle = decodeHtml(wp.yoast_head_json?.title ?? '')
+  const yoastDescription = decodeHtml(wp.yoast_head_json?.description ?? '')
+  return {
+    seoTitle: yoastTitle || titulo,
+    seoDescription:
+      yoastDescription || excerptOrTitleFallback(wp.excerpt.rendered, titulo, 160),
   }
 }
 

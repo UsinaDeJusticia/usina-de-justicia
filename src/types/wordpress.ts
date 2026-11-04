@@ -32,6 +32,11 @@ export interface WPPost {
   categories: number[]
   tags: number[]
   format: string
+  /** Lo agrega Yoast SEO; puede faltar si el plugin no está activo. */
+  yoast_head_json?: {
+    title?: string
+    description?: string
+  }
   _embedded?: {
     author?: WPAuthor[]
     'wp:featuredmedia'?: WPMedia[]

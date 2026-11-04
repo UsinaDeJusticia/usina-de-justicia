@@ -51,14 +51,15 @@ export function generateArticleMetadata(
 ): Metadata {
   const url = `${siteConfig.url}/noticias/${slug}`
   const description = articulo.seoDescription || articulo.extracto
+  const title = articulo.seoTitle || articulo.titulo
 
   return {
-    title: articulo.seoTitle || articulo.titulo,
+    title,
     description,
     alternates: { canonical: url },
     ...(esMencionExterna(articulo) && { robots: { index: false, follow: true } }),
     openGraph: {
-      title: articulo.titulo,
+      title,
       description,
       url,
       type: 'article',
@@ -68,7 +69,7 @@ export function generateArticleMetadata(
     },
     twitter: {
       card: 'summary_large_image',
-      title: articulo.titulo,
+      title,
       description,
     },
   }
