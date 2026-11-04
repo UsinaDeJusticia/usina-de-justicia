@@ -25,7 +25,7 @@ it('sitemap conserva URLs indexables y post.modified; omite fechas inventadas y 
     assert.ok(post)
     assert.equal((post.lastModified as Date).toISOString(), modified.replace('Z', '.000Z'))
     assert.ok(first.some((entry) => entry.url === `${siteConfig.url}/noticias/categoria/en-los-medios`))
-    assert.ok(first.some((entry) => entry.url.endsWith('/noticias/tag/victimas')))
+    assert.ok(!first.some((entry) => entry.url.includes('/noticias/tag/')))
     assert.ok(first.some((entry) => entry.url === `${siteConfig.url}/`))
     assert.ok(!first.some((entry) => entry.url.endsWith('/mencion-externa')))
     assert.ok(!first.some((entry) => entry.url.includes('nuevo-campus-virtual')))
