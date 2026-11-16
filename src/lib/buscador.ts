@@ -87,10 +87,10 @@ export const PAGINAS_ESTATICAS: DocBuscador[] = [
   { id: 'pagina:/contacto', tipo: 'pagina', titulo: 'Contacto', href: '/contacto', categoria: 'Página', extracto: '¿Sos víctima de un delito o necesitás orientación? Escribinos o completá el formulario y te responderemos a la brevedad.' },
   // src/app/galeria/page.tsx
   { id: 'pagina:/galeria', tipo: 'pagina', titulo: 'Galería', href: '/galeria', categoria: 'Página', extracto: 'Galería de fotos de eventos, actividades y encuentros de Usina de Justicia.' },
-  // src/app/legal/privacidad/page.tsx
-  { id: 'pagina:/legal/privacidad', tipo: 'pagina', titulo: 'Política de Privacidad', href: '/legal/privacidad', categoria: 'Página', extracto: 'Política de privacidad y protección de datos personales de Usina de Justicia.' },
-  // src/app/legal/terminos/page.tsx
-  { id: 'pagina:/legal/terminos', tipo: 'pagina', titulo: 'Términos de Uso', href: '/legal/terminos', categoria: 'Página', extracto: 'Términos y condiciones de uso del sitio web de Usina de Justicia.' },
+  // src/app/privacidad/page.tsx
+  { id: 'pagina:/privacidad', tipo: 'pagina', titulo: 'Política de Privacidad', href: '/privacidad', categoria: 'Página', extracto: 'Política de privacidad de Usina de Justicia: responsable del tratamiento, datos de los formularios, integración con TikTok y derechos de la Ley 25.326.' },
+  // src/app/terminos/page.tsx
+  { id: 'pagina:/terminos', tipo: 'pagina', titulo: 'Términos y Condiciones de Uso', href: '/terminos', categoria: 'Página', extracto: 'Términos y condiciones de uso del sitio de Usina de Justicia: uso permitido, propiedad intelectual, enlaces a terceros, responsabilidad y ley aplicable.' },
   // src/app/en/page.tsx
   { id: 'pagina:/en', tipo: 'pagina', titulo: 'About Usina de Justicia (English)', href: '/en', categoria: 'Página', extracto: 'Usina de Justicia is an Argentine civil association that has accompanied families of homicide and femicide victims since 2014.' },
 ]

@@ -74,8 +74,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${siteConfig.url}/donar`, changeFrequency: 'monthly', priority: 0.7 },
     { url: `${siteConfig.url}/encuentros`, changeFrequency: 'weekly', priority: 0.6 },
     { url: `${siteConfig.url}/contacto`, changeFrequency: 'yearly', priority: 0.6 },
-    { url: `${siteConfig.url}/legal/privacidad`, changeFrequency: 'yearly', priority: 0.3 },
-    { url: `${siteConfig.url}/legal/terminos`, changeFrequency: 'yearly', priority: 0.3 },
+    { url: `${siteConfig.url}/privacidad`, changeFrequency: 'yearly', priority: 0.3 },
+    { url: `${siteConfig.url}/terminos`, changeFrequency: 'yearly', priority: 0.3 },
     { url: `${siteConfig.url}/en`, changeFrequency: 'yearly', priority: 0.5 },
     { url: `${siteConfig.url}/galeria`, changeFrequency: 'monthly', priority: 0.4 },
   ]

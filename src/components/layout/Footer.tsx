@@ -112,17 +112,21 @@ export function Footer() {
             <span className="hidden sm:inline"> · </span>
             <br className="sm:hidden" />
             <Link
-              href="/legal/privacidad"
-              className={cnFocus('text-grey-600 hover:text-navy-700 rounded-xs')}
+              href="/privacidad"
+              className={cnFocus(
+                'text-grey-600 underline underline-offset-2 hover:text-navy-700 rounded-xs'
+              )}
             >
               Política de Privacidad
             </Link>{' '}
             ·{' '}
             <Link
-              href="/legal/terminos"
-              className={cnFocus('text-grey-600 hover:text-navy-700 rounded-xs')}
+              href="/terminos"
+              className={cnFocus(
+                'text-grey-600 underline underline-offset-2 hover:text-navy-700 rounded-xs'
+              )}
             >
-              Términos de Uso
+              Términos y Condiciones
             </Link>{' '}
             ·{' '}
             <Link

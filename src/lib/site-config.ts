@@ -96,8 +96,8 @@ export const siteConfig = {
       { label: 'Prensa', href: 'mailto:info@usinadejusticia.org.ar' },
     ],
     legal: [
-      { label: 'Política de Privacidad', href: '/legal/privacidad' },
-      { label: 'Términos de Uso', href: '/legal/terminos' },
+      { label: 'Política de Privacidad', href: '/privacidad' },
+      { label: 'Términos y Condiciones', href: '/terminos' },
     ],
   },
 }
