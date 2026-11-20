@@ -10,6 +10,7 @@ import {
   variantesDeMedia,
   varianteParaAncho,
   urlParaAncho,
+  urlsParaHero,
   ANCHO_TARJETA,
   ANCHO_HERO_NOTA,
 } from '../imagenes.ts'
@@ -190,5 +191,36 @@ describe('urlParaAncho — lo que consumen los componentes', () => {
 
   it('sin imagen devuelve undefined', () => {
     assert.equal(urlParaAncho(undefined, ANCHO_TARJETA), undefined)
+  })
+})
+
+describe('urlsParaHero — fallback ante fallo de origen', () => {
+  it('prueba el JPEG social de WordPress si falla la variante original', () => {
+    const m = media({
+      source_url: 'https://wp.test/mauro.webp',
+      mime_type: 'image/webp',
+    })
+    m.media_details = {
+      width: 536,
+      height: 584,
+      sizes: {
+        'usina-social': {
+          source_url: 'https://wp.test/mauro-usina-social.jpg',
+          width: 536,
+          height: 584,
+          mime_type: 'image/jpeg',
+          filesize: 40420,
+        },
+      },
+    }
+
+    assert.deepEqual(urlsParaHero(asset(m)), [
+      'https://wp.test/mauro.webp',
+      'https://wp.test/mauro-usina-social.jpg',
+    ])
+  })
+
+  it('no devuelve fuentes cuando el artículo no tiene imagen', () => {
+    assert.deepEqual(urlsParaHero(undefined), [])
   })
 })

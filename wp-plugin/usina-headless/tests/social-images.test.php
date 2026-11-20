@@ -1,7 +1,6 @@
 <?php
 // Pruebas del contrato editorial sin WordPress, red ni librerías nuevas.
 define( 'ABSPATH', __DIR__ . '/' );
-define( 'REST_REQUEST', true );
 $actions = array();
 $filters = array();
 $notifications = array();
@@ -13,6 +12,7 @@ $editor_failure = false;
 $source_size = array( 'width' => 2400, 'height' => 1600 );
 $resize_calls = array();
 $post_media = 1;
+$posts = array();
 
 function add_action( $name, $callback, $priority = 10, $argc = 1 ) { global $actions; $actions[$name] = $callback; }
 function add_filter( $name, $callback, $priority = 10, $argc = 1 ) { global $filters; $filters[$name] = $callback; }
@@ -26,6 +26,7 @@ function wp_basename( $path ) { return basename( $path ); }
 function is_wp_error( $value ) { return $value instanceof WP_Error; }
 class WP_Error {}
 function get_post_thumbnail_id( $id ) { global $post_media; return $post_media; }
+function get_post( $id ) { global $posts; return $posts[$id] ?? null; }
 function wp_get_attachment_metadata( $id ) { global $metadata; return $metadata[$id] ?? array(); }
 function wp_update_attachment_metadata( $id, $value ) { global $metadata; $metadata[$id] = usina_headless_social_variant( $value, $id ); return true; }
 function get_option( $name, $default ) { return array( 'endpoint' => 'https://next.test/api/revalidate', 'secret' => 'local-test-secret' ); }
@@ -67,13 +68,17 @@ $temp = sys_get_temp_dir() . '/usina-social-test-' . bin2hex( random_bytes( 6 ) 
 mkdir( $temp );
 try {
   check( $actions['rest_after_insert_post'] === 'usina_headless_on_rest_save_post', 'hook REST posterior al guardado' );
+  check( $actions['shutdown'] === 'usina_headless_flush_pending_posts', 'procesar guardados clásicos al final de la petición' );
   check( $filters['wp_update_attachment_metadata'] === 'usina_headless_social_variant', 'sólo preparar imágenes al escribir metadata' );
   $sources[1] = $temp . '/foto.webp'; $mimes[1] = 'image/webp'; file_put_contents( $sources[1], 'original-one' );
   $metadata[1] = array( 'width' => 2400, 'height' => 1600, 'sizes' => array() );
   $post = (object) array( 'ID' => 10, 'post_status' => 'publish', 'post_name' => 'una-nota' );
+  $posts[10] = $post;
+  $post_media = 99; // El post todavía tiene la miniatura anterior al guardar.
   usina_headless_on_save_post( 10, $post, true );
-  check( count( $notifications ) === 0 && $editors === 0, 'no avisar ni convertir antes de featured_media en REST' );
-  usina_headless_on_rest_save_post( $post, null, false );
+  check( count( $notifications ) === 0 && $editors === 0, 'no avisar ni convertir antes de guardar la miniatura clásica' );
+  $post_media = 1; // El meta box ya escribió la nueva miniatura.
+  usina_headless_flush_pending_posts();
   $social = $metadata[1]['sizes']['usina-social'];
   check( $social['width'] === 1200 && $social['height'] === 800, 'conservar proporción y limitar tamaño' );
   check( $resize_calls[0] === array( 1200, 1200, false ), 'sin recorte' );
