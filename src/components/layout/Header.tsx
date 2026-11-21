@@ -4,17 +4,16 @@ import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import Form from 'next/form'
-import { usePathname } from 'next/navigation'
 import { Menu, Search, X } from 'lucide-react'
 import { siteConfig } from '@/lib/site-config'
 import { Button } from '@/components/ui/Button'
 import { cn } from '@/lib/utils'
+import { AxisNavigation } from './AxisNavigation'
 
 const focusRing =
   'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-navy-600 focus-visible:ring-offset-2'
 
 export function Header() {
-  const pathname = usePathname()
   const [panel, setPanel] = useState<'menu' | 'search' | null>(null)
   const menuButton = useRef<HTMLButtonElement>(null)
   const searchButton = useRef<HTMLButtonElement>(null)
@@ -34,27 +33,6 @@ export function Header() {
 
   function closePanel() {
     setPanel(null)
-  }
-
-  function navLinks() {
-    return siteConfig.mainNav.map(({ href, label }) => {
-      const active = pathname === href || pathname.startsWith(href + '/')
-      return (
-        <Link
-          key={href}
-          href={href}
-          onClick={closePanel}
-          aria-current={active ? 'page' : undefined}
-          className={cn(
-            'rounded-xs px-2 py-2 font-bold no-underline hover:text-navy-600 hover:no-underline',
-            active ? 'text-navy-700 underline underline-offset-4' : 'text-ink',
-            focusRing,
-          )}
-        >
-          {label}
-        </Link>
-      )
-    })
   }
 
   function searchForm(id: string, inputRef: React.RefObject<HTMLInputElement | null>) {
@@ -97,8 +75,8 @@ export function Header() {
           />
         </Link>
 
-        <nav aria-label="Principal" className="hidden items-center gap-2 text-body-sm lg:flex xl:gap-6">
-          {navLinks()}
+        <nav aria-label="Principal" className="hidden text-body-sm lg:block">
+          <AxisNavigation mode="desktop" onNavigate={closePanel} />
         </nav>
 
         <div className="flex shrink-0 items-center gap-1 sm:gap-2">
@@ -149,7 +127,7 @@ export function Header() {
       <div id="mobile-nav" hidden={panel !== 'menu'}>
         <div className="max-h-[70dvh] overflow-y-auto border-t border-grey-200 px-4 pb-5 pt-3 md:px-10 lg:hidden">
           <nav aria-label="Principal" className="flex flex-col">
-            {navLinks()}
+            {panel === 'menu' && <AxisNavigation mode="mobile" onNavigate={closePanel} />}
             <Link
               href={siteConfig.headerCta.donate.href}
               onClick={closePanel}

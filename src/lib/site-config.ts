@@ -36,9 +36,33 @@ export const siteConfig = {
   },
 
   mainNav: [
-    { label: 'Acompañamiento', href: '/acompanamiento' },
-    { label: 'Incidencia', href: '/incidencia' },
-    { label: 'Formación e investigación', href: '/formacion-e-investigacion' },
+    {
+      label: 'Acompañamiento',
+      href: '/acompanamiento',
+      children: [
+        { label: 'Guías para familias', href: '/acompanamiento#guias' },
+        { label: 'Encuentros abiertos', href: '/encuentros' },
+        { label: 'Historias y testimonios', href: '/noticias/categoria/historias' },
+      ],
+    },
+    {
+      label: 'Incidencia',
+      href: '/incidencia',
+      children: [
+        { label: 'Propuestas legislativas e intervenciones judiciales', href: '/noticias/categoria/incidencia' },
+        { label: 'Informes y recursos', href: '/recursos' },
+        { label: 'Archivo de publicaciones', href: '/observatorio' },
+      ],
+    },
+    {
+      label: 'Formación e investigación',
+      href: '/formacion-e-investigacion',
+      children: [
+        { label: 'Cursos y diplomatura', href: 'https://ivujus.org.ar/es/formacion' },
+        { label: 'Publicaciones del IVUJUS', href: 'https://ivujus.org.ar/es/publicaciones' },
+        { label: 'Eventos académicos', href: 'https://ivujus.org.ar/es/simposios' },
+      ],
+    },
   ],
 
   headerCta: {
