@@ -15,7 +15,7 @@ const argentinaDate = new Intl.DateTimeFormat('sv-SE', {
 
 async function featuredArticles() {
   const [selected, recent] = await Promise.all([
-    getArticulosByTagSlug('destacado-portada', { perPage: 12 }).then((result) => result.data).catch(() => []),
+    getArticulosByTagSlug('destacado-portada', { perPage: 12 }, 'slug').then((result) => result.data).catch(() => []),
     getCategoryIdsBySection('en-los-medios')
       .catch(() => [])
       .then((categoriesExclude) => getArticulos({ perPage: 12, categoriesExclude }))

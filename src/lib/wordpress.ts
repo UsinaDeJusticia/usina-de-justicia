@@ -638,18 +638,18 @@ export async function getWPTags(
 
 export async function getArticulosByTagSlug(
   tagSlug: string,
-  params: Omit<WPQueryParams, 'tags'> = {}
+  params: Omit<WPQueryParams, 'tags'> = {},
+  lookup: 'list' | 'slug' = 'list'
 ): Promise<PaginatedResponse<Articulo>> {
-  const { data } = await wpFetch<WPTagType[]>('/tags', {
-    slug: tagSlug,
-    per_page: 1,
-    hide_empty: true,
-  })
-  const tag = data[0]
+  // La portada busca una etiqueta editorial concreta, aunque no figure entre
+  // las primeras 100 etiquetas que comparten las rutas de archivo.
+  const tag = lookup === 'slug'
+    ? (await wpFetch<WPTagType[]>('/tags', { slug: tagSlug, per_page: 1, hide_empty: true })).data[0]
+    : (await getWPTags()).find((item) => item.slug === tagSlug)
   if (!tag) {
     return { data: [], total: 0, totalPages: 0, currentPage: 1 }
   }
-  return getArticulos({ ...params, tags: [tag.id] })
+  return getArticulos({ ...params, tags: [Number(tag.id)] })
 }
 
 // ============================================
