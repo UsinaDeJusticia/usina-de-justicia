@@ -323,9 +323,12 @@ const nextConfig = {
       { source: '/aportar', destination: '/donar', permanent: true },
 
       // === LEGAL ===
-      { source: '/privacidad', destination: '/legal/privacidad', permanent: true },
-      { source: '/politica-privacidad', destination: '/legal/privacidad', permanent: true },
-      { source: '/terminos', destination: '/legal/terminos', permanent: true },
+      // /privacidad y /terminos son páginas reales (el pie enlaza esas URLs
+      // y la revisión de TikTok tiene que recibir la política, no un 301).
+      // No se redirige /legal/* hacia ellas: el 301 histórico iba al revés
+      // y un redirect inverso armaría un bucle en navegadores que lo cachearon.
+      // /legal/privacidad y /legal/terminos siguen publicadas con el mismo texto.
+      { source: '/politica-privacidad', destination: '/privacidad', permanent: true },
       // Alias en inglés — mismo criterio que /about y /team más arriba.
       { source: '/privacy', destination: '/legal/privacidad', permanent: true },
       { source: '/privacy-policy', destination: '/legal/privacidad', permanent: true },
