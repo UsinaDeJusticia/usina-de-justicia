@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import { ArrowRight } from 'lucide-react'
-import { generatePageMetadata } from '@/lib/metadata'
+import { generatePageMetadata, homeLanguageAlternates } from '@/lib/metadata'
 import { FeaturedUpdates } from '@/components/home/FeaturedUpdates'
 import { QueHacer } from '@/components/home/QueHacer'
 import { Pillars } from '@/components/home/Pillars'
@@ -13,8 +13,7 @@ export const metadata = generatePageMetadata({
   description:
     'Usina de Justicia es una asociación civil que defiende los derechos de las víctimas de homicidio y femicidio en Argentina. Acompañamos familias, promovemos reformas legislativas y trabajamos por una justicia con perspectiva de víctima.',
   path: '/',
-  // hreflang recíproco con la landing /en (v1 mínima, ver src/app/en/page.tsx).
-  languages: { en: '/en' },
+  languages: homeLanguageAlternates,
   // Home vive en el mismo segmento que el layout raíz que define el title
   // template — el único caso en que ese template NO se aplica (ver el
   // comentario de `appendSiteName` en src/lib/metadata.ts) — así que necesita

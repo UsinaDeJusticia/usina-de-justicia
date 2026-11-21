@@ -2,16 +2,15 @@
 // Sitemap nativo de Next.js (reemplaza next-sitemap, que era una
 // dependencia inerte: sin postbuild ni config propia). Se genera al build
 // (o en cada revalidación ISR, si el hosting la dispara) con tres bloques:
-// rutas estáticas del árbol, las 6 categorías de noticias, los tags, y
+// rutas estáticas del árbol, las categorías de noticias y
 // TODOS los posts publicados de WordPress.
 
 import type { MetadataRoute } from 'next'
+import { conZonaHoraria } from '../lib/metadata.ts'
 import { siteConfig } from '../lib/site-config.ts'
 import {
-  getWPTags,
   getAllPublishedPostSlugs,
   getCategoryIdsBySection,
-  WP_REVALIDATE_ARCHIVO,
 } from '../lib/wordpress.ts'
 import { SITE_SECTIONS } from '../types/wordpress.ts'
 
@@ -97,19 +96,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     })
   )
 
-  // Tags reales (con al menos un post), page 1 de cada uno.
-  let tagRoutes: MetadataRoute.Sitemap = []
-  try {
-    const tags = await getWPTags(WP_REVALIDATE_ARCHIVO)
-    tagRoutes = tags.map((tag) => ({
-      url: `${siteConfig.url}/noticias/tag/${tag.slug}`,
-      changeFrequency: 'weekly',
-      priority: 0.4,
-    }))
-  } catch {
-    // Si falla WP, el sitemap sigue sin los tags (mejor incompleto que roto).
-  }
-
   // Todos los posts publicados (menos los 19 de IVUJUS-301 y los de "En los
   // medios": cobertura de terceros, noindex — ver `externa` en
   // SITE_SECTIONS. Que un post falle acá no debe tumbar el resto del
@@ -131,19 +117,19 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       .filter(
         (post) => !post.categories.some((id) => enLosMediosIds.includes(id))
       )
-      .map((post) => ({
-        url: `${siteConfig.url}/noticias/${post.slug}`,
-        lastModified: new Date(post.modified),
-        changeFrequency: 'monthly',
-        priority: 0.6,
-      }))
+      .map((post) => {
+        const modifiedTime = Date.parse(conZonaHoraria(post.modified) ?? '')
+        return {
+          url: `${siteConfig.url}/noticias/${post.slug}`,
+          lastModified: Number.isFinite(modifiedTime) ? new Date(modifiedTime) : undefined,
+          changeFrequency: 'monthly',
+          priority: 0.6,
+        }
+      })
   } catch {
     // Si falla WP, el sitemap sigue con las rutas estáticas y de categoría
     // (mejor incompleto que roto).
   }
 
-  // SEO oct-2026: las etiquetas van noindex,follow, así que no se publican
-  // en el sitemap (un sitemap sólo debe listar URLs indexables).
-  void tagRoutes
   return [...staticRoutes, ...categoryRoutes, ...postRoutes]
 }

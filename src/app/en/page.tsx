@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import { Button } from '@/components/ui/Button'
+import { homeLanguageAlternates } from '@/lib/metadata'
 import { siteConfig } from '@/lib/site-config'
 
 // v1 permanente — decisión D5 del plan maestro cerrada sin contenido
@@ -16,12 +17,12 @@ import { siteConfig } from '@/lib/site-config'
 // - Datos de contacto: src/lib/site-config.ts (siteConfig.contact).
 
 export const metadata: Metadata = {
-  title: "Usina de Justicia — Victims' Rights Association (Argentina)",
+  title: { absolute: "Usina de Justicia — Victims' Rights Association (Argentina)" },
   description:
     'Usina de Justicia is an Argentine civil association that has accompanied families of homicide and femicide victims since 2014.',
   alternates: {
     canonical: 'https://www.usinadejusticia.org.ar/en',
-    languages: { es: '/' },
+    languages: homeLanguageAlternates,
   },
   robots: { index: true, follow: true },
 }
