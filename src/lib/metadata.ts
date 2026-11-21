@@ -9,6 +9,11 @@ import { SITE_SECTIONS, type SiteSection } from '../types/wordpress.ts'
 import type { Articulo } from '../types/index.ts'
 import { varianteParaTarjetaOG } from './imagenes.ts'
 
+export const homeLanguageAlternates = {
+  'es-AR': '/',
+  en: '/en',
+}
+
 interface PageSEO {
   title: string
   description: string
