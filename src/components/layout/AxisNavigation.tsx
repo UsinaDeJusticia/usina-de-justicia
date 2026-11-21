@@ -91,7 +91,7 @@ export function AxisNavigation({ mode, onNavigate }: AxisNavigationProps) {
               )
             }}
             onBlur={(event) => {
-              if (event.currentTarget.contains(event.relatedTarget)) return
+              if (!desktop || event.currentTarget.contains(event.relatedTarget)) return
               setDisclosure((currentDisclosure) => currentDisclosure?.href === href ? null : currentDisclosure)
             }}
             onKeyDown={(event) => {
