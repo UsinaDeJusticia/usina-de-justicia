@@ -67,6 +67,8 @@ export const PAGINAS_ESTATICAS: DocBuscador[] = [
   { id: 'pagina:/necesito-ayuda', tipo: 'pagina', titulo: 'Necesito ayuda', href: '/necesito-ayuda', categoria: 'Página', extracto: 'Si perdiste a un ser querido por un hecho de inseguridad, Usina de Justicia te acompaña: asesoramiento jurídico, contención psicológica y grupos de pares. Comunicate con nosotros.' },
   // src/app/acompanamiento/page.tsx
   { id: 'pagina:/acompanamiento', tipo: 'pagina', titulo: 'Acompañamiento', href: '/acompanamiento', categoria: 'Página', extracto: 'Usina de Justicia brinda asesoramiento legal, contención emocional y difusión de los casos en forma gratuita a los familiares de víctimas de homicidio y femicidio, desde el primer contacto hasta la ejecución de la pena.' },
+  { id: 'pagina:/incidencia', tipo: 'pagina', titulo: 'Incidencia en políticas públicas', href: '/incidencia', categoria: 'Página', extracto: 'Propuestas legislativas, amicus curiae, informes y políticas públicas sobre derechos de las víctimas del delito.' },
+  { id: 'pagina:/formacion-e-investigacion', tipo: 'pagina', titulo: 'Formación e investigación', href: '/formacion-e-investigacion', categoria: 'Página', extracto: 'Cursos, publicaciones y eventos del Instituto de Victimología de Usina de Justicia (IVUJUS).' },
   // src/app/observatorio/page.tsx
   { id: 'pagina:/observatorio', tipo: 'pagina', titulo: 'Archivo de publicaciones', href: '/observatorio', categoria: 'Publicaciones', extracto: 'Archivo de publicaciones históricas de Usina de Justicia sobre los derechos de las víctimas, la justicia penal y la incidencia pública.' },
   // src/app/noticias/page.tsx

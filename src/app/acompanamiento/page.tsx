@@ -261,6 +261,18 @@ export default async function AcompanamientoPage() {
         </div>
       </section>
 
+      <section aria-labelledby="encuentros-titulo" className="border-t border-grey-200 bg-white py-9">
+        <div className="mx-auto flex max-w-content flex-wrap items-center justify-between gap-4 px-4 md:px-10">
+          <div>
+            <h2 id="encuentros-titulo" className="m-0 font-display text-2xl font-extrabold text-navy-900">Encuentros abiertos</h2>
+            <p className="mb-0 mt-2 max-w-[60ch] text-grey-700">
+              Conocé los encuentros de Usina de Justicia y cómo participar.
+            </p>
+          </div>
+          <Button href="/encuentros" variant="secondary">Ver encuentros abiertos</Button>
+        </div>
+      </section>
+
       {/*
         Historias — la categoría WP "historias" (ver SITE_SECTIONS en
         src/types/wordpress.ts) ya tiene decenas de casos reales publicados

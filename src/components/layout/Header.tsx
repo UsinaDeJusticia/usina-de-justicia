@@ -4,239 +4,164 @@ import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import Form from 'next/form'
+import { usePathname } from 'next/navigation'
 import { Menu, Search, X } from 'lucide-react'
 import { siteConfig } from '@/lib/site-config'
 import { Button } from '@/components/ui/Button'
 import { cn } from '@/lib/utils'
 
-// Portado de design-system/home/Header.jsx (HeaderUJ).
-// Un único renglón: logo + nav + 2 CTAs. El header viejo tenía además una
-// barra superior con email/redes — el diseño nuevo la elimina (esa info
-// vive en el Footer) para mantener el header liviano y sticky.
+const focusRing =
+  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-navy-600 focus-visible:ring-offset-2'
+
 export function Header() {
-  const [scrolled, setScrolled] = useState(false)
-  const [mobileOpen, setMobileOpen] = useState(false)
-  const [searchOpen, setSearchOpen] = useState(false)
-  const searchInputRef = useRef<HTMLInputElement>(null)
-
-  // La barra de búsqueda vive siempre en el DOM (mismo patrón de transición
-  // que el nav mobile), así que autoFocus no sirve: el foco se da al abrir.
-  useEffect(() => {
-    if (searchOpen) searchInputRef.current?.focus()
-  }, [searchOpen])
+  const pathname = usePathname()
+  const [panel, setPanel] = useState<'menu' | 'search' | null>(null)
+  const menuButton = useRef<HTMLButtonElement>(null)
+  const searchButton = useRef<HTMLButtonElement>(null)
+  const mobileSearch = useRef<HTMLInputElement>(null)
+  const desktopSearch = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 8)
-    onScroll()
-    window.addEventListener('scroll', onScroll, { passive: true })
-    return () => window.removeEventListener('scroll', onScroll)
+    const layout = window.matchMedia('(min-width: 64rem)')
+    const closePanel = () => setPanel(null)
+    layout.addEventListener('change', closePanel)
+    return () => layout.removeEventListener('change', closePanel)
   }, [])
 
-  // Cerrar el menú mobile al navegar a un hash/página nueva.
   useEffect(() => {
-    if (!mobileOpen) return
-    const onResize = () => {
-      if (window.innerWidth >= 1024) setMobileOpen(false)
-    }
-    window.addEventListener('resize', onResize)
-    return () => window.removeEventListener('resize', onResize)
-  }, [mobileOpen])
+    if (panel === 'search') desktopSearch.current?.focus()
+  }, [panel])
 
-  const focusRing =
-    'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-navy-600 focus-visible:ring-offset-2 focus-visible:ring-offset-white'
+  function closePanel() {
+    setPanel(null)
+  }
 
-  const abrirBusqueda = () => {
-    setSearchOpen((v) => !v)
-    setMobileOpen(false)
+  function navLinks() {
+    return siteConfig.mainNav.map(({ href, label }) => {
+      const active = pathname === href || pathname.startsWith(href + '/')
+      return (
+        <Link
+          key={href}
+          href={href}
+          onClick={closePanel}
+          aria-current={active ? 'page' : undefined}
+          className={cn(
+            'rounded-xs px-2 py-2 font-bold no-underline hover:text-navy-600 hover:no-underline',
+            active ? 'text-navy-700 underline underline-offset-4' : 'text-ink',
+            focusRing,
+          )}
+        >
+          {label}
+        </Link>
+      )
+    })
+  }
+
+  function searchForm(id: string, inputRef: React.RefObject<HTMLInputElement | null>) {
+    return (
+      <Form action="/buscar" onSubmit={closePanel} className="flex min-w-0 gap-2">
+        <label htmlFor={id} className="sr-only">Buscar en el sitio</label>
+        <input
+          ref={inputRef}
+          id={id}
+          name="q"
+          type="search"
+          required
+          placeholder="Buscar en el sitio"
+          className={cn('min-w-0 flex-1 rounded-xs border border-grey-200 bg-white px-3 py-2 text-ink', focusRing)}
+        />
+        <Button type="submit" size="sm">Buscar</Button>
+      </Form>
+    )
   }
 
   return (
     <header
-      className={cn(
-        'sticky top-0 z-50 bg-white transition-colors duration-base ease-out',
-        scrolled ? 'border-b border-grey-200' : 'border-b border-transparent'
-      )}
+      className="sticky top-0 z-50 border-b border-grey-200 bg-white"
+      onKeyDown={(event) => {
+        if (event.key !== 'Escape' || !panel) return
+        const trigger = panel === 'menu' ? menuButton : searchButton
+        closePanel()
+        trigger.current?.focus()
+      }}
     >
-      <div className="max-w-content mx-auto px-4 md:px-10 flex items-center justify-between h-16 md:h-[72px] gap-5">
-        <Link
-          href="/"
-          className={cn('shrink-0 inline-flex items-center no-underline rounded-xs', focusRing)}
-        >
+      <div className="mx-auto flex h-16 max-w-content items-center justify-between gap-2 px-4 md:h-[72px] md:px-10">
+        <Link href="/" onClick={closePanel} className={cn('inline-flex shrink-0 rounded-xs', focusRing)}>
           <Image
             src="/images/logo_uj.png"
             alt={siteConfig.name}
             width={172}
             height={75}
             priority
-            className="h-9 md:h-[42px] w-auto"
+            className="h-8 w-auto sm:h-10"
           />
         </Link>
 
-        {/* Nav desktop */}
-        <nav aria-label="Principal" className="hidden lg:flex items-center gap-7">
-          {siteConfig.mainNav.map((item) => (
-            <Link
-              key={item.label}
-              href={item.href}
-              {...('external' in item && item.external
-                ? { target: '_blank', rel: 'noopener noreferrer' }
-                : {})}
-              className={cn(
-                'text-body-sm font-bold text-ink no-underline hover:text-navy-600 hover:no-underline transition-colors duration-base ease-out rounded-xs',
-                focusRing
-              )}
-            >
-              {item.label}
-            </Link>
-          ))}
+        <nav aria-label="Principal" className="hidden items-center gap-2 text-body-sm lg:flex xl:gap-6">
+          {navLinks()}
         </nav>
 
-        {/* CTAs desktop */}
-        <div className="hidden lg:flex items-center gap-2.5 shrink-0">
-          {/* Buscador: despliega una barra debajo del header (mismo patrón
-              de panel que el nav mobile — sin modal a propósito, el repo no
-              tiene primitivas de modal). El pedido de Emanuel (ago-2026) fue
-              que la búsqueda sea consultable desde cualquier sección sin
-              tener que descubrir la página /buscar. */}
+        <div className="flex shrink-0 items-center gap-1 sm:gap-2">
           <button
+            ref={searchButton}
             type="button"
-            onClick={abrirBusqueda}
-            aria-expanded={searchOpen}
+            aria-label={panel === 'search' ? 'Cerrar búsqueda' : 'Abrir búsqueda'}
+            aria-expanded={panel === 'search'}
             aria-controls="site-search"
-            aria-label={searchOpen ? 'Cerrar búsqueda' : 'Abrir búsqueda'}
-            className={cn(
-              'p-2 text-ink hover:text-navy-600 transition-colors duration-base ease-out rounded-xs',
-              focusRing
-            )}
+            onClick={() => setPanel(panel === 'search' ? null : 'search')}
+            className={cn('hidden size-11 place-items-center rounded-xs text-ink hover:text-navy-600 lg:grid', focusRing)}
           >
-            {searchOpen ? (
-              <X className="w-5 h-5" aria-hidden="true" />
-            ) : (
-              <Search className="w-5 h-5" aria-hidden="true" />
-            )}
+            {panel === 'search' ? <X size={20} aria-hidden /> : <Search size={20} aria-hidden />}
           </button>
-          <Button href={siteConfig.headerCta.help.href} variant="secondary" size="sm">
-            {siteConfig.headerCta.help.label}
-          </Button>
-          <Button href={siteConfig.headerCta.donate.href} variant="primary" size="sm">
+          <Link
+            href={siteConfig.headerCta.donate.href}
+            className={cn('hidden rounded-xs px-2 py-2 text-body-sm font-bold text-navy-700 no-underline hover:underline lg:inline-flex', focusRing)}
+          >
             {siteConfig.headerCta.donate.label}
-          </Button>
-        </div>
-
-        {/* Mobile: lupa + CTA donar + hamburguesa */}
-        <div className="flex items-center gap-2 lg:hidden">
-          <button
-            type="button"
-            onClick={abrirBusqueda}
-            aria-expanded={searchOpen}
-            aria-controls="site-search"
-            aria-label={searchOpen ? 'Cerrar búsqueda' : 'Abrir búsqueda'}
-            className={cn(
-              'p-2 text-ink hover:text-navy-600 transition-colors duration-base ease-out rounded-xs',
-              focusRing
-            )}
-          >
-            {searchOpen ? (
-              <X className="w-5 h-5" aria-hidden="true" />
-            ) : (
-              <Search className="w-5 h-5" aria-hidden="true" />
-            )}
-          </button>
-          <Button href={siteConfig.headerCta.donate.href} variant="primary" size="sm">
-            {siteConfig.headerCta.donate.label}
-          </Button>
-          <button
-            type="button"
-            onClick={() => {
-              setMobileOpen((v) => !v)
-              setSearchOpen(false)
-            }}
-            aria-expanded={mobileOpen}
-            aria-controls="mobile-nav"
-            aria-label={mobileOpen ? 'Cerrar menú' : 'Abrir menú'}
-            className={cn(
-              'p-2 -mr-2 text-ink hover:text-navy-600 transition-colors duration-base ease-out rounded-xs',
-              focusRing
-            )}
-          >
-            {mobileOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-          </button>
-        </div>
-      </div>
-
-      {/* Barra de búsqueda desplegable (desktop y mobile). El submit navega
-          a /buscar?q=... con next/form; la página hace la búsqueda en vivo. */}
-      <div
-        id="site-search"
-        className={cn(
-          'overflow-hidden border-t border-grey-200 transition-[max-height] duration-base ease-out',
-          searchOpen ? 'max-h-24' : 'max-h-0 border-t-0'
-        )}
-      >
-        <Form
-          action="/buscar"
-          onSubmit={() => setSearchOpen(false)}
-          className="max-w-content mx-auto px-4 md:px-10 py-3 flex gap-2"
-        >
-          <label htmlFor="header-buscar" className="sr-only">
-            Buscar en el sitio
-          </label>
-          <input
-            ref={searchInputRef}
-            id="header-buscar"
-            type="search"
-            name="q"
-            placeholder="Buscar noticias, informes y páginas…"
-            onKeyDown={(e) => {
-              if (e.key === 'Escape') setSearchOpen(false)
-            }}
-            className={cn(
-              'w-full bg-white border border-grey-200 rounded-xs px-4 py-2 text-body text-ink placeholder:text-grey-500 transition-colors duration-base ease-out',
-              focusRing
-            )}
-          />
-          <Button type="submit" variant="primary" size="sm">
-            Buscar
-          </Button>
-        </Form>
-      </div>
-
-      {/* Nav mobile */}
-      <div
-        id="mobile-nav"
-        className={cn(
-          'lg:hidden overflow-hidden border-t border-grey-200 transition-[max-height] duration-base ease-out',
-          mobileOpen ? 'max-h-[70vh]' : 'max-h-0 border-t-0'
-        )}
-      >
-        <nav aria-label="Principal" className="max-w-content mx-auto px-4 py-4 flex flex-col gap-1">
-          {siteConfig.mainNav.map((item) => (
-            <Link
-              key={item.label}
-              href={item.href}
-              onClick={() => setMobileOpen(false)}
-              {...('external' in item && item.external
-                ? { target: '_blank', rel: 'noopener noreferrer' }
-                : {})}
-              className={cn(
-                'px-2 py-2.5 text-body font-bold text-ink no-underline hover:text-navy-600 hover:no-underline hover:bg-navy-50 rounded-xs transition-colors duration-base ease-out',
-                focusRing
-              )}
-            >
-              {item.label}
-            </Link>
-          ))}
+          </Link>
           <Link
             href={siteConfig.headerCta.help.href}
-            onClick={() => setMobileOpen(false)}
-            className={cn(
-              'mt-3 px-2 py-2.5 text-body-sm font-bold text-navy-600 no-underline hover:no-underline rounded-xs',
-              focusRing
-            )}
+            onClick={closePanel}
+            className={cn('inline-flex min-h-11 items-center whitespace-nowrap rounded-xs bg-navy-700 px-3 text-sm font-bold text-white no-underline hover:bg-navy-900 hover:text-white hover:no-underline', focusRing)}
           >
             {siteConfig.headerCta.help.label}
           </Link>
-        </nav>
+          <button
+            ref={menuButton}
+            type="button"
+            aria-label={panel === 'menu' ? 'Cerrar menú' : 'Abrir menú'}
+            aria-expanded={panel === 'menu'}
+            aria-controls="mobile-nav"
+            onClick={() => setPanel(panel === 'menu' ? null : 'menu')}
+            className={cn('grid size-11 place-items-center rounded-xs text-ink hover:text-navy-600 lg:hidden', focusRing)}
+          >
+            {panel === 'menu' ? <X size={24} aria-hidden /> : <Menu size={24} aria-hidden />}
+          </button>
+        </div>
+      </div>
+
+      <div id="site-search" hidden={panel !== 'search'}>
+        <div className="mx-auto max-w-content border-t border-grey-200 px-4 py-3 md:px-10">
+          {searchForm('header-buscar', desktopSearch)}
+        </div>
+      </div>
+
+      <div id="mobile-nav" hidden={panel !== 'menu'}>
+        <div className="max-h-[70dvh] overflow-y-auto border-t border-grey-200 px-4 pb-5 pt-3 md:px-10 lg:hidden">
+          <nav aria-label="Principal" className="flex flex-col">
+            {navLinks()}
+            <Link
+              href={siteConfig.headerCta.donate.href}
+              onClick={closePanel}
+              className={cn('rounded-xs px-2 py-2 font-bold text-navy-700 no-underline hover:underline', focusRing)}
+            >
+              {siteConfig.headerCta.donate.label}
+            </Link>
+          </nav>
+          <div className="mt-3 border-t border-grey-200 pt-4">
+            {searchForm('menu-buscar', mobileSearch)}
+          </div>
+        </div>
       </div>
     </header>
   )

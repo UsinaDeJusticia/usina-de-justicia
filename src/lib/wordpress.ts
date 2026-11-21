@@ -640,12 +640,16 @@ export async function getArticulosByTagSlug(
   tagSlug: string,
   params: Omit<WPQueryParams, 'tags'> = {}
 ): Promise<PaginatedResponse<Articulo>> {
-  const tags = await getWPTags()
-  const tag = tags.find((t) => t.slug === tagSlug)
+  const { data } = await wpFetch<WPTagType[]>('/tags', {
+    slug: tagSlug,
+    per_page: 1,
+    hide_empty: true,
+  })
+  const tag = data[0]
   if (!tag) {
     return { data: [], total: 0, totalPages: 0, currentPage: 1 }
   }
-  return getArticulos({ ...params, tags: [Number(tag.id)] })
+  return getArticulos({ ...params, tags: [tag.id] })
 }
 
 // ============================================

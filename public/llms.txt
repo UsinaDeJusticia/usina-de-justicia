@@ -62,6 +62,8 @@ también en Markdown, con el índice de secciones para poder recuperarse.
 - [Inicio](https://www.usinadejusticia.org.ar/): qué hace la organización y cuáles son sus últimas novedades editoriales.
 - [Necesito ayuda](https://www.usinadejusticia.org.ar/necesito-ayuda): guía de acción para una familia que acaba de perder a un ser querido — primeras 48 horas, derechos, cómo contactar. Incluye preguntas frecuentes.
 - [Acompañamiento](https://www.usinadejusticia.org.ar/acompanamiento): el programa institucional — cómo trabaja el equipo, guías de derechos por etapa del proceso, marco legal (Ley 27.372) e historias reales.
+- [Incidencia](https://www.usinadejusticia.org.ar/incidencia): propuestas legislativas, intervenciones judiciales y recursos sobre los derechos de las víctimas.
+- [Formación e investigación](https://www.usinadejusticia.org.ar/formacion-e-investigacion): cursos, publicaciones y eventos del Instituto de Victimología de Usina de Justicia (IVUJUS).
 - [Nosotros](https://www.usinadejusticia.org.ar/nosotros): historia, misión, valores, distinciones y agradecimientos.
 - [Equipo](https://www.usinadejusticia.org.ar/nosotros/equipo): integrantes de la Comisión Directiva con nombre y cargo.
 - [Transparencia](https://www.usinadejusticia.org.ar/nosotros/transparencia): memorias y balances anuales en PDF.
