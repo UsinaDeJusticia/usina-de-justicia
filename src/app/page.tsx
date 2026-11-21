@@ -1,6 +1,7 @@
+import Link from 'next/link'
+import { ArrowRight } from 'lucide-react'
 import { generatePageMetadata } from '@/lib/metadata'
-import { getArticulos, getCategoryIdsBySection } from '@/lib/wordpress'
-import { HeroRotator } from '@/components/home/HeroRotator'
+import { FeaturedUpdates } from '@/components/home/FeaturedUpdates'
 import { QueHacer } from '@/components/home/QueHacer'
 import { Pillars } from '@/components/home/Pillars'
 import { Testimonios } from '@/components/home/Testimonios'
@@ -21,33 +22,38 @@ export const metadata = generatePageMetadata({
   appendSiteName: true,
 })
 
-export default async function Home() {
-  // El panel editorial del hero muestra el artículo más reciente de
-  // WordPress. Si la API falla, HeroEditorial cae a un contenido
-  // institucional fijo (ver componente) — la home nunca se rompe por esto.
-  //
-  // "En los medios" queda afuera a propósito: es cobertura de terceros, no
-  // contenido nuestro, y no debería poder convertirse en la pieza
-  // destacada de la portada solo por ser lo último publicado.
-  let latestArticle: Awaited<ReturnType<typeof getArticulos>>['data'][number] | null = null
-  try {
-    let excludeIds: number[] = []
-    try {
-      excludeIds = await getCategoryIdsBySection('en-los-medios')
-    } catch {
-      // Si falla, seguimos sin excluir — peor caso: una mención externa
-      // protagoniza el hero una vez, hasta la próxima revalidación.
-    }
-    const response = await getArticulos({ perPage: 1, categoriesExclude: excludeIds })
-    latestArticle = response.data[0] ?? null
-  } catch {
-    // Si falla la API, la home sigue funcionando sin la nota destacada.
-  }
-
+export default function Home() {
   return (
     <>
-      <HeroRotator latestArticle={latestArticle} />
+      <section aria-labelledby="portada-titulo" className="bg-navy-900 text-white">
+        <div className="mx-auto grid max-w-content gap-7 px-4 py-12 md:grid-cols-[minmax(0,3fr)_minmax(0,2fr)] md:items-center md:gap-12 md:px-10 md:py-20">
+          <div>
+            <h1 id="portada-titulo" className="m-0 max-w-[15ch] text-balance font-display text-[clamp(2.6rem,6.2vw,5.5rem)] font-extrabold leading-[1.02] tracking-[-0.035em] text-white">
+              Una justicia justa para las víctimas.
+            </h1>
+            <p className="mb-0 mt-5 max-w-[52ch] text-body-lg leading-relaxed text-navy-100 md:mt-7">
+              Usina de Justicia es una asociación civil argentina. Acompañamos a familias de víctimas de homicidio y femicidio, defendemos sus derechos y promovemos la formación en victimología.
+            </p>
+          </div>
+
+          <div className="rounded-xl bg-ivory p-6 text-navy-900 md:p-9">
+            <h2 className="m-0 text-balance font-display text-2xl font-extrabold tracking-tight md:text-3xl">
+              Si perdiste a un ser querido
+            </h2>
+            <p className="mb-5 mt-3 max-w-[38ch] text-body leading-relaxed text-grey-700">
+              Te ofrecemos contención emocional y asesoramiento jurídico gratuitos.
+            </p>
+            <Link
+              href="/necesito-ayuda"
+              className="inline-flex min-h-12 items-center gap-3 rounded-xs bg-navy-700 px-4 py-2 font-bold text-white no-underline hover:bg-navy-900 hover:text-white hover:no-underline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-navy-600"
+            >
+              Necesito ayuda <ArrowRight size={18} aria-hidden />
+            </Link>
+          </div>
+        </div>
+      </section>
       <Pillars />
+      <FeaturedUpdates />
       <QueHacer />
       <Testimonios />
       <Trayectoria />

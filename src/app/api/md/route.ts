@@ -58,8 +58,7 @@ function markdownResponse(body: string, status: number) {
 
 /** Índice de secciones reales del sitio, para que un agente sepa a dónde ir. */
 function siteIndex(): string {
-  const lines = siteConfig.mainNav
-    .filter((item) => !item.external)
+  const lines = [...siteConfig.mainNav, { label: 'Noticias', href: '/noticias' }]
     .map((item) => `- [${item.label}](${siteConfig.url}${item.href})`)
 
   return [

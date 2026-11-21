@@ -7,7 +7,7 @@ import { GuideCard } from './GuideCard'
 // de hardcodear el contenido de "la única guía que existe" en esta sección.
 export function GuiasSeccion() {
   return (
-    <section className="py-16 md:py-20 bg-white border-t border-grey-200">
+    <section id="guias" className="scroll-mt-20 py-16 md:py-20 bg-white border-t border-grey-200">
       <div className="max-w-content mx-auto px-4 md:px-10">
         <div className="max-w-[720px] mb-11">
           <p className="text-[12px] font-bold tracking-[0.14em] uppercase text-navy-600">

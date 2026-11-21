@@ -69,6 +69,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${siteConfig.url}/nosotros/distinciones`, changeFrequency: 'monthly', priority: 0.5 },
     { url: `${siteConfig.url}/nosotros/transparencia`, changeFrequency: 'monthly', priority: 0.5 },
     { url: `${siteConfig.url}/acompanamiento`, changeFrequency: 'monthly', priority: 0.8 },
+    { url: `${siteConfig.url}/incidencia`, changeFrequency: 'monthly', priority: 0.8 },
+    { url: `${siteConfig.url}/formacion-e-investigacion`, changeFrequency: 'monthly', priority: 0.8 },
     { url: `${siteConfig.url}/observatorio`, changeFrequency: 'weekly', priority: 0.7 },
     { url: `${siteConfig.url}/recursos`, changeFrequency: 'weekly', priority: 0.6 },
     { url: `${siteConfig.url}/donar`, changeFrequency: 'monthly', priority: 0.7 },

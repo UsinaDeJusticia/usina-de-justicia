@@ -26,7 +26,8 @@ export const metadata: Metadata = {
 
 export default function NotFound() {
   const destinos = [
-    ...siteConfig.mainNav.filter((item) => !item.external),
+    ...siteConfig.mainNav,
+    { label: 'Noticias', href: '/noticias' },
     siteConfig.headerCta.help,
   ]
 

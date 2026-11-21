@@ -35,65 +35,58 @@ export const siteConfig = {
     ivujus: 'https://ivujus.org.ar/',
   },
 
-  // Las publicaciones históricas del Observatorio quedan accesibles desde el pie,
-  // sin presentarlas como una sección institucional activa que se confunda con IVUJUS.
   mainNav: [
-    { label: 'Nosotros', href: '/nosotros' },
-    { label: 'Acompañamiento', href: '/acompanamiento' },
-    { label: 'Incidencia', href: '/noticias/categoria/incidencia' },
-    { label: 'Noticias', href: '/noticias' },
-    { label: 'Recursos', href: '/recursos' },
-    { label: 'IVUJUS', href: 'https://ivujus.org.ar/', external: true },
-    { label: 'Contacto', href: '/contacto' },
+    {
+      label: 'Acompañamiento',
+      href: '/acompanamiento',
+      children: [
+        { label: 'Guías para familias', href: '/acompanamiento#guias' },
+        { label: 'Encuentros abiertos', href: '/encuentros' },
+        { label: 'Historias y testimonios', href: '/noticias/categoria/historias' },
+      ],
+    },
+    {
+      label: 'Incidencia',
+      href: '/incidencia',
+      children: [
+        { label: 'Propuestas legislativas e intervenciones judiciales', href: '/noticias/categoria/incidencia' },
+        { label: 'Informes y recursos', href: '/recursos' },
+        { label: 'Archivo de publicaciones', href: '/observatorio' },
+      ],
+    },
+    {
+      label: 'Formación e investigación',
+      href: '/formacion-e-investigacion',
+      children: [
+        { label: 'Cursos y diplomatura', href: 'https://ivujus.org.ar/es/formacion' },
+        { label: 'Publicaciones del IVUJUS', href: 'https://ivujus.org.ar/es/publicaciones' },
+        { label: 'Eventos académicos', href: 'https://ivujus.org.ar/es/simposios' },
+      ],
+    },
   ],
 
-  // CTAs del header (design-system/home/Header.jsx: "Necesito ayuda" + "Donar").
   headerCta: {
     help: { label: 'Necesito ayuda', href: '/necesito-ayuda' },
     donate: { label: 'Donar', href: '/donar' },
   },
 
-  // Columnas del footer (design-system/home/Footer.jsx). Igual que en mainNav,
-  // los sub-ítems sin página propia apuntan al equivalente real más cercano.
   footerNav: {
     institucion: [
       { label: 'Nosotros', href: '/nosotros' },
       { label: 'Equipo', href: '/nosotros/equipo' },
       { label: 'Transparencia institucional', href: '/nosotros/transparencia' },
     ],
-    // "Capacitación" se retiró: en el sitio viejo apuntaba a
-    // /programas/capacitacion-y-formacion, contenido placeholder sin fuente
-    // real (lo propio de Usina en esa categoría es cola larga editorial;
-    // el resto es IVUJUS → 301, ver MAPA-MIGRACION.md §3). IVUJUS sigue
-    // linkeado porque tiene sitio propio real (ivujus.org.ar).
-    acompanamiento: [
-      { label: 'Acompañamiento', href: '/acompanamiento' },
-      { label: 'Incidencia', href: '/noticias/categoria/incidencia' },
-      // Página permanente de inscripción a los encuentros mensuales por
-      // Zoom (docs/ENCUENTROS.md). Va en el pie y no en el menú superior,
-      // que ya tiene siete ítems.
-      { label: 'Encuentros abiertos', href: '/encuentros' },
-      { label: 'IVUJUS', href: 'https://ivujus.org.ar/', external: true },
-    ],
     publicaciones: [
-      { label: 'Archivo de publicaciones', href: '/observatorio' },
-      { label: 'Informes', href: '/recursos' },
-      { label: 'Amicus curiae', href: '/noticias/categoria/incidencia' },
-      // "Noticias" se agregó en ago-2026, al revisar la sugerencia de la
-      // Comisión de replicar el menú superior en el pie. El pie ya tenía
-      // navegación por columnas —así que no hacía falta construirla— pero
-      // faltaba justo la sección que más crece: /noticias, con las 842 notas
-      // publicadas, era la única del menú principal que no estaba enlazada
-      // desde acá.
       { label: 'Noticias', href: '/noticias' },
+      { label: 'Informes y guías', href: '/recursos' },
+      { label: 'Archivo de publicaciones', href: '/observatorio' },
       { label: 'Prensa', href: '/noticias/categoria/prensa' },
+      { label: 'En los medios', href: '/noticias/categoria/en-los-medios' },
     ],
     contacto: [
+      { label: 'Contacto', href: '/contacto' },
       { label: 'Necesito ayuda', href: '/necesito-ayuda' },
-      { label: 'Escribinos', href: '/contacto' },
-      { label: 'Sumate como voluntario', href: '/contacto' }, // TODO Fase 3: formulario de voluntariado
-      { label: 'Convenios', href: '/contacto' }, // TODO Fase 3: página de convenios institucionales
-      { label: 'Prensa', href: 'mailto:info@usinadejusticia.org.ar' },
+      { label: 'Donar', href: '/donar' },
     ],
     legal: [
       { label: 'Política de Privacidad', href: '/legal/privacidad' },
