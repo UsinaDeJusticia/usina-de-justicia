@@ -65,7 +65,7 @@ export function Pagination({
       className="flex flex-col items-center gap-4 mt-12"
       aria-label="Paginación"
     >
-      <div className="flex items-center gap-2">
+      <div className="flex max-w-full flex-wrap items-center justify-center gap-2">
         {/* Retroceder 10 */}
         {showSkip &&
           (canSkipBack ? (

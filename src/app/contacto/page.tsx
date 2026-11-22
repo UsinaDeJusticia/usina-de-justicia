@@ -6,6 +6,25 @@ import { Button } from '@/components/ui/Button'
 import { Mail, Phone, Send, CheckCircle, AlertCircle } from 'lucide-react'
 import { siteConfig } from '@/lib/site-config'
 
+const requiredMessages = {
+  nombre: 'Ingresá tu nombre completo.',
+  email: 'Ingresá tu correo electrónico.',
+  asunto: 'Seleccioná un asunto.',
+  mensaje: 'Escribí tu mensaje.',
+}
+
+type ContactField = keyof typeof requiredMessages
+type FieldErrors = Partial<Record<ContactField, string>>
+const requiredFields = Object.keys(requiredMessages) as ContactField[]
+
+function validateField(field: ContactField, value: string) {
+  const trimmed = value.trim()
+  if (!trimmed) return requiredMessages[field]
+  if (field === 'email' && !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(trimmed)) {
+    return 'Ingresá un correo válido, como nombre@ejemplo.com.'
+  }
+}
+
 export default function ContactoPage() {
   const [formData, setFormData] = useState({
     nombre: '',
@@ -21,17 +40,51 @@ export default function ContactoPage() {
   const [enviado, setEnviado] = useState(false)
   const [enviando, setEnviando] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [fieldErrors, setFieldErrors] = useState<FieldErrors>({})
+
+  function fieldAttributes(field: ContactField) {
+    return fieldErrors[field] ? { 'aria-invalid': true, 'aria-describedby': field + '-error' } : {}
+  }
+
+  function renderFieldError(field: ContactField) {
+    return fieldErrors[field] && (
+      <p id={field + '-error'} className="mt-1.5 text-body-sm font-bold text-danger">
+        {fieldErrors[field]}
+      </p>
+    )
+  }
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
   ) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value })
+    const { name, value } = e.target
+    setFormData(current => ({ ...current, [name]: value }))
+    const field = name as ContactField
+    if (fieldErrors[field]) {
+      setFieldErrors(current => ({ ...current, [field]: validateField(field, value) }))
+    }
   }
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    setEnviando(true)
+    if (enviando) return
     setError(null)
+
+    const errors: FieldErrors = {}
+    for (const field of requiredFields) {
+      const message = validateField(field, formData[field])
+      if (message) errors[field] = message
+    }
+    setFieldErrors(errors)
+
+    const firstInvalid = requiredFields.find(field => errors[field])
+    if (firstInvalid) {
+      const input = e.currentTarget.elements.namedItem(firstInvalid)
+      if (input instanceof HTMLElement) requestAnimationFrame(() => input.focus())
+      return
+    }
+
+    setEnviando(true)
 
     // Envío real vía /api/contact (Resend) — ver src/app/api/contact/route.ts.
     // Si el servicio no está configurado todavía (falta RESEND_API_KEY),
@@ -41,7 +94,7 @@ export default function ContactoPage() {
       const response = await fetch('/api/contact', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({ ...formData, email: formData.email.trim() }),
       })
       const data = (await response.json()) as { sent: boolean; error?: string }
 
@@ -123,7 +176,7 @@ export default function ContactoPage() {
                 <p className="text-body font-bold text-ink mb-4">
                   Seguinos en redes
                 </p>
-                <div className="flex gap-3">
+                <div className="flex flex-wrap gap-3">
                   {Object.entries(siteConfig.social).map(([network, url]) => (
                     <a
                       key={network}
@@ -165,7 +218,7 @@ export default function ContactoPage() {
                 <div className="bg-ivory border border-grey-200 rounded-xs p-6 lg:p-8">
                   <h2 className="font-display font-bold text-h3 text-ink mb-6">Envianos tu consulta</h2>
 
-                  <div className="space-y-5">
+                  <form method="post" noValidate onSubmit={handleSubmit} className="space-y-5">
                     <div className="grid sm:grid-cols-2 gap-5">
                       <div>
                         <label htmlFor="nombre" className="block text-body-sm font-bold text-grey-700 mb-1.5">
@@ -175,12 +228,14 @@ export default function ContactoPage() {
                           type="text"
                           id="nombre"
                           name="nombre"
+                          {...fieldAttributes('nombre')}
                           required
                           value={formData.nombre}
                           onChange={handleChange}
                           className="w-full px-4 py-3 rounded-xs border border-grey-300 bg-white text-body text-ink focus:outline-hidden focus:ring-2 focus:ring-navy-300 focus:border-navy-600 transition-colors duration-base ease-out"
                           placeholder="Tu nombre"
                         />
+                        {renderFieldError('nombre')}
                       </div>
                       <div>
                         <label htmlFor="email" className="block text-body-sm font-bold text-grey-700 mb-1.5">
@@ -190,12 +245,14 @@ export default function ContactoPage() {
                           type="email"
                           id="email"
                           name="email"
+                          {...fieldAttributes('email')}
                           required
                           value={formData.email}
                           onChange={handleChange}
                           className="w-full px-4 py-3 rounded-xs border border-grey-300 bg-white text-body text-ink focus:outline-hidden focus:ring-2 focus:ring-navy-300 focus:border-navy-600 transition-colors duration-base ease-out"
                           placeholder="tu@email.com"
                         />
+                        {renderFieldError('email')}
                       </div>
                     </div>
 
@@ -221,6 +278,7 @@ export default function ContactoPage() {
                         <select
                           id="asunto"
                           name="asunto"
+                          {...fieldAttributes('asunto')}
                           required
                           value={formData.asunto}
                           onChange={handleChange}
@@ -233,6 +291,7 @@ export default function ContactoPage() {
                           <option value="donaciones">Donaciones</option>
                           <option value="otro">Otro</option>
                         </select>
+                        {renderFieldError('asunto')}
                       </div>
                     </div>
 
@@ -243,6 +302,7 @@ export default function ContactoPage() {
                       <textarea
                         id="mensaje"
                         name="mensaje"
+                        {...fieldAttributes('mensaje')}
                         required
                         rows={5}
                         value={formData.mensaje}
@@ -250,6 +310,7 @@ export default function ContactoPage() {
                         className="w-full px-4 py-3 rounded-xs border border-grey-300 bg-white text-body text-ink focus:outline-hidden focus:ring-2 focus:ring-navy-300 focus:border-navy-600 transition-colors duration-base ease-out resize-vertical"
                         placeholder="Contanos cómo podemos ayudarte..."
                       />
+                      {renderFieldError('mensaje')}
                     </div>
 
                     {/*
@@ -275,23 +336,38 @@ export default function ContactoPage() {
                     />
 
                     {error && (
-                      <div className="flex items-start gap-3 p-4 rounded-xs bg-warning-bg border border-warning text-body-sm text-ink">
+                      <div role="alert" className="flex items-start gap-3 p-4 rounded-xs bg-warning-bg border border-warning text-body-sm text-ink">
                         <AlertCircle className="w-5 h-5 text-warning shrink-0 mt-0.5" aria-hidden="true" />
                         <p className="m-0">{error}</p>
                       </div>
                     )}
 
-                    <Button type="button" variant="primary" size="lg" disabled={enviando} onClick={handleSubmit}>
-                      {enviando ? (
-                        'Enviando...'
-                      ) : (
-                        <>
-                          <Send className="w-4 h-4" aria-hidden="true" />
+                    <Button
+                      type="submit"
+                      variant="primary"
+                      size="lg"
+                      disabled={enviando}
+                      className="disabled:cursor-wait disabled:opacity-100"
+                      aria-label={enviando ? 'Enviando…' : 'Enviar mensaje'}
+                    >
+                      <span aria-hidden="true" className="grid overflow-hidden">
+                        <span
+                          className={`col-start-1 row-start-1 flex items-center justify-center gap-2 motion-safe:transition-[translate,opacity] motion-safe:duration-base ease-out ${enviando ? 'motion-safe:-translate-y-full opacity-0' : 'opacity-100'}`}
+                        >
+                          <Send className="size-4 shrink-0" />
                           Enviar mensaje
-                        </>
-                      )}
+                        </span>
+                        <span
+                          className={`col-start-1 row-start-1 grid place-items-center motion-safe:transition-[translate,opacity] motion-safe:duration-base ease-out ${enviando ? 'opacity-100' : 'motion-safe:translate-y-full opacity-0'}`}
+                        >
+                          Enviando…
+                        </span>
+                      </span>
                     </Button>
-                  </div>
+                    <span role="status" className="sr-only">
+                      {enviando ? 'Enviando mensaje…' : ''}
+                    </span>
+                  </form>
                 </div>
               )}
             </div>
