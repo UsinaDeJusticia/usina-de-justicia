@@ -1,6 +1,6 @@
 import Image from 'next/image'
 import Link from 'next/link'
-import { ArrowRight } from 'lucide-react'
+import { EditorialArrow } from './EditorialArrow'
 import { urlParaAncho } from '@/lib/imagenes'
 import { getArticulos, getArticulosByTagSlug, getCategoryIdsBySection } from '@/lib/wordpress'
 import type { Articulo } from '@/types'
@@ -46,8 +46,8 @@ export async function FeaturedUpdates() {
           <h2 id="destacados-titulo" className="m-0 font-display text-3xl font-extrabold tracking-tight text-navy-900 md:text-4xl">
             Novedades
           </h2>
-          <Link href="/noticias" className="mt-3 inline-flex min-h-11 items-center gap-2 font-bold text-navy-700 underline-offset-4">
-            Ver todas las noticias <ArrowRight size={16} aria-hidden />
+          <Link href="/noticias" className="group mt-3 inline-flex min-h-11 items-center gap-2 font-bold text-navy-700 underline-offset-4">
+            Ver todas las noticias <span className="[&>svg]:size-4"><EditorialArrow /></span>
           </Link>
         </div>
         <div className="min-w-0">

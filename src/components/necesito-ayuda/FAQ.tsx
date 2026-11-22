@@ -57,16 +57,16 @@ export function FAQ() {
 
         <div className="flex flex-col divide-y divide-grey-200 border-t border-b border-grey-200">
           {faqItems.map(({ question, answer }) => (
-            <details key={question} className="group py-5">
-              <summary className="flex items-center justify-between gap-4 cursor-pointer list-none font-display font-bold text-ink text-lg marker:content-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-navy-600 focus-visible:ring-offset-2 rounded-xs">
+            <details key={question} className="group py-2.5">
+              <summary className="flex min-h-11 items-center justify-between gap-4 py-2.5 cursor-pointer list-none font-display font-bold text-ink text-lg marker:content-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-navy-600 focus-visible:ring-offset-2 rounded-xs group-open:text-navy-700">
                 <span>{question}</span>
                 <ChevronDown
-                  className="w-5 h-5 shrink-0 text-navy-600 transition-transform duration-base ease-out group-open:rotate-180"
+                  className="w-5 h-5 shrink-0 text-navy-600 group-open:rotate-180 motion-safe:transition-transform motion-safe:duration-base ease-out"
                   strokeWidth={1.75}
                   aria-hidden="true"
                 />
               </summary>
-              <p className="text-body text-grey-700 leading-relaxed mt-3 mb-0 max-w-[640px]">
+              <p className="text-body text-grey-700 leading-relaxed mt-1 mb-2.5 max-w-[640px] group-open:motion-safe:animate-faq-answer">
                 {answer}
               </p>
             </details>

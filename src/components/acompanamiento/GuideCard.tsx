@@ -15,6 +15,7 @@ import {
 } from 'lucide-react'
 import type { Guia } from '@/types'
 import { Badge } from '@/components/ui/Badge'
+import { GuideIndex } from './GuideIndex'
 
 // GuideCard — pensado para una serie que va a crecer (hoy renderiza una sola
 // guía). Todo el copy sale de `guias-data.ts` (a su vez trazado a
@@ -108,28 +109,13 @@ export function GuideCard({ guia }: { guia: Guia }) {
             )}
           </div>
         </div>
-
-        {/* Índice rápido — versión compacta para mobile/tablet (el lg:hidden
-            complementa al <aside> sticky que aparece más abajo en desktop) */}
-        <nav aria-label={`Índice de la guía: ${guia.titulo}`} className="lg:hidden mt-7 -mx-1 overflow-x-auto">
-          <ul className="flex gap-2 px-1 list-none m-0 p-0 min-w-max">
-            {indice.map((item) => (
-              <li key={item.id}>
-                <a
-                  href={`#${item.id}`}
-                  className="inline-flex whitespace-nowrap rounded-pill border border-grey-200 bg-ivory px-3.5 py-1.5 text-body-sm font-bold text-navy-600 no-underline hover:bg-navy-50 hover:no-underline"
-                >
-                  {item.label}
-                </a>
-              </li>
-            ))}
-          </ul>
-        </nav>
       </div>
 
       <div className="lg:grid lg:grid-cols-[1fr_260px] lg:gap-0">
+        <GuideIndex title={guia.titulo} items={indice} />
+
         {/* Contenido principal */}
-        <div className="px-6 md:px-10 py-10 md:py-12 lg:border-r lg:border-grey-200">
+        <div className="px-6 md:px-10 py-10 md:py-12 lg:col-start-1 lg:row-start-1 lg:border-r lg:border-grey-200">
           {guia.secciones.map((seccion) => (
             <section key={seccion.id} id={anchorId(seccion.id)} className="mb-12 scroll-mt-24 last:mb-0">
               <h4 className="font-display font-bold text-h3 text-ink mb-4">{seccion.titulo}</h4>
@@ -225,29 +211,6 @@ export function GuideCard({ guia }: { guia: Guia }) {
             </div>
           </section>
         </div>
-
-        {/* Índice rápido — versión sticky para desktop */}
-        <aside className="hidden lg:block px-8 py-12">
-          <div className="sticky top-24">
-            <p className="text-[11px] font-bold tracking-[0.14em] uppercase text-grey-500 mb-3.5">
-              En esta guía
-            </p>
-            <nav aria-label={`Índice de la guía: ${guia.titulo}`}>
-              <ul className="flex flex-col gap-1 list-none p-0 m-0 border-l border-grey-200">
-                {indice.map((item) => (
-                  <li key={item.id}>
-                    <a
-                      href={`#${item.id}`}
-                      className="block pl-4 py-1.5 text-body-sm text-grey-700 border-l-2 border-transparent -ml-px hover:text-navy-600 hover:border-navy-600 no-underline hover:no-underline transition-colors duration-base ease-out"
-                    >
-                      {item.label}
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </nav>
-          </div>
-        </aside>
       </div>
     </article>
   )

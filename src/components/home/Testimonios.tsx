@@ -1,5 +1,6 @@
 import Image from 'next/image'
 import Link from 'next/link'
+import { EditorialArrow } from './EditorialArrow'
 
 // Portado de design-system/home/Testimonios.jsx. Copy aprobado (nombres,
 // fechas y jurisdicciones no se inventan ni se editan).
@@ -134,9 +135,10 @@ export function Testimonios() {
         <div className="text-center mt-9">
           <Link
             href="/noticias/categoria/historias"
-            className="text-navy-600 font-bold text-body-sm underline underline-offset-4"
+            className="group inline-flex items-center gap-1.5 text-navy-600 font-bold text-body-sm rounded-xs focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-navy-600"
           >
-            Ver todos los testimonios →
+            <span className="underline underline-offset-4">Ver todos los testimonios</span>
+            <EditorialArrow />
           </Link>
         </div>
       </div>

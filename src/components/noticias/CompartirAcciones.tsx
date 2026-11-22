@@ -25,6 +25,12 @@ import { botonCompartirClasses } from './compartir-estilos'
 
 type Estado = 'inicial' | 'copiado' | 'error'
 
+const mensajes: Record<Estado, string> = {
+  inicial: '',
+  copiado: 'Enlace copiado',
+  error: 'No se pudo copiar',
+}
+
 interface CompartirAccionesProps {
   /** URL canónica absoluta de la nota. */
   url: string
@@ -104,25 +110,23 @@ export function CompartirAcciones({ url, titulo }: CompartirAccionesProps) {
         title="Copiar enlace"
         className={botonCompartirClasses}
       >
-        {estado === 'copiado' ? (
-          <Check className="w-[18px] h-[18px]" strokeWidth={2.5} aria-hidden="true" />
-        ) : (
-          <Copy className="w-[18px] h-[18px]" strokeWidth={2} aria-hidden="true" />
-        )}
+        <span aria-hidden="true" className="grid">
+          <Copy
+            className={`col-start-1 row-start-1 size-[18px] motion-safe:transition-opacity motion-safe:duration-fast ease-out ${estado === 'copiado' ? 'opacity-0' : 'opacity-100'}`}
+            strokeWidth={2}
+          />
+          <Check
+            className={`col-start-1 row-start-1 size-[18px] motion-safe:transition-opacity motion-safe:duration-fast ease-out ${estado === 'copiado' ? 'opacity-100' : 'opacity-0'}`}
+            strokeWidth={2.5}
+          />
+        </span>
       </button>
 
-      {/*
-        La confirmación se anuncia y se ve. `aria-live="polite"` la lee un
-        lector de pantalla sin interrumpir; el texto visible cubre a quien
-        solo ve el ícono cambiar por un instante. Con `min-h` fijo para que
-        aparecer y desaparecer no mueva la fila.
-      */}
-      <span
-        aria-live="polite"
-        className="text-body-sm text-grey-600 min-h-5 flex items-center"
-      >
-        {estado === 'copiado' && 'Enlace copiado'}
-        {estado === 'error' && 'No se pudo copiar'}
+      <span className="grid text-body-sm text-grey-600">
+        {/* Los dos mensajes reservan el mismo espacio antes y después de copiar. */}
+        <span aria-hidden="true" className="invisible col-start-1 row-start-1">{mensajes.copiado}</span>
+        <span aria-hidden="true" className="invisible col-start-1 row-start-1">{mensajes.error}</span>
+        <span role="status" className="col-start-1 row-start-1">{mensajes[estado]}</span>
       </span>
     </>
   )
