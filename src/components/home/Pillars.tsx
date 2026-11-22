@@ -1,5 +1,6 @@
 import Link from 'next/link'
-import { ArrowRight, BookOpen, Gavel, HeartHandshake } from 'lucide-react'
+import { BookOpen, Gavel, HeartHandshake } from 'lucide-react'
+import { EditorialArrow } from './EditorialArrow'
 import { siteConfig } from '@/lib/site-config'
 
 const details = [
@@ -35,7 +36,7 @@ export function Pillars() {
                 >
                   <Icon size={21} className="mt-0.5" aria-hidden />
                   <h3 className="m-0 font-display text-lg font-extrabold leading-snug group-hover:underline group-hover:underline-offset-4">{label}</h3>
-                  <ArrowRight size={18} className="mt-0.5" aria-hidden />
+                  <span className="mt-0.5 [&>svg]:size-[18px]"><EditorialArrow /></span>
                   <p className="col-start-2 col-end-4 m-0 max-w-[36ch] text-body-sm leading-relaxed text-grey-700">
                     {description}
                   </p>
