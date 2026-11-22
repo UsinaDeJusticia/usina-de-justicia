@@ -12,11 +12,12 @@
 // - AbortController por request: al tipear rápido, la respuesta de una query
 //   vieja no debe pisar a la nueva.
 
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { Search } from 'lucide-react'
 import { Badge } from '@/components/ui/Badge'
+import { Button } from '@/components/ui/Button'
 import { cn, formatDate } from '@/lib/utils'
 
 /** Mismo shape que ResultadoBuscador en src/lib/buscador.ts (duplicado a
@@ -41,10 +42,11 @@ export function BuscadorClient() {
   const searchParams = useSearchParams()
   // Init una sola vez desde la URL (permite compartir /buscar?q=...).
   const [q, setQ] = useState(() => searchParams.get('q') ?? '')
-  const [resultados, setResultados] = useState<ResultadoBuscador[]>([])
-  const [total, setTotal] = useState(0)
+  const [respuesta, setRespuesta] = useState<{ query: string; total: number; resultados: ResultadoBuscador[] } | null>(null)
   const [estado, setEstado] = useState<Estado>('inactivo')
-  const abortRef = useRef<AbortController | null>(null)
+  const [intento, setIntento] = useState(0)
+  const { resultados = [], total = 0 } = respuesta ?? {}
+  const muestraResultadosAnteriores = resultados.length > 0 && respuesta?.query !== q.trim()
 
   // Sincronización ENTRANTE: Next refleja en useSearchParams tanto la
   // navegación de next/form como los replaceState nativos (soportado desde
@@ -70,16 +72,13 @@ export function BuscadorClient() {
 
     if (query.length < 2) {
       setEstado('inactivo')
-      setResultados([])
-      setTotal(0)
+      setRespuesta(null)
       return
     }
 
     setEstado('buscando')
+    const controller = new AbortController()
     const timer = setTimeout(async () => {
-      abortRef.current?.abort()
-      const controller = new AbortController()
-      abortRef.current = controller
       try {
         const res = await fetch(`/api/buscar?q=${encodeURIComponent(query)}`, {
           signal: controller.signal,
@@ -89,24 +88,24 @@ export function BuscadorClient() {
           resultados: ResultadoBuscador[]
           error?: string
         }
+        if (controller.signal.aborted) return
         if (!res.ok || data.error) {
           setEstado('error')
           return
         }
-        setResultados(data.resultados)
-        setTotal(data.total)
+        setRespuesta({ query, total: data.total, resultados: data.resultados })
         setEstado('ok')
-      } catch (error) {
-        if (error instanceof Error && error.name === 'AbortError') return
+      } catch {
+        if (controller.signal.aborted) return
         setEstado('error')
       }
     }, 250)
 
     return () => {
       clearTimeout(timer)
-      abortRef.current?.abort()
+      controller.abort()
     }
-  }, [q])
+  }, [q, intento])
 
   return (
     <div>
@@ -132,31 +131,42 @@ export function BuscadorClient() {
         />
       </div>
 
-      <p className="text-body-sm text-grey-700 mt-4" aria-live="polite">
-        {estado === 'buscando' && 'Buscando…'}
-        {estado === 'ok' &&
-          total > 0 &&
-          (total === 1
-            ? `1 resultado para «${q.trim()}»`
-            : `${total} resultados para «${q.trim()}»`)}
-        {estado === 'ok' && total === 0 && 'Sin resultados. Probá con otras palabras.'}
+      <div className="mt-4 flex min-h-17 items-start gap-3 py-1">
+        <p role="status" className="m-0 min-w-0 flex-1 self-center text-body-sm text-grey-700 wrap-anywhere">
+          {estado === 'buscando' && 'Buscando…'}
+          {estado === 'ok' &&
+            total > 0 &&
+            (total === 1
+              ? '1 resultado para «' + respuesta?.query + '»'
+              : total + ' resultados para «' + respuesta?.query + '»')}
+          {estado === 'ok' && total === 0 && 'Sin resultados. Probá con otras palabras.'}
+          {estado === 'error' && (
+            <>
+              No pudimos buscar.
+              {resultados.length === 0 && (
+                <>
+                  {' '}
+                  <Link href="/noticias" className={cn('text-navy-600 underline', focusRing)}>
+                    Ver últimas noticias
+                  </Link>
+                </>
+              )}
+            </>
+          )}
+          {muestraResultadosAnteriores && (
+            <span className="block truncate">Resultados anteriores de «{respuesta?.query}».</span>
+          )}
+        </p>
         {estado === 'error' && (
-          <>
-            No pudimos buscar en este momento. Probá de nuevo en unos minutos o recorré{' '}
-            <Link
-              href="/noticias"
-              className={cn('text-navy-600 underline hover:text-navy-700', focusRing)}
-            >
-              las últimas noticias
-            </Link>
-            .
-          </>
+          <Button type="button" variant="secondary" size="sm" className="min-h-11 shrink-0 self-center" onClick={() => setIntento(value => value + 1)}>
+            Reintentar
+          </Button>
         )}
-      </p>
+      </div>
 
-      {estado === 'ok' && resultados.length > 0 && (
+      {resultados.length > 0 && (
         <>
-          <ul className="flex flex-col gap-4 mt-8">
+          <ul aria-busy={estado === 'buscando'} className="mt-4 flex flex-col gap-4">
             {resultados.map((r) => (
               <li key={r.href}>
                 <article className="bg-white border border-grey-200 rounded-xs p-6 hover:shadow-md transition-shadow duration-base ease-out">

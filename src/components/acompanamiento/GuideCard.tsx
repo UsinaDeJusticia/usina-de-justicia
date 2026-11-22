@@ -196,16 +196,16 @@ export function GuideCard({ guia }: { guia: Guia }) {
             </p>
             <div className="flex flex-col divide-y divide-grey-200 border-t border-b border-grey-200 mt-4 max-w-[680px]">
               {guia.preguntas.map(({ pregunta, respuesta }) => (
-                <details key={pregunta} className="group py-4">
-                  <summary className="flex items-center justify-between gap-4 cursor-pointer list-none font-display font-bold text-ink text-body marker:content-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-navy-600 focus-visible:ring-offset-2 rounded-xs">
+                <details key={pregunta} className="group py-1.5">
+                  <summary className="flex min-h-11 items-center justify-between gap-4 py-2.5 cursor-pointer list-none font-display font-bold text-ink text-body marker:content-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-navy-600 focus-visible:ring-offset-2 rounded-xs group-open:text-navy-700">
                     <span>{pregunta}</span>
                     <ChevronDown
-                      className="w-4.5 h-4.5 shrink-0 text-navy-600 transition-transform duration-base ease-out group-open:rotate-180"
+                      className="w-4.5 h-4.5 shrink-0 text-navy-600 group-open:rotate-180 motion-safe:transition-transform motion-safe:duration-base ease-out"
                       strokeWidth={1.75}
                       aria-hidden="true"
                     />
                   </summary>
-                  <p className="text-body-sm text-grey-700 leading-relaxed mt-3 mb-0">{respuesta}</p>
+                  <p className="text-body-sm text-grey-700 leading-relaxed mt-1 mb-2.5 group-open:motion-safe:animate-faq-answer">{respuesta}</p>
                 </details>
               ))}
             </div>
