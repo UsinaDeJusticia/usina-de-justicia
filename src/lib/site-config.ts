@@ -89,8 +89,8 @@ export const siteConfig = {
       { label: 'Donar', href: '/donar' },
     ],
     legal: [
-      { label: 'Política de Privacidad', href: '/legal/privacidad' },
-      { label: 'Términos de Uso', href: '/legal/terminos' },
+      { label: 'Política de Privacidad', href: '/privacidad' },
+      { label: 'Términos y Condiciones', href: '/terminos' },
     ],
   },
 }
