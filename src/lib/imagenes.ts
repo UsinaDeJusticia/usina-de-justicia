@@ -190,3 +190,17 @@ export function varianteParaTarjetaOG(
   if (!compatibles.length) return undefined
   return varianteParaAncho({ ...imagen, variantes: compatibles }, 1200)
 }
+
+/**
+ * El hero intenta primero la variante adecuada para pantalla y luego el JPEG
+ * social que WordPress prepara para imágenes WebP/AVIF. Algunos orígenes
+ * pueden fallar al servir el formato original aunque el JPEG esté disponible.
+ */
+export function urlsParaHero(
+  imagen: ImageAsset | undefined,
+  anchoMinimo = ANCHO_HERO_HOME
+): string[] {
+  const principal = urlParaAncho(imagen, anchoMinimo)
+  const fallbackSocial = varianteParaTarjetaOG(imagen)?.url
+  return [...new Set([principal, fallbackSocial].filter((url): url is string => Boolean(url)))]
+}
